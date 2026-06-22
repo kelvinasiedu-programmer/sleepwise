@@ -137,6 +137,9 @@ fully on BM25 retrieval and the deterministic explanation template (zero keys, z
 | `SLEEPWISE_EMBEDDING_MODEL` | `text-embedding-3-small` | Embedding model |
 | `ANTHROPIC_API_KEY` | — | Enables LLM-written explanations (falls back to the template on any error) |
 | `SLEEPWISE_LLM_MODEL` | `claude-haiku-4-5` | Explanation model |
+| `SLEEPWISE_RATE_LIMIT` / `SLEEPWISE_RATE_WINDOW` | `60` / `60` | Per-IP requests per window (seconds) |
+| `SLEEPWISE_CORS_ORIGINS` | `*` | Comma-separated allowed origins |
+| `SENTRY_DSN` | — | Enables Sentry error tracking (if `sentry-sdk` is installed) |
 
 ## Deploy
 

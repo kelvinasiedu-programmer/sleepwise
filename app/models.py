@@ -6,9 +6,9 @@ for the shapes that flow through the pipeline.
 
 from __future__ import annotations
 
-from typing import Literal
+from typing import Annotated, Literal
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, StringConstraints
 
 Severity = Literal["ALLOW", "WARN", "BLOCK"]
 
@@ -45,11 +45,15 @@ class InteractionRule(BaseModel):
     verified: bool = False
 
 
+# Bounded free-text to cap payload size (defense against abusive input).
+_FreeText = Annotated[str, StringConstraints(strip_whitespace=True, max_length=100)]
+
+
 class UserInput(BaseModel):
-    goal: str = "sleep"
-    meds: list[str] = Field(default_factory=list)
-    conditions: list[str] = Field(default_factory=list)
-    current_supplements: list[str] = Field(default_factory=list)
+    goal: Annotated[str, StringConstraints(strip_whitespace=True, max_length=50)] = "sleep"
+    meds: list[_FreeText] = Field(default_factory=list, max_length=50)
+    conditions: list[_FreeText] = Field(default_factory=list, max_length=50)
+    current_supplements: list[_FreeText] = Field(default_factory=list, max_length=50)
 
 
 class SafetyReason(BaseModel):
