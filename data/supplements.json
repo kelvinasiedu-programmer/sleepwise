@@ -1,0 +1,134 @@
+[
+  {
+    "id": "melatonin",
+    "name": "Melatonin",
+    "aliases": ["n-acetyl-5-methoxytryptamine"],
+    "dose_low": 0.5,
+    "dose_high": 5,
+    "unit": "mg",
+    "timing": "30–60 min before bed",
+    "evidence_grade": "moderate",
+    "summary": "A hormone that regulates the sleep–wake cycle; most useful for delayed sleep timing and jet lag.",
+    "evidence": [
+      {
+        "claim": "Can modestly shorten the time it takes to fall asleep, especially for circadian-rhythm and jet-lag related sleep problems.",
+        "source": "NIH ODS — Melatonin Fact Sheet",
+        "source_url": "https://ods.od.nih.gov/factsheets/Melatonin-HealthProfessional/",
+        "verified": true
+      },
+      {
+        "claim": "Lower doses (0.5–3 mg) are often as effective as higher doses; more is not necessarily better.",
+        "source": "NIH ODS — Melatonin Fact Sheet",
+        "source_url": "https://ods.od.nih.gov/factsheets/Melatonin-HealthProfessional/",
+        "verified": true
+      }
+    ],
+    "buy_query": "melatonin"
+  },
+  {
+    "id": "magnesium",
+    "name": "Magnesium glycinate",
+    "aliases": ["magnesium bisglycinate"],
+    "dose_low": 200,
+    "dose_high": 400,
+    "unit": "mg",
+    "timing": "evening",
+    "evidence_grade": "limited",
+    "summary": "An essential mineral; the glycinate form is well tolerated. May support relaxation and sleep quality, especially where intake is low.",
+    "evidence": [
+      {
+        "claim": "Adequate magnesium status is linked to sleep quality; supplementation may help when dietary intake is insufficient.",
+        "source": "NIH ODS — Magnesium Fact Sheet",
+        "source_url": "https://ods.od.nih.gov/factsheets/Magnesium-HealthProfessional/",
+        "verified": true
+      },
+      {
+        "claim": "The tolerable upper intake level from supplements is 350 mg/day for adults; higher amounts can cause diarrhea.",
+        "source": "NIH ODS — Magnesium Fact Sheet",
+        "source_url": "https://ods.od.nih.gov/factsheets/Magnesium-HealthProfessional/",
+        "verified": true
+      }
+    ],
+    "buy_query": "magnesium glycinate"
+  },
+  {
+    "id": "l_theanine",
+    "name": "L-theanine",
+    "aliases": ["theanine"],
+    "dose_low": 200,
+    "dose_high": 400,
+    "unit": "mg",
+    "timing": "before bed",
+    "evidence_grade": "limited",
+    "summary": "An amino acid found in tea; associated with relaxation without sedation. Sometimes paired with magnesium.",
+    "evidence": [
+      {
+        "claim": "May promote relaxation and reduce subjective stress, which can indirectly support sleep.",
+        "source": "MedlinePlus — Herbs & Supplements",
+        "source_url": "https://medlineplus.gov/druginfo/herb_All.html",
+        "verified": false
+      }
+    ],
+    "buy_query": "l-theanine"
+  },
+  {
+    "id": "glycine",
+    "name": "Glycine",
+    "aliases": [],
+    "dose_low": 3000,
+    "dose_high": 5000,
+    "unit": "mg",
+    "timing": "before bed",
+    "evidence_grade": "preliminary",
+    "summary": "An amino acid; small studies suggest a dose before bed may improve subjective sleep quality.",
+    "evidence": [
+      {
+        "claim": "Small trials report improved subjective sleep quality and reduced next-day fatigue with ~3 g before bed.",
+        "source": "MedlinePlus — Herbs & Supplements",
+        "source_url": "https://medlineplus.gov/druginfo/herb_All.html",
+        "verified": false
+      }
+    ],
+    "buy_query": "glycine powder"
+  },
+  {
+    "id": "valerian",
+    "name": "Valerian",
+    "aliases": ["valeriana officinalis"],
+    "dose_low": 300,
+    "dose_high": 600,
+    "unit": "mg",
+    "timing": "30–120 min before bed",
+    "evidence_grade": "limited",
+    "summary": "A traditional sleep herb. Evidence is mixed; notable for additive sedation with other CNS depressants.",
+    "evidence": [
+      {
+        "claim": "Some people report improved sleep, but clinical evidence is mixed and study quality varies.",
+        "source": "NIH ODS — Valerian Fact Sheet",
+        "source_url": "https://ods.od.nih.gov/factsheets/Valerian-HealthProfessional/",
+        "verified": true
+      }
+    ],
+    "buy_query": "valerian root"
+  },
+  {
+    "id": "ashwagandha",
+    "name": "Ashwagandha",
+    "aliases": ["withania somnifera"],
+    "dose_low": 250,
+    "dose_high": 600,
+    "unit": "mg",
+    "timing": "evening",
+    "evidence_grade": "limited",
+    "summary": "An adaptogenic herb (root extract) studied for stress and sleep. Not recommended in pregnancy.",
+    "evidence": [
+      {
+        "claim": "Root-extract studies suggest possible improvements in stress and sleep measures, though trials are small.",
+        "source": "MedlinePlus — Herbs & Supplements",
+        "source_url": "https://medlineplus.gov/druginfo/herb_All.html",
+        "verified": false
+      }
+    ],
+    "buy_query": "ashwagandha root extract"
+  }
+]
