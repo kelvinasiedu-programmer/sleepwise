@@ -43,7 +43,7 @@
   <rect x="502" y="120" width="130" height="92" rx="10" fill="#E1F5EE" stroke="#5DCAA5" stroke-width="1.5"/>
   <text class="lbl" x="567" y="156" text-anchor="middle">4 · Evidence</text>
   <text class="sub" x="567" y="176" text-anchor="middle">cited</text>
-  <text class="sub" x="567" y="190" text-anchor="middle">RAG-ready</text>
+  <text class="sub" x="567" y="190" text-anchor="middle">BM25 / RAG</text>
 
   <!-- 5 explain -->
   <rect x="656" y="120" width="130" height="92" rx="10" fill="#EEEDFE" stroke="#AFA9EC" stroke-width="1.5"/>

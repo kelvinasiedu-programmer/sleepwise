@@ -1,0 +1,162 @@
+[
+  {
+    "id": "melatonin-1",
+    "supplement_id": "melatonin",
+    "text": "Melatonin is a hormone that signals the body's sleep-wake cycle; supplements are most effective for circadian-rhythm problems and jet lag.",
+    "source": "NIH ODS Melatonin Fact Sheet",
+    "source_url": "https://ods.od.nih.gov/factsheets/Melatonin-Consumer/",
+    "verified": true
+  },
+  {
+    "id": "melatonin-2",
+    "supplement_id": "melatonin",
+    "text": "For sleep onset, doses of 0.5 to 5 mg taken 30 to 60 minutes before bed are typical; lower doses are often as effective as higher ones.",
+    "source": "NIH ODS Melatonin Fact Sheet",
+    "source_url": "https://ods.od.nih.gov/factsheets/Melatonin-Consumer/",
+    "verified": true
+  },
+  {
+    "id": "melatonin-3",
+    "supplement_id": "melatonin",
+    "text": "Short-term melatonin use is generally well tolerated; side effects can include daytime drowsiness, headache, and dizziness.",
+    "source": "NIH ODS Melatonin Fact Sheet",
+    "source_url": "https://ods.od.nih.gov/factsheets/Melatonin-Consumer/",
+    "verified": true
+  },
+  {
+    "id": "melatonin-4",
+    "supplement_id": "melatonin",
+    "text": "Melatonin may interact with anticoagulants, immunosuppressants, diabetes medications, and blood-pressure drugs.",
+    "source": "NIH ODS Melatonin Fact Sheet",
+    "source_url": "https://ods.od.nih.gov/factsheets/Melatonin-Consumer/",
+    "verified": true
+  },
+  {
+    "id": "magnesium-1",
+    "supplement_id": "magnesium",
+    "text": "Magnesium is an essential mineral involved in nerve and muscle function; the glycinate form is well tolerated and gentle on the stomach.",
+    "source": "NIH ODS Magnesium Fact Sheet",
+    "source_url": "https://ods.od.nih.gov/factsheets/Magnesium-HealthProfessional/",
+    "verified": true
+  },
+  {
+    "id": "magnesium-2",
+    "supplement_id": "magnesium",
+    "text": "Adequate magnesium status is associated with better sleep quality; supplementation may help most when dietary intake is low.",
+    "source": "NIH ODS Magnesium Fact Sheet",
+    "source_url": "https://ods.od.nih.gov/factsheets/Magnesium-HealthProfessional/",
+    "verified": true
+  },
+  {
+    "id": "magnesium-3",
+    "supplement_id": "magnesium",
+    "text": "The tolerable upper intake level for supplemental magnesium is 350 mg per day for adults; excess can cause diarrhea.",
+    "source": "NIH ODS Magnesium Fact Sheet",
+    "source_url": "https://ods.od.nih.gov/factsheets/Magnesium-HealthProfessional/",
+    "verified": true
+  },
+  {
+    "id": "magnesium-4",
+    "supplement_id": "magnesium",
+    "text": "Magnesium can bind certain antibiotics and bisphosphonates and reduce their absorption; separate the doses by several hours.",
+    "source": "NIH ODS Magnesium Fact Sheet",
+    "source_url": "https://ods.od.nih.gov/factsheets/Magnesium-HealthProfessional/",
+    "verified": true
+  },
+  {
+    "id": "l_theanine-1",
+    "supplement_id": "l_theanine",
+    "text": "L-theanine is an amino acid found in tea leaves, associated with a calm, relaxed state without strong sedation.",
+    "source": "MedlinePlus Herbs & Supplements",
+    "source_url": "https://medlineplus.gov/druginfo/herb_All.html",
+    "verified": false
+  },
+  {
+    "id": "l_theanine-2",
+    "supplement_id": "l_theanine",
+    "text": "Typical study doses range from 200 to 400 mg, sometimes taken before bed to support relaxation.",
+    "source": "MedlinePlus Herbs & Supplements",
+    "source_url": "https://medlineplus.gov/druginfo/herb_All.html",
+    "verified": false
+  },
+  {
+    "id": "l_theanine-3",
+    "supplement_id": "l_theanine",
+    "text": "L-theanine is often combined with magnesium or used to soften the stimulating effect of caffeine.",
+    "source": "MedlinePlus Herbs & Supplements",
+    "source_url": "https://medlineplus.gov/druginfo/herb_All.html",
+    "verified": false
+  },
+  {
+    "id": "glycine-1",
+    "supplement_id": "glycine",
+    "text": "Glycine is an amino acid; small trials suggest about 3 grams before bed may improve subjective sleep quality.",
+    "source": "MedlinePlus Herbs & Supplements",
+    "source_url": "https://medlineplus.gov/druginfo/herb_All.html",
+    "verified": false
+  },
+  {
+    "id": "glycine-2",
+    "supplement_id": "glycine",
+    "text": "Reported benefits include falling asleep faster and reduced next-day fatigue, though the evidence is preliminary.",
+    "source": "MedlinePlus Herbs & Supplements",
+    "source_url": "https://medlineplus.gov/druginfo/herb_All.html",
+    "verified": false
+  },
+  {
+    "id": "glycine-3",
+    "supplement_id": "glycine",
+    "text": "Glycine may reduce the effectiveness of the antipsychotic clozapine.",
+    "source": "MedlinePlus Herbs & Supplements",
+    "source_url": "https://medlineplus.gov/druginfo/herb_All.html",
+    "verified": false
+  },
+  {
+    "id": "valerian-1",
+    "supplement_id": "valerian",
+    "text": "Valerian is a traditional herbal sleep aid; clinical evidence is mixed and study quality varies.",
+    "source": "NIH ODS Valerian Fact Sheet",
+    "source_url": "https://ods.od.nih.gov/factsheets/Valerian-HealthProfessional/",
+    "verified": true
+  },
+  {
+    "id": "valerian-2",
+    "supplement_id": "valerian",
+    "text": "Common doses are 300 to 600 mg of extract taken 30 minutes to two hours before bed.",
+    "source": "NIH ODS Valerian Fact Sheet",
+    "source_url": "https://ods.od.nih.gov/factsheets/Valerian-HealthProfessional/",
+    "verified": true
+  },
+  {
+    "id": "valerian-3",
+    "supplement_id": "valerian",
+    "text": "Valerian can add to the sedative effects of benzodiazepines, sedative-hypnotics, and other CNS depressants.",
+    "source": "NIH ODS Valerian Fact Sheet",
+    "source_url": "https://ods.od.nih.gov/factsheets/Valerian-HealthProfessional/",
+    "verified": true
+  },
+  {
+    "id": "ashwagandha-1",
+    "supplement_id": "ashwagandha",
+    "text": "Ashwagandha is an adaptogenic herb; root-extract trials suggest possible improvements in stress and sleep measures.",
+    "source": "MedlinePlus Herbs & Supplements",
+    "source_url": "https://medlineplus.gov/druginfo/herb_All.html",
+    "verified": false
+  },
+  {
+    "id": "ashwagandha-2",
+    "supplement_id": "ashwagandha",
+    "text": "Studied doses commonly range from 250 to 600 mg of root extract per day.",
+    "source": "MedlinePlus Herbs & Supplements",
+    "source_url": "https://medlineplus.gov/druginfo/herb_All.html",
+    "verified": false
+  },
+  {
+    "id": "ashwagandha-3",
+    "supplement_id": "ashwagandha",
+    "text": "Ashwagandha is not recommended during pregnancy and may affect thyroid hormone levels and immune activity.",
+    "source": "MedlinePlus Herbs & Supplements",
+    "source_url": "https://medlineplus.gov/druginfo/herb_All.html",
+    "verified": false
+  }
+]
