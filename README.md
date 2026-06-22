@@ -1,49 +1,69 @@
 # SleepWise
 
 [![CI](https://github.com/kelvinasiedu-programmer/sleepwise/actions/workflows/ci.yml/badge.svg)](https://github.com/kelvinasiedu-programmer/sleepwise/actions/workflows/ci.yml)
-![Python](https://img.shields.io/badge/python-3.10%2B-blue)
+![Python](https://img.shields.io/badge/python-3.10%20%E2%80%93%203.13-blue)
+[![Lint: Ruff](https://img.shields.io/badge/lint-ruff-261230)](https://github.com/astral-sh/ruff)
+[![Types: mypy](https://img.shields.io/badge/types-mypy-blue)](https://mypy-lang.org/)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 
 **A safety-first supplement guidance engine for sleep.** You enter your goal, your
-current medications, and a few health flags; SleepWise returns evidence-backed
-sleep supplements with doses, citations, **interaction warnings checked by a
-deterministic rule engine**, and a clear "talk to a professional" signal when it
-matters.
+current medications, and a few health flags; SleepWise returns evidence-backed sleep
+supplements with doses, citations, **interaction warnings checked by a deterministic
+rule engine**, and a clear "talk to a professional" signal when it matters.
 
-> ⚠️ **Not medical advice.** SleepWise surfaces general information from public
-> NIH/FDA databases. It is not a diagnosis and not a substitute for a doctor or
-> pharmacist. See [Safety & limitations](#safety--limitations).
+> ⚠️ **Not medical advice.** SleepWise surfaces general information from public NIH/FDA
+> databases. It is not a diagnosis and not a substitute for a doctor or pharmacist. See
+> [Safety & limitations](#safety--limitations).
+>
+> **Live demo:** _not deployed yet_ — see [Quickstart](#quickstart) to run it locally.
 
----
+<p align="center">
+  <img src="docs/architecture.svg" width="860"
+       alt="SleepWise request pipeline: input, normalize meds, deterministic safety gate (ALLOW/WARN/BLOCK), evidence, citation-locked LLM explanation, result.">
+</p>
+
+<!-- Record a short clip, save it as docs/demo.gif, and uncomment:
+<p align="center"><img src="docs/demo.gif" width="720" alt="SleepWise demo"></p>
+-->
+
+## Contents
+
+- [Why this project is interesting](#why-this-project-is-interesting-the-engineering-not-the-supplements)
+- [Architecture](#architecture)
+- [Tech stack](#tech-stack)
+- [Data sources](#data-sources)
+- [Quickstart](#quickstart)
+- [Testing & quality](#testing--quality)
+- [Safety & limitations](#safety--limitations)
+- [Roadmap](#roadmap)
 
 ## Why this project is interesting (the engineering, not the supplements)
 
 Most "AI health" demos let a language model free-associate medical claims. That is
 exactly how you hurt someone. SleepWise is built the opposite way:
 
-- **Safety is deterministic, not generative.** Whether two things can be combined
-  is decided by a hand-verified rule engine ([`app/safety.py`](app/safety.py)) —
-  *before* any model runs. The LLM is only allowed to *explain* the vetted output,
-  never to invent or override it.
-- **Every claim is grounded and cited.** Doses and evidence come from the NIH
-  Office of Dietary Supplements and MedlinePlus, carried through to the response.
+- **Safety is deterministic, not generative.** Whether two things can be combined is
+  decided by a hand-verified rule engine ([`app/safety.py`](app/safety.py)) — *before*
+  any model runs. The LLM is only allowed to *explain* the vetted output, never to
+  invent or override it.
+- **Every claim is grounded and cited.** Doses and evidence come from the NIH Office of
+  Dietary Supplements and MedlinePlus, carried through to the response.
 - **It fails safe.** Unknown med? Pregnancy flag? Prescription sedative? The engine
   escalates to a warning or a hard block and routes you to a clinician.
 
-This is a small, honest slice of a real problem — and the design choices are
-written up in [`DECISIONS.md`](DECISIONS.md).
+The design choices are written up in [`DECISIONS.md`](DECISIONS.md).
 
 ## Architecture
 
-```
-your input ─► normalize meds (RxNorm) ─► DETERMINISTIC SAFETY LAYER ─► evidence (RAG-ready) ─► LLM explanation ─► result
-                                          ALLOW / WARN / BLOCK
-                                          (runs first, no model)
-                 curated knowledge base (doses + hand-verified interaction rules) feeds the safety + evidence steps
-```
+The safety layer is the gate: it returns ALLOW / WARN / BLOCK *before* any model runs,
+so a hallucination can never reach a safety decision. A curated knowledge base feeds the
+safety and evidence stages (see the diagram above).
 
-The safety layer is the gate: it can block a suggestion before the model ever
-speaks. See the [request flow](#request-flow) diagram in `DECISIONS.md`.
+```
+input ─► normalize meds ─► SAFETY GATE ─► evidence ─► LLM explain ─► result
+                           ALLOW/WARN/BLOCK
+                           (deterministic, first)
+```
 
 ## Tech stack
 
@@ -54,6 +74,7 @@ speaks. See the [request flow](#request-flow) diagram in `DECISIONS.md`.
 | Data | Curated JSON from NIH ODS / DSLD / MedlinePlus | Authoritative, citable |
 | Med normalization | NIH RxNorm (with offline fallback) | Reliable name → drug-class matching |
 | Explanation | Structured-output LLM (templated fallback) | Friendly prose, citation-locked |
+| Quality | Ruff · mypy · pytest + coverage · CI | Enforced on every push |
 
 ## Data sources
 
@@ -65,18 +86,24 @@ speaks. See the [request flow](#request-flow) diagram in `DECISIONS.md`.
 
 ## Quickstart
 
+**Run the app:**
+
 ```bash
-# 1. clone, then from the repo root:
 python -m venv .venv
-# Windows:  .venv\Scripts\activate     macOS/Linux:  source .venv/bin/activate
+# Windows: .venv\Scripts\activate     macOS/Linux: source .venv/bin/activate
 pip install -r requirements.txt
-
-# 2. run the tests (the safety rules are covered)
-pytest -q
-
-# 3. start the API + minimal UI
 uvicorn app.main:app --reload
-# open http://127.0.0.1:8000  (UI)  or  http://127.0.0.1:8000/docs  (API)
+# UI at http://127.0.0.1:8000  ·  API docs at http://127.0.0.1:8000/docs
+```
+
+**Develop (tests, lint, types):**
+
+```bash
+pip install -r requirements-dev.txt
+pytest          # tests + coverage
+ruff check .    # lint
+ruff format .   # format
+mypy app        # types
 ```
 
 ### Example request
@@ -91,17 +118,25 @@ Valerian comes back in `not_recommended` (BLOCK: additive CNS depression with a
 benzodiazepine) with no purchase link, while safe options are returned with cited
 rationale.
 
-## Testing
+## Testing & quality
 
-`pytest` covers the rules that matter most — the dangerous pairs:
+Every push runs a three-stage GitHub Actions pipeline:
+
+- **Lint & format** — `ruff check` + `ruff format --check`
+- **Type check** — `mypy app` (zero issues required)
+- **Test** — `pytest` across **Python 3.10 – 3.13** with a **coverage gate (≥ 90%)**
+
+The tests encode the requirement that matters most — the dangerous pairs:
 
 - valerian + benzodiazepine → **BLOCK**
 - melatonin + anticoagulant → **WARN**
 - magnesium + quinolone antibiotic → **WARN**
+- magnesium + kidney disease → **BLOCK**
 - ashwagandha in pregnancy → **BLOCK**
 - clean profile → **ALLOW**
 
-If a future change ever lets a known-dangerous pair through, a test fails.
+If a future change ever lets a known-dangerous pair through, a test fails. Dependencies
+are kept current by Dependabot; local hygiene is enforced by `pre-commit`.
 
 ## Safety & limitations
 
@@ -109,16 +144,19 @@ If a future change ever lets a known-dangerous pair through, a test fails.
 - The interaction table is **hand-curated for six sleep supplements** against common
   drug classes. It is intentionally narrow and is **not** a complete interaction
   database. Absence of a warning is **not** proof of safety.
-- Data entries are tagged with `verified`; unverified rows must be checked against
-  their cited source before any real-world use.
+- Medication matching is exact-string on generic names; brand names are out of scope in
+  v1 (a known limitation — see [`DECISIONS.md`](DECISIONS.md) and the roadmap).
+- Data entries are tagged with `verified`; unverified rows must be checked against their
+  cited source before any real-world use.
 - No personal health data is stored — requests are stateless by design.
 
 ## Roadmap
 
+- [ ] Brand-name + live RxNorm/RxClass drug-class resolution
 - [ ] Swap the evidence step for true RAG (embeddings over the full ODS + MedlinePlus corpus)
-- [ ] Live RxNorm/RxClass drug-class resolution with caching
+- [ ] Model additive effects across recommended supplements (e.g. stacked sedatives)
 - [ ] Expand beyond sleep (one goal module at a time)
-- [ ] Affiliate links with FTC-compliant disclosure
+- [ ] Deploy a live demo + affiliate links with FTC-compliant disclosure
 
 ## License
 

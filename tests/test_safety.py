@@ -3,6 +3,7 @@
 These encode the requirement that matters most: known-dangerous pairs must be caught.
 If a future change ever lets one through, the suite goes red.
 """
+
 from app import normalize, recommend, safety
 from app.models import UserInput
 

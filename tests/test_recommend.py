@@ -1,4 +1,5 @@
 """End-to-end recommendation tests."""
+
 from app import recommend
 from app.models import UserInput
 

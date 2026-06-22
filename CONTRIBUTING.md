@@ -16,9 +16,10 @@ will be rejected.
 ```bash
 python -m venv .venv
 # Windows: .venv\Scripts\activate     macOS/Linux: source .venv/bin/activate
-pip install -r requirements.txt
-pytest -q
-uvicorn app.main:app --reload   # UI at /, docs at /docs
+pip install -r requirements-dev.txt
+pre-commit install      # optional: run ruff on every commit
+pytest                  # tests + coverage
+uvicorn app.main:app --reload
 ```
 
 ## Project layout
@@ -31,7 +32,7 @@ uvicorn app.main:app --reload   # UI at /, docs at /docs
 | `app/explain.py` | Explanation layer, citation-locked |
 | `app/models.py` | Pydantic data contracts |
 | `data/*.json` | Curated supplements + interaction rules |
-| `tests/` | Rule-engine + end-to-end tests |
+| `tests/` | Rule-engine, normalize, explain, and HTTP tests |
 
 ## Adding a supplement
 
@@ -52,6 +53,14 @@ uvicorn app.main:app --reload   # UI at /, docs at /docs
 
 ## Before opening a PR
 
-- `pytest -q` is green.
-- New data carries a real `source_url`, and the `verified` flag is honest.
-- No safety decision moved into the model layer.
+All of these run in CI and must pass:
+
+```bash
+ruff check .            # lint
+ruff format --check .   # formatting
+mypy app                # types (zero issues)
+pytest --cov-fail-under=90   # tests + coverage gate
+```
+
+Also confirm: new data carries a real `source_url`, the `verified` flag is honest, and
+no safety decision moved into the model layer.

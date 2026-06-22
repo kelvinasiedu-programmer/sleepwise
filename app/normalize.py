@@ -1,14 +1,15 @@
 """Map user-entered medication names to drug classes.
 
-Primary path: NIH RxNorm / RxClass (https://rxnav.nlm.nih.gov/). To keep the app
-runnable offline and the tests deterministic, we ship a small local lookup and only
-hit the network when explicitly asked. Graceful degradation is intentional — see
-DECISIONS.md (#3).
+The offline map below is the source of truth today. A live NIH RxNorm / RxClass
+resolver is the planned upgrade (see the roadmap in README.md); the `use_network` hook
+and `_resolve_via_rxnorm` exist so it can be added without changing this module's public
+signature. Graceful degradation is intentional — see DECISIONS.md (#3).
 """
+
 from __future__ import annotations
 
-# Minimal, hand-maintained name -> drug-class map. This is a starting point for the
-# offline path; the live RxNorm path (below) is the real source for production.
+# Minimal, hand-maintained generic-name -> drug-class map. Brand names and misspellings
+# are deliberately out of scope for v1 (a documented limitation, not an oversight).
 LOCAL_DRUG_CLASSES: dict[str, str] = {
     # anticoagulants / antiplatelets
     "warfarin": "anticoagulant",
@@ -57,49 +58,31 @@ LOCAL_DRUG_CLASSES: dict[str, str] = {
     "alendronate": "bisphosphonate",
 }
 
+# RxNorm REST base for the planned live resolver.
 RXNAV_BASE = "https://rxnav.nlm.nih.gov/REST"
 
 
-def to_drug_classes(meds: list[str], use_network: bool = False, timeout: float = 4.0) -> set[str]:
-    """Resolve a list of medication names to a set of drug classes.
+def to_drug_classes(meds: list[str], use_network: bool = False) -> set[str]:
+    """Resolve medication names to a set of drug classes.
 
-    The offline map always runs. If ``use_network`` is True we additionally try
-    RxNorm, but any failure there is swallowed so the safety layer still has the
-    offline result to work with.
+    The offline map always runs. When ``use_network`` is True we additionally consult
+    RxNorm; that path is a documented hook today and returns nothing, so the offline
+    result is never blocked by network behavior.
     """
-    classes: set[str] = set()
-    for med in meds:
-        key = med.strip().lower()
-        if key in LOCAL_DRUG_CLASSES:
-            classes.add(LOCAL_DRUG_CLASSES[key])
-
+    classes = {
+        LOCAL_DRUG_CLASSES[key]
+        for med in meds
+        if (key := med.strip().lower()) in LOCAL_DRUG_CLASSES
+    }
     if use_network:
-        classes |= _resolve_via_rxnorm(meds, timeout=timeout)
-
+        classes |= _resolve_via_rxnorm(meds)
     return classes
 
 
-def _resolve_via_rxnorm(meds: list[str], timeout: float) -> set[str]:
-    """Best-effort live resolution via RxNorm/RxClass.
+def _resolve_via_rxnorm(meds: list[str]) -> set[str]:
+    """Hook for live RxNorm/RxClass resolution.
 
-    Imported lazily so the package has no hard dependency on httpx for the common
-    (offline) path. Returns an empty set on any failure.
+    Not yet implemented: the offline map is authoritative for v1. This exists so the
+    network path can be added later without touching ``to_drug_classes``'s signature.
     """
-    try:
-        import httpx  # noqa: PLC0415 (intentional lazy import)
-    except Exception:
-        return set()
-
-    found: set[str] = set()
-    try:
-        with httpx.Client(timeout=timeout) as client:
-            for med in meds:
-                resp = client.get(
-                    f"{RXNAV_BASE}/rxcui.json", params={"name": med, "search": 1}
-                )
-                # NOTE: mapping an rxcui -> drug class via RxClass is the next step.
-                # Left as a documented integration point for the roadmap.
-                _ = resp
-    except Exception:
-        return found
-    return found
+    return set()

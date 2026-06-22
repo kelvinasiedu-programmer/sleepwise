@@ -3,6 +3,7 @@
 This module wires the deterministic safety layer to the evidence and explanation
 steps. It contains no safety logic of its own — that lives in app/safety.py.
 """
+
 from __future__ import annotations
 
 import json

@@ -1,25 +1,26 @@
 """Deterministic safety layer — the heart of SleepWise.
 
-This module decides whether each candidate supplement is ALLOW / WARN / BLOCK for
-a given user, using hand-verified interaction rules ONLY. No language model is
-involved. The LLM (see app/explain.py) may *describe* this output but must never
-override or invent it.
+This module decides whether each candidate supplement is ALLOW / WARN / BLOCK for a
+given user, using hand-verified interaction rules ONLY. No language model is involved.
+The LLM (see app/explain.py) may *describe* this output but must never override or
+invent it.
 
-Keeping this layer pure and deterministic is what makes it unit-testable and what
-keeps a hallucination from ever reaching a safety decision.
+Keeping this layer pure and deterministic is what makes it unit-testable and what keeps
+a hallucination from ever reaching a safety decision.
 """
+
 from __future__ import annotations
 
-from .models import InteractionRule, SafetyReason, SafetyResult, Supplement, UserInput
+from .models import InteractionRule, SafetyReason, SafetyResult, Severity, Supplement, UserInput
 
-_SEVERITY_ORDER: dict[str, int] = {"ALLOW": 0, "WARN": 1, "BLOCK": 2}
+_SEVERITY_ORDER: dict[Severity, int] = {"ALLOW": 0, "WARN": 1, "BLOCK": 2}
 
 # Profile flags that always warrant a professional conversation before supplementing,
 # regardless of the specific supplement.
 HARD_GATE_CONDITIONS = {"pregnancy", "breastfeeding", "under_18"}
 
 
-def _escalate(current: str, candidate: str) -> str:
+def _escalate(current: Severity, candidate: Severity) -> Severity:
     """Return whichever severity is more severe."""
     return candidate if _SEVERITY_ORDER[candidate] > _SEVERITY_ORDER[current] else current
 
@@ -38,7 +39,7 @@ def evaluate(
         rules: the full interaction-rule table.
         drug_classes: the user's medications already mapped to drug classes.
     """
-    status = "ALLOW"
+    status: Severity = "ALLOW"
     reasons: list[SafetyReason] = []
     defer_to_pro = False
 

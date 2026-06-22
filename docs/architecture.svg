@@ -1,0 +1,77 @@
+<svg viewBox="0 0 980 380" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
+  <title id="title">SleepWise request pipeline</title>
+  <desc id="desc">A horizontal pipeline: user input is normalized to drug classes, then passed through a deterministic safety gate that returns ALLOW, WARN, or BLOCK before any model runs. Allowed items go to evidence retrieval and a citation-locked LLM explanation, producing the result. A curated knowledge base feeds the safety and evidence stages.</desc>
+  <defs>
+    <marker id="ar" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#888780"/>
+    </marker>
+  </defs>
+  <style>
+    text { font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif; }
+    .lbl { font-weight: 700; font-size: 14px; fill: #26215C; }
+    .sub { font-weight: 400; font-size: 10.5px; fill: #5F5E5A; }
+    .hd  { font-weight: 700; font-size: 16px; fill: #26215C; }
+    .tag { font-weight: 400; font-size: 12px; fill: #5F5E5A; }
+    .flow { stroke: #888780; stroke-width: 1.8; fill: none; }
+    .dash { stroke: #888780; stroke-width: 1.4; fill: none; stroke-dasharray: 4 4; }
+  </style>
+
+  <rect x="1" y="1" width="978" height="378" rx="14" fill="#FFFFFF" stroke="#E1E0D8"/>
+  <text class="hd" x="32" y="42">SleepWise — request pipeline</text>
+  <text class="tag" x="32" y="64">Safety is decided before any language model runs.</text>
+
+  <!-- 1 input -->
+  <rect x="40" y="120" width="130" height="92" rx="10" fill="#F1EFE8" stroke="#D3D1C7" stroke-width="1.5"/>
+  <text class="lbl" x="105" y="156" text-anchor="middle">1 · Input</text>
+  <text class="sub" x="105" y="176" text-anchor="middle">goal · meds</text>
+  <text class="sub" x="105" y="190" text-anchor="middle">· conditions</text>
+
+  <!-- 2 normalize -->
+  <rect x="194" y="120" width="130" height="92" rx="10" fill="#EEEDFE" stroke="#AFA9EC" stroke-width="1.5"/>
+  <text class="lbl" x="259" y="156" text-anchor="middle">2 · Normalize</text>
+  <text class="sub" x="259" y="176" text-anchor="middle">meds →</text>
+  <text class="sub" x="259" y="190" text-anchor="middle">drug class</text>
+
+  <!-- 3 SAFETY GATE (emphasized) -->
+  <rect x="340" y="104" width="146" height="124" rx="12" fill="#FAECE7" stroke="#D85A30" stroke-width="2.5"/>
+  <text class="lbl" x="413" y="150" text-anchor="middle" fill="#712B13">3 · SAFETY GATE</text>
+  <text class="sub" x="413" y="172" text-anchor="middle">ALLOW · WARN · BLOCK</text>
+  <text class="sub" x="413" y="190" text-anchor="middle">deterministic — runs first</text>
+  <text class="sub" x="413" y="206" text-anchor="middle">no model involved</text>
+
+  <!-- 4 evidence -->
+  <rect x="502" y="120" width="130" height="92" rx="10" fill="#E1F5EE" stroke="#5DCAA5" stroke-width="1.5"/>
+  <text class="lbl" x="567" y="156" text-anchor="middle">4 · Evidence</text>
+  <text class="sub" x="567" y="176" text-anchor="middle">cited</text>
+  <text class="sub" x="567" y="190" text-anchor="middle">RAG-ready</text>
+
+  <!-- 5 explain -->
+  <rect x="656" y="120" width="130" height="92" rx="10" fill="#EEEDFE" stroke="#AFA9EC" stroke-width="1.5"/>
+  <text class="lbl" x="721" y="156" text-anchor="middle">5 · Explain</text>
+  <text class="sub" x="721" y="176" text-anchor="middle">LLM, citation-</text>
+  <text class="sub" x="721" y="190" text-anchor="middle">locked</text>
+
+  <!-- 6 result -->
+  <rect x="810" y="120" width="130" height="92" rx="10" fill="#F1EFE8" stroke="#D3D1C7" stroke-width="1.5"/>
+  <text class="lbl" x="875" y="156" text-anchor="middle">6 · Result</text>
+  <text class="sub" x="875" y="176" text-anchor="middle">recs · risks</text>
+  <text class="sub" x="875" y="190" text-anchor="middle">buy links</text>
+
+  <!-- flow arrows -->
+  <path class="flow" d="M170,166 L192,166" marker-end="url(#ar)"/>
+  <path class="flow" d="M324,166 L338,166" marker-end="url(#ar)"/>
+  <path class="flow" d="M486,166 L500,166" marker-end="url(#ar)"/>
+  <path class="flow" d="M632,166 L654,166" marker-end="url(#ar)"/>
+  <path class="flow" d="M786,166 L808,166" marker-end="url(#ar)"/>
+
+  <!-- knowledge base -->
+  <rect x="300" y="272" width="320" height="64" rx="10" fill="#FFFFFF" stroke="#888780" stroke-width="1.4" stroke-dasharray="4 4"/>
+  <text class="lbl" x="460" y="300" text-anchor="middle" font-size="13">Curated knowledge base</text>
+  <text class="sub" x="460" y="318" text-anchor="middle">doses (DSLD / ODS) · hand-verified interaction rules</text>
+
+  <!-- kb feeds safety + evidence -->
+  <path class="dash" d="M430,272 L413,230" marker-end="url(#ar)"/>
+  <path class="dash" d="M520,272 L567,214" marker-end="url(#ar)"/>
+
+  <text class="tag" x="32" y="362">Orange = deterministic safety gate. The model (step 5) only explains vetted output and must cite its sources.</text>
+</svg>
