@@ -5,6 +5,7 @@
 Serves a minimal UI at "/" and the JSON API at "/recommend" (docs at "/docs").
 The catalog is loaded once at startup.
 """
+
 from __future__ import annotations
 
 from pathlib import Path

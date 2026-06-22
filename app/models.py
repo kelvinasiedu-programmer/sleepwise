@@ -3,6 +3,7 @@
 Pydantic gives us validation, automatic API docs, and a single source of truth
 for the shapes that flow through the pipeline.
 """
+
 from __future__ import annotations
 
 from typing import Literal

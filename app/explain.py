@@ -9,6 +9,7 @@ that was not in its input.
 The cardinal rule: the model never asserts a safety fact the rule engine did not
 produce.
 """
+
 from __future__ import annotations
 
 from .models import EvidenceItem, SafetyResult, Supplement

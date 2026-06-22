@@ -5,6 +5,7 @@ supplement. The interface is deliberately tiny so it can be swapped for true RAG
 (embeddings over the full ODS + MedlinePlus corpus) without changing any caller —
 see the roadmap in README.md.
 """
+
 from __future__ import annotations
 
 from .models import EvidenceItem, Supplement
