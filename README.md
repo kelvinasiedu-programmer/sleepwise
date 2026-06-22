@@ -15,7 +15,7 @@ rule engine**, and a clear "talk to a professional" signal when it matters.
 > databases. It is not a diagnosis and not a substitute for a doctor or pharmacist. See
 > [Safety & limitations](#safety--limitations).
 >
-> **Live demo:** _not deployed yet_ — see [Quickstart](#quickstart) to run it locally.
+> **Live demo:** one-click deploy is configured ([Deploy](#deploy)); not yet hosted.
 
 <p align="center">
   <img src="docs/architecture.svg" width="860"
@@ -33,6 +33,7 @@ rule engine**, and a clear "talk to a professional" signal when it matters.
 - [Tech stack](#tech-stack)
 - [Data sources](#data-sources)
 - [Quickstart](#quickstart)
+- [Deploy](#deploy)
 - [Testing & quality](#testing--quality)
 - [Safety & limitations](#safety--limitations)
 - [Roadmap](#roadmap)
@@ -118,6 +119,24 @@ Valerian comes back in `not_recommended` (BLOCK: additive CNS depression with a
 benzodiazepine) with no purchase link, while safe options are returned with cited
 rationale.
 
+## Deploy
+
+The app is a single stateless service — deploy it anywhere.
+
+**Render (one click):** push to GitHub, then on Render choose **New + → Blueprint** and
+select this repo. [`render.yaml`](render.yaml) provisions a free web service with a
+`/health` check and auto-deploy on push.
+
+**Docker (Railway / Fly / Cloud Run / anywhere):**
+
+```bash
+docker build -t sleepwise .
+docker run -p 8000:8000 sleepwise   # http://localhost:8000
+```
+
+The image is a slim multi-stage build that runs as a non-root user, honors the host's
+`$PORT`, and ships a container `HEALTHCHECK` against `/health`.
+
 ## Testing & quality
 
 Every push runs a three-stage GitHub Actions pipeline:
@@ -156,7 +175,8 @@ are kept current by Dependabot; local hygiene is enforced by `pre-commit`.
 - [ ] Swap the evidence step for true RAG (embeddings over the full ODS + MedlinePlus corpus)
 - [ ] Model additive effects across recommended supplements (e.g. stacked sedatives)
 - [ ] Expand beyond sleep (one goal module at a time)
-- [ ] Deploy a live demo + affiliate links with FTC-compliant disclosure
+- [x] Deploy config (Render blueprint + Docker) — see [Deploy](#deploy)
+- [ ] Host the live demo + affiliate links with FTC-compliant disclosure
 
 ## License
 

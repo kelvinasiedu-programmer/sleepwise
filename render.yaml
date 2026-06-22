@@ -1,0 +1,16 @@
+# Render Blueprint — https://render.com/docs/blueprint-spec
+# One-click deploy: push to GitHub, then on Render choose
+# New + → Blueprint → pick this repo. Render reads this file.
+services:
+  - type: web
+    name: sleepwise
+    runtime: python
+    plan: free
+    region: oregon
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /health
+    autoDeploy: true
+    envVars:
+      - key: PYTHON_VERSION
+        value: "3.12.5"
