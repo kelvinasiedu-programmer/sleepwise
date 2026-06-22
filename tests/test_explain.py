@@ -41,3 +41,19 @@ def test_unverified_evidence_is_flagged():
 def test_no_interactions_is_not_presented_as_a_guarantee():
     text = explain.explain(_supplement(), SafetyResult(status="ALLOW"), [])
     assert "not a guarantee" in text.lower()
+
+
+def test_explain_falls_back_to_template_without_a_key():
+    supplement = _supplement()
+    result = SafetyResult(
+        status="WARN",
+        reasons=[SafetyReason(severity="WARN", message="x", source_url="http://s")],
+    )
+    # With no ANTHROPIC_API_KEY (cleared by conftest), the output is exactly the template.
+    assert explain.explain(supplement, result, []) == explain._render_template(
+        supplement, result, []
+    )
+
+
+def test_call_llm_returns_none_without_a_key():
+    assert explain._call_llm(_supplement(), SafetyResult(status="ALLOW"), []) is None

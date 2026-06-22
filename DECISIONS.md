@@ -62,14 +62,37 @@ safe is to not hold the data at all in v1.
 **Why:** A narrow, well-evidenced domain is verifiable and shippable in a week. Breadth
 is a roadmap item, not a v1 requirement.
 
+## 7. Retrieval: BM25 by default, embeddings optional
+
+**Decision:** Evidence is retrieved by a from-scratch BM25 index over a curated corpus
+(`data/evidence_corpus.json`). An embedding backend is available behind
+`SLEEPWISE_RETRIEVER=embedding` + `OPENAI_API_KEY`, and `get_retriever` falls back to BM25
+on any error.
+
+**Why:** BM25 is real, well-understood retrieval that needs no model, no service, and no
+memory budget — so the deployed free-tier app does genuine RAG out of the box. The
+embedding path demonstrates the upgrade without forcing a dependency or a key.
+
+## 8. The LLM writes prose only — never safety
+
+**Decision:** When `ANTHROPIC_API_KEY` is set, an LLM rewrites the *already-vetted* facts
+into friendlier prose. The authoritative ALLOW/WARN/BLOCK status and the structured
+`warnings` list come from the rule engine and are returned separately; the model output
+only fills the human-readable `explanation` string. With no key, the deterministic
+template is used.
+
+**Why:** This keeps the safety invariant intact even with generation enabled — the UI
+shows engine-produced warnings regardless of what the prose says — while still letting the
+app benefit from an LLM when one is available.
+
 ## Request flow
 
 ```
 1. Your input            goal=sleep, meds[], conditions[]
 2. Normalize meds        RxNorm (+ local fallback) -> drug classes
 3. SAFETY LAYER          rule engine -> ALLOW / WARN / BLOCK   <-- deterministic, runs first
-4. Evidence retrieval    curated, cited (RAG-ready interface)
-5. LLM explanation       structured output, cite-only
+4. Evidence retrieval    BM25 RAG over the evidence corpus (embeddings optional)
+5. LLM explanation       optional; cite-only, deterministic template fallback
 6. Result                recommendations, risks, defer-to-pro, buy links
 ```
 

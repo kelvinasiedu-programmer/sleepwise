@@ -34,6 +34,7 @@ rule engine**, and a clear "talk to a professional" signal when it matters.
 - [Tech stack](#tech-stack)
 - [Data sources](#data-sources)
 - [Quickstart](#quickstart)
+- [Configuration](#configuration)
 - [Deploy](#deploy)
 - [Testing & quality](#testing--quality)
 - [Safety & limitations](#safety--limitations)
@@ -48,8 +49,9 @@ exactly how you hurt someone. SleepWise is built the opposite way:
   decided by a hand-verified rule engine ([`app/safety.py`](app/safety.py)) — *before*
   any model runs. The LLM is only allowed to *explain* the vetted output, never to
   invent or override it.
-- **Every claim is grounded and cited.** Doses and evidence come from the NIH Office of
-  Dietary Supplements and MedlinePlus, carried through to the response.
+- **Every claim is grounded, retrieved, and cited.** Evidence is pulled from a curated
+  NIH ODS / MedlinePlus corpus by a from-scratch BM25 retriever (RAG) and carried — with
+  its citation — all the way to the response.
 - **It fails safe.** Unknown med? Pregnancy flag? Prescription sedative? The engine
   escalates to a warning or a hard block and routes you to a clinician.
 
@@ -75,7 +77,8 @@ input ─► normalize meds ─► SAFETY GATE ─► evidence ─► LLM explai
 | Safety | Pure-Python rule engine | Deterministic, unit-testable, no model in the loop |
 | Data | Curated JSON from NIH ODS / DSLD / MedlinePlus | Authoritative, citable |
 | Med normalization | NIH RxNorm (with offline fallback) | Reliable name → drug-class matching |
-| Explanation | Structured-output LLM (templated fallback) | Friendly prose, citation-locked |
+| Retrieval (RAG) | From-scratch BM25; optional embeddings | Real retrieval, zero-dependency default |
+| Explanation | Optional LLM (Anthropic) + template fallback | Friendly prose, citation-locked |
 | Quality | Ruff · mypy · pytest + coverage · CI | Enforced on every push |
 
 ## Data sources
@@ -119,6 +122,19 @@ curl -X POST http://127.0.0.1:8000/recommend \
 Valerian comes back in `not_recommended` (BLOCK: additive CNS depression with a
 benzodiazepine) with no purchase link, while safe options are returned with cited
 rationale.
+
+## Configuration
+
+All integrations are **optional** — with no environment variables set, SleepWise runs
+fully on BM25 retrieval and the deterministic explanation template (zero keys, zero cost).
+
+| Variable | Default | Effect |
+|---|---|---|
+| `SLEEPWISE_RETRIEVER` | `bm25` | Set to `embedding` for semantic retrieval (needs `OPENAI_API_KEY`) |
+| `OPENAI_API_KEY` | — | Enables the embedding retriever |
+| `SLEEPWISE_EMBEDDING_MODEL` | `text-embedding-3-small` | Embedding model |
+| `ANTHROPIC_API_KEY` | — | Enables LLM-written explanations (falls back to the template on any error) |
+| `SLEEPWISE_LLM_MODEL` | `claude-haiku-4-5` | Explanation model |
 
 ## Deploy
 
@@ -174,12 +190,14 @@ are kept current by Dependabot; local hygiene is enforced by `pre-commit`.
 
 ## Roadmap
 
-- [ ] Brand-name + live RxNorm/RxClass drug-class resolution
-- [ ] Swap the evidence step for true RAG (embeddings over the full ODS + MedlinePlus corpus)
-- [ ] Model additive effects across recommended supplements (e.g. stacked sedatives)
-- [ ] Expand beyond sleep (one goal module at a time)
+- [x] RAG evidence retrieval — from-scratch BM25 default, optional embedding backend
+- [x] Optional LLM explanations (Anthropic) with deterministic citation-locked fallback
 - [x] Deploy config (Render blueprint + Docker) — see [Deploy](#deploy)
 - [x] Host the live demo — [sleepwise-90oh.onrender.com](https://sleepwise-90oh.onrender.com)
+- [ ] Brand-name + live RxNorm/RxClass drug-class resolution
+- [ ] Model additive effects across recommended supplements (e.g. stacked sedatives)
+- [ ] Semantic embeddings over the full ODS + MedlinePlus corpus
+- [ ] Expand beyond sleep (one goal module at a time)
 - [ ] Affiliate links with FTC-compliant disclosure
 
 ## License

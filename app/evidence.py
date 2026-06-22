@@ -1,20 +1,21 @@
-"""Evidence retrieval.
+"""Evidence retrieval entry point.
 
-v1 returns the curated, already-goal-specific EvidenceItems attached to each
-supplement. The interface is deliberately tiny so it can be swapped for true RAG
-(embeddings over the full ODS + MedlinePlus corpus) without changing any caller —
-see the roadmap in README.md.
+Delegates to a pluggable retriever (BM25 by default) over the curated evidence corpus in
+``data/evidence_corpus.json``. This is the *retrieval* half of RAG; app/explain.py does
+the optional *generation* half.
 """
 
 from __future__ import annotations
 
 from .models import EvidenceItem, Supplement
+from .retrieval import Retriever, get_retriever
+
+# Built once at import. The default BM25 backend has no external dependencies, so this is
+# cheap and safe to do eagerly.
+_retriever: Retriever = get_retriever()
 
 
 def retrieve(supplement: Supplement, goal: str = "sleep", k: int = 3) -> list[EvidenceItem]:
-    """Return up to ``k`` evidence items supporting this supplement for the goal.
-
-    Today this is a simple slice of curated evidence. The signature matches what a
-    vector-search retriever would expose, so upgrading is a drop-in replacement.
-    """
-    return supplement.evidence[:k]
+    """Return up to ``k`` evidence chunks most relevant to the goal for this supplement."""
+    query = f"{goal} {supplement.name} benefits dose risks interactions"
+    return _retriever.search(query, supplement.id, k)
