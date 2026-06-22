@@ -56,7 +56,8 @@ exactly how you hurt someone. SleepWise is built the opposite way:
 - **It fails safe.** Unknown med? Pregnancy flag? Prescription sedative? The engine
   escalates to a warning or a hard block and routes you to a clinician.
 
-The design choices are written up in [`DECISIONS.md`](DECISIONS.md).
+The design choices are written up in [`DECISIONS.md`](DECISIONS.md), with a longer
+narrative in [`docs/CASE_STUDY.md`](docs/CASE_STUDY.md).
 
 ## Architecture
 

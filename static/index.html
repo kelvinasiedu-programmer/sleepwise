@@ -5,101 +5,188 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>SleepWise — safety-first sleep supplement guidance</title>
   <style>
-    :root { color-scheme: light dark; }
+    :root {
+      color-scheme: light dark;
+      --bg: #ffffff; --fg: #1f1d2b; --muted: #6b7280; --line: #e3e1d8;
+      --card: #ffffff; --accent: #534ab7; --accent-fg: #ffffff;
+      --allow-bg: #e1f5ee; --allow-fg: #0f6e56;
+      --warn-bg: #fbeaf0; --warn-fg: #993556;
+      --block-bg: #faece7; --block-fg: #993c1d;
+      --disc-bg: #faece7; --disc-line: #d85a30; --disc-fg: #712b13;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #16151c; --fg: #ececf1; --muted: #a0a0ad; --line: #2c2a36;
+        --card: #1d1c25; --disc-bg: #2a1813; --disc-fg: #f0997b;
+      }
+    }
     * { box-sizing: border-box; }
     body {
-      font-family: ui-sans-serif, system-ui, -apple-system, sans-serif;
-      max-width: 760px; margin: 0 auto; padding: 24px; line-height: 1.5;
+      font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+      max-width: 780px; margin: 0 auto; padding: 28px 20px 64px;
+      line-height: 1.55; background: var(--bg); color: var(--fg);
     }
-    h1 { margin-bottom: 4px; }
-    .tag { color: #6b7280; margin-top: 0; }
+    header h1 { margin: 0 0 2px; font-size: 28px; }
+    .tag { color: var(--muted); margin: 0 0 16px; }
     .disclaimer {
-      border: 1px solid #d85a30; background: #faece7; color: #712b13;
-      padding: 10px 14px; border-radius: 8px; font-size: 14px; margin: 16px 0;
+      border: 1px solid var(--disc-line); background: var(--disc-bg); color: var(--disc-fg);
+      padding: 11px 14px; border-radius: 10px; font-size: 14px; margin: 0 0 22px;
     }
-    label { display: block; font-weight: 600; margin: 14px 0 4px; }
-    input[type=text] { width: 100%; padding: 8px; border: 1px solid #b4b2a9; border-radius: 6px; }
-    .conds { display: flex; flex-wrap: wrap; gap: 12px; font-weight: 400; }
-    .conds label { display: flex; align-items: center; gap: 6px; font-weight: 400; margin: 0; }
-    button { margin-top: 16px; padding: 10px 18px; border: 0; border-radius: 6px;
-      background: #534ab7; color: #fff; font-size: 15px; cursor: pointer; }
-    .card { border: 1px solid #d3d1c7; border-radius: 10px; padding: 14px 16px; margin: 12px 0; }
-    .card h3 { margin: 0 0 4px; }
-    .pill { font-size: 12px; font-weight: 700; padding: 2px 8px; border-radius: 999px; }
-    .ALLOW { background: #e1f5ee; color: #0f6e56; }
-    .WARN  { background: #fbeaf0; color: #993556; }
-    .BLOCK { background: #faece7; color: #993c1d; }
-    .muted { color: #6b7280; font-size: 13px; }
-    .warn { color: #993556; font-size: 14px; }
-    a { color: #534ab7; }
-    section h2 { margin-top: 28px; }
+    form { display: grid; gap: 6px; }
+    label.field { font-weight: 600; margin-top: 12px; }
+    input[type=text] {
+      width: 100%; padding: 9px 11px; border: 1px solid var(--line); border-radius: 8px;
+      background: var(--card); color: var(--fg); font-size: 15px;
+    }
+    .conds { display: flex; flex-wrap: wrap; gap: 10px 16px; margin-top: 6px; }
+    .conds label { display: flex; align-items: center; gap: 6px; font-weight: 400; }
+    button {
+      margin-top: 18px; padding: 11px 20px; border: 0; border-radius: 8px;
+      background: var(--accent); color: var(--accent-fg); font-size: 15px; font-weight: 600;
+      cursor: pointer; justify-self: start;
+    }
+    button[disabled] { opacity: .6; cursor: progress; }
+    .status-line { margin: 18px 0 0; color: var(--muted); font-size: 14px; }
+    .status-line[role=alert] { color: var(--block-fg); }
+    section h2 { font-size: 18px; margin: 28px 0 6px; }
+    .card {
+      border: 1px solid var(--line); border-radius: 12px; padding: 14px 16px;
+      margin: 12px 0; background: var(--card);
+    }
+    .card-head { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+    .card h3 { margin: 0; font-size: 17px; }
+    .pill { font-size: 12px; font-weight: 700; padding: 2px 9px; border-radius: 999px; }
+    .pill-ALLOW { background: var(--allow-bg); color: var(--allow-fg); }
+    .pill-WARN  { background: var(--warn-bg);  color: var(--warn-fg); }
+    .pill-BLOCK { background: var(--block-bg); color: var(--block-fg); }
+    .dose { color: var(--muted); font-size: 13px; margin: 4px 0; }
+    .warn { color: var(--warn-fg); font-size: 14px; margin: 6px 0; }
+    .pro  { color: var(--block-fg); font-weight: 600; font-size: 14px; margin: 6px 0; }
+    .evidence { color: var(--muted); font-size: 13px; margin: 5px 0; }
+    a { color: var(--accent); }
+    footer { margin-top: 40px; color: var(--muted); font-size: 13px; border-top: 1px solid var(--line); padding-top: 14px; }
   </style>
 </head>
 <body>
-  <h1>SleepWise</h1>
-  <p class="tag">Safety-first supplement guidance for sleep.</p>
-  <div class="disclaimer">
+  <header>
+    <h1>SleepWise</h1>
+    <p class="tag">Safety-first supplement guidance for sleep.</p>
+  </header>
+
+  <p class="disclaimer">
     Educational information from public NIH/FDA databases — <strong>not medical advice</strong>.
     Always talk to a doctor or pharmacist before starting any supplement.
-  </div>
+  </p>
 
-  <label for="meds">Current medications (comma-separated)</label>
-  <input id="meds" type="text" placeholder="e.g. lorazepam, warfarin" />
+  <form id="form" autocomplete="off">
+    <label class="field" for="meds">Current medications <span style="font-weight:400">(comma-separated)</span></label>
+    <input id="meds" type="text" placeholder="e.g. lorazepam, warfarin, Xanax 1mg" />
 
-  <label>Health flags</label>
-  <div class="conds">
-    <label><input type="checkbox" value="pregnancy" /> Pregnant</label>
-    <label><input type="checkbox" value="breastfeeding" /> Breastfeeding</label>
-    <label><input type="checkbox" value="under_18" /> Under 18</label>
-    <label><input type="checkbox" value="kidney_disease" /> Kidney disease</label>
-    <label><input type="checkbox" value="thyroid_disorder" /> Thyroid disorder</label>
-  </div>
+    <label class="field" for="supps">Supplements you already take <span style="font-weight:400">(optional)</span></label>
+    <input id="supps" type="text" placeholder="e.g. melatonin" />
 
-  <button id="go">Get guidance</button>
+    <span class="field" id="flags-label">Health flags</span>
+    <div class="conds" role="group" aria-labelledby="flags-label">
+      <label><input type="checkbox" value="pregnancy" /> Pregnant</label>
+      <label><input type="checkbox" value="breastfeeding" /> Breastfeeding</label>
+      <label><input type="checkbox" value="under_18" /> Under 18</label>
+      <label><input type="checkbox" value="kidney_disease" /> Kidney disease</label>
+      <label><input type="checkbox" value="thyroid_disorder" /> Thyroid disorder</label>
+    </div>
 
-  <div id="results"></div>
+    <button id="go" type="submit">Get guidance</button>
+  </form>
+
+  <p id="status" class="status-line" aria-live="polite"></p>
+  <div id="results" aria-live="polite"></div>
+
+  <footer>
+    Educational tool · not medical advice · data from NIH ODS, MedlinePlus &amp; openFDA.
+  </footer>
 
   <script>
-    const $ = (s) => document.querySelector(s);
+    const byId = (id) => document.getElementById(id);
+
+    function el(tag, opts = {}, ...children) {
+      const node = document.createElement(tag);
+      if (opts.class) node.className = opts.class;
+      if (opts.text != null) node.textContent = opts.text;   // text only — never innerHTML
+      if (opts.href && /^https?:\/\//i.test(opts.href)) {     // only allow http(s) links
+        node.href = opts.href; node.target = "_blank"; node.rel = "noopener";
+      }
+      for (const child of children) if (child) node.appendChild(child);
+      return node;
+    }
 
     function card(rec) {
-      const warnings = rec.warnings.map(w =>
-        `<p class="warn">[${w.severity}] ${w.message}</p>`).join("");
-      const evidence = rec.rationale.map(e =>
-        `<p class="muted">${e.claim} — <a href="${e.source_url}" target="_blank" rel="noopener">${e.source}</a></p>`).join("");
-      const buy = rec.buy_link
-        ? `<p><a href="${rec.buy_link}" target="_blank" rel="noopener">Where to buy ↗</a></p>` : "";
-      const pro = rec.defer_to_pro
-        ? `<p class="warn">⚠ Talk to a clinician or pharmacist before using this.</p>` : "";
-      return `<div class="card">
-        <h3>${rec.supplement} <span class="pill ${rec.status}">${rec.status}</span></h3>
-        <p>${rec.summary}</p>
-        <p class="muted">Typical dose: ${rec.dose}${rec.timing ? " · " + rec.timing : ""}</p>
-        ${pro}${warnings}${evidence}${buy}
-      </div>`;
+      const head = el("div", { class: "card-head" },
+        el("h3", { text: rec.supplement }),
+        el("span", { class: "pill pill-" + rec.status, text: rec.status })
+      );
+      const node = el("div", { class: "card" }, head, el("p", { text: rec.summary }));
+      node.appendChild(el("p", { class: "dose",
+        text: "Typical dose: " + rec.dose + (rec.timing ? " · " + rec.timing : "") }));
+      if (rec.defer_to_pro) {
+        node.appendChild(el("p", { class: "pro", text: "⚠ Talk to a clinician or pharmacist before using this." }));
+      }
+      for (const w of rec.warnings) {
+        node.appendChild(el("p", { class: "warn", text: "[" + w.severity + "] " + w.message }));
+      }
+      for (const e of rec.rationale) {
+        const p = el("p", { class: "evidence", text: e.claim + " — " });
+        p.appendChild(el("a", { href: e.source_url, text: e.source }));
+        node.appendChild(p);
+      }
+      if (rec.buy_link) {
+        node.appendChild(el("p", {}, el("a", { href: rec.buy_link, text: "Where to buy ↗" })));
+      }
+      return node;
     }
 
-    async function run() {
-      const meds = $("#meds").value.split(",").map(s => s.trim()).filter(Boolean);
+    function section(title, recs) {
+      const sec = el("section", {}, el("h2", { text: title }));
+      for (const r of recs) sec.appendChild(card(r));
+      return sec;
+    }
+
+    async function run(event) {
+      event.preventDefault();
+      const status = byId("status");
+      const results = byId("results");
+      const button = byId("go");
+      status.removeAttribute("role");
+
+      const meds = byId("meds").value.split(",").map(s => s.trim()).filter(Boolean);
+      const current_supplements = byId("supps").value.split(",").map(s => s.trim()).filter(Boolean);
       const conditions = [...document.querySelectorAll(".conds input:checked")].map(c => c.value);
-      const res = await fetch("/recommend", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ goal: "sleep", meds, conditions })
-      });
-      const data = await res.json();
-      let html = "";
-      if (data.recommended.length) {
-        html += "<section><h2>Worth considering</h2>" + data.recommended.map(card).join("") + "</section>";
+
+      button.disabled = true;
+      status.textContent = "Checking…";
+      results.replaceChildren();
+
+      try {
+        const res = await fetch("/recommend", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ goal: "sleep", meds, conditions, current_supplements })
+        });
+        if (!res.ok) throw new Error("Request failed (" + res.status + ")");
+        const data = await res.json();
+
+        const frag = document.createDocumentFragment();
+        if (data.recommended.length) frag.appendChild(section("Worth considering", data.recommended));
+        if (data.not_recommended.length) frag.appendChild(section("Not recommended for your profile", data.not_recommended));
+        results.appendChild(frag);
+        status.textContent = "";
+      } catch (err) {
+        status.setAttribute("role", "alert");
+        status.textContent = "Something went wrong: " + err.message + ". Please try again.";
+      } finally {
+        button.disabled = false;
       }
-      if (data.not_recommended.length) {
-        html += "<section><h2>Not recommended for your profile</h2>" +
-                data.not_recommended.map(card).join("") + "</section>";
-      }
-      $("#results").innerHTML = html;
     }
 
-    $("#go").addEventListener("click", run);
+    byId("form").addEventListener("submit", run);
   </script>
 </body>
 </html>
