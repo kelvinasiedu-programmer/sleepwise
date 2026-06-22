@@ -44,3 +44,20 @@ def llm_enabled() -> bool:
 
 def embeddings_enabled() -> bool:
     return retriever_kind() == "embedding" and bool(openai_api_key())
+
+
+def cors_origins() -> list[str]:
+    raw = os.getenv("SLEEPWISE_CORS_ORIGINS", "*")
+    return [origin.strip() for origin in raw.split(",") if origin.strip()]
+
+
+def rate_limit() -> int:
+    return int(os.getenv("SLEEPWISE_RATE_LIMIT", "60"))
+
+
+def rate_window() -> float:
+    return float(os.getenv("SLEEPWISE_RATE_WINDOW", "60"))
+
+
+def sentry_dsn() -> str | None:
+    return os.getenv("SENTRY_DSN")
