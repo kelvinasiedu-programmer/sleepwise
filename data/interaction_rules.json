@@ -1,0 +1,173 @@
+[
+  {
+    "supplement_id": "valerian",
+    "target_type": "drug_class",
+    "target": "benzodiazepine",
+    "severity": "BLOCK",
+    "message": "Valerian can add to the sedative effect of benzodiazepines, increasing drowsiness and CNS depression. Do not combine without medical supervision.",
+    "source_url": "https://ods.od.nih.gov/factsheets/Valerian-HealthProfessional/",
+    "verified": true
+  },
+  {
+    "supplement_id": "valerian",
+    "target_type": "drug_class",
+    "target": "sedative_hypnotic",
+    "severity": "BLOCK",
+    "message": "Combining valerian with sedative-hypnotics (e.g., zolpidem) can cause excessive sedation. Do not combine without medical supervision.",
+    "source_url": "https://ods.od.nih.gov/factsheets/Valerian-HealthProfessional/",
+    "verified": true
+  },
+  {
+    "supplement_id": "valerian",
+    "target_type": "drug_class",
+    "target": "opioid",
+    "severity": "BLOCK",
+    "message": "Valerian adds to opioid-related CNS depression. This combination can be dangerous; consult a clinician.",
+    "source_url": "https://medlineplus.gov/druginfo/herb_All.html",
+    "verified": false
+  },
+  {
+    "supplement_id": "melatonin",
+    "target_type": "drug_class",
+    "target": "anticoagulant",
+    "severity": "WARN",
+    "message": "Melatonin may affect bleeding risk and interact with anticoagulants. Discuss with your prescriber before combining.",
+    "source_url": "https://ods.od.nih.gov/factsheets/Melatonin-HealthProfessional/",
+    "verified": true
+  },
+  {
+    "supplement_id": "melatonin",
+    "target_type": "drug_class",
+    "target": "antiplatelet",
+    "severity": "WARN",
+    "message": "Melatonin may add to antiplatelet effects and bleeding risk. Discuss with your prescriber before combining.",
+    "source_url": "https://ods.od.nih.gov/factsheets/Melatonin-HealthProfessional/",
+    "verified": true
+  },
+  {
+    "supplement_id": "melatonin",
+    "target_type": "drug_class",
+    "target": "antihypertensive",
+    "severity": "WARN",
+    "message": "Melatonin can influence blood pressure and may interact with antihypertensive medications. Monitor with your clinician.",
+    "source_url": "https://ods.od.nih.gov/factsheets/Melatonin-HealthProfessional/",
+    "verified": true
+  },
+  {
+    "supplement_id": "melatonin",
+    "target_type": "drug_class",
+    "target": "antidiabetic",
+    "severity": "WARN",
+    "message": "Melatonin may affect blood glucose. If you take antidiabetic medication, monitor levels and consult your clinician.",
+    "source_url": "https://ods.od.nih.gov/factsheets/Melatonin-HealthProfessional/",
+    "verified": true
+  },
+  {
+    "supplement_id": "melatonin",
+    "target_type": "drug_class",
+    "target": "immunosuppressant",
+    "severity": "WARN",
+    "message": "Melatonin can stimulate immune activity and may counteract immunosuppressant therapy. Consult your prescriber.",
+    "source_url": "https://ods.od.nih.gov/factsheets/Melatonin-HealthProfessional/",
+    "verified": true
+  },
+  {
+    "supplement_id": "melatonin",
+    "target_type": "drug_class",
+    "target": "benzodiazepine",
+    "severity": "WARN",
+    "message": "Melatonin adds to the sedative effect of benzodiazepines. Use caution and avoid activities requiring alertness.",
+    "source_url": "https://ods.od.nih.gov/factsheets/Melatonin-HealthProfessional/",
+    "verified": true
+  },
+  {
+    "supplement_id": "magnesium",
+    "target_type": "drug_class",
+    "target": "quinolone_antibiotic",
+    "severity": "WARN",
+    "message": "Magnesium can bind quinolone antibiotics and reduce their absorption. Separate doses by several hours.",
+    "source_url": "https://ods.od.nih.gov/factsheets/Magnesium-HealthProfessional/",
+    "verified": true
+  },
+  {
+    "supplement_id": "magnesium",
+    "target_type": "drug_class",
+    "target": "tetracycline_antibiotic",
+    "severity": "WARN",
+    "message": "Magnesium can bind tetracycline antibiotics and reduce their absorption. Separate doses by several hours.",
+    "source_url": "https://ods.od.nih.gov/factsheets/Magnesium-HealthProfessional/",
+    "verified": true
+  },
+  {
+    "supplement_id": "magnesium",
+    "target_type": "drug_class",
+    "target": "bisphosphonate",
+    "severity": "WARN",
+    "message": "Magnesium can reduce absorption of bisphosphonates. Separate dosing and follow your pharmacist's guidance.",
+    "source_url": "https://ods.od.nih.gov/factsheets/Magnesium-HealthProfessional/",
+    "verified": true
+  },
+  {
+    "supplement_id": "magnesium",
+    "target_type": "condition",
+    "target": "kidney_disease",
+    "severity": "BLOCK",
+    "message": "With reduced kidney function, supplemental magnesium can accumulate to dangerous levels. Do not supplement without medical supervision.",
+    "source_url": "https://ods.od.nih.gov/factsheets/Magnesium-HealthProfessional/",
+    "verified": true
+  },
+  {
+    "supplement_id": "l_theanine",
+    "target_type": "drug_class",
+    "target": "antihypertensive",
+    "severity": "WARN",
+    "message": "L-theanine may lower blood pressure and could add to antihypertensive medication. Monitor with your clinician.",
+    "source_url": "https://medlineplus.gov/druginfo/herb_All.html",
+    "verified": false
+  },
+  {
+    "supplement_id": "glycine",
+    "target_type": "drug_class",
+    "target": "antipsychotic_clozapine",
+    "severity": "WARN",
+    "message": "Glycine may reduce the effectiveness of clozapine. Do not combine without your prescriber's guidance.",
+    "source_url": "https://medlineplus.gov/druginfo/herb_All.html",
+    "verified": false
+  },
+  {
+    "supplement_id": "ashwagandha",
+    "target_type": "condition",
+    "target": "pregnancy",
+    "severity": "BLOCK",
+    "message": "Ashwagandha is not recommended during pregnancy. Avoid use and consult your clinician.",
+    "source_url": "https://medlineplus.gov/druginfo/herb_All.html",
+    "verified": false
+  },
+  {
+    "supplement_id": "ashwagandha",
+    "target_type": "drug_class",
+    "target": "immunosuppressant",
+    "severity": "WARN",
+    "message": "Ashwagandha may stimulate the immune system and counteract immunosuppressant therapy. Consult your prescriber.",
+    "source_url": "https://medlineplus.gov/druginfo/herb_All.html",
+    "verified": false
+  },
+  {
+    "supplement_id": "ashwagandha",
+    "target_type": "drug_class",
+    "target": "thyroid_hormone",
+    "severity": "WARN",
+    "message": "Ashwagandha may increase thyroid hormone levels and add to thyroid medication. Monitor with your clinician.",
+    "source_url": "https://medlineplus.gov/druginfo/herb_All.html",
+    "verified": false
+  },
+  {
+    "supplement_id": "ashwagandha",
+    "target_type": "drug_class",
+    "target": "sedative_hypnotic",
+    "severity": "WARN",
+    "message": "Ashwagandha may add to the effect of sedative medications. Use caution and avoid activities requiring alertness.",
+    "source_url": "https://medlineplus.gov/druginfo/herb_All.html",
+    "verified": false
+  }
+]

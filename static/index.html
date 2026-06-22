@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>SleepWise — safety-first sleep supplement guidance</title>
+  <style>
+    :root { color-scheme: light dark; }
+    * { box-sizing: border-box; }
+    body {
+      font-family: ui-sans-serif, system-ui, -apple-system, sans-serif;
+      max-width: 760px; margin: 0 auto; padding: 24px; line-height: 1.5;
+    }
+    h1 { margin-bottom: 4px; }
+    .tag { color: #6b7280; margin-top: 0; }
+    .disclaimer {
+      border: 1px solid #d85a30; background: #faece7; color: #712b13;
+      padding: 10px 14px; border-radius: 8px; font-size: 14px; margin: 16px 0;
+    }
+    label { display: block; font-weight: 600; margin: 14px 0 4px; }
+    input[type=text] { width: 100%; padding: 8px; border: 1px solid #b4b2a9; border-radius: 6px; }
+    .conds { display: flex; flex-wrap: wrap; gap: 12px; font-weight: 400; }
+    .conds label { display: flex; align-items: center; gap: 6px; font-weight: 400; margin: 0; }
+    button { margin-top: 16px; padding: 10px 18px; border: 0; border-radius: 6px;
+      background: #534ab7; color: #fff; font-size: 15px; cursor: pointer; }
+    .card { border: 1px solid #d3d1c7; border-radius: 10px; padding: 14px 16px; margin: 12px 0; }
+    .card h3 { margin: 0 0 4px; }
+    .pill { font-size: 12px; font-weight: 700; padding: 2px 8px; border-radius: 999px; }
+    .ALLOW { background: #e1f5ee; color: #0f6e56; }
+    .WARN  { background: #fbeaf0; color: #993556; }
+    .BLOCK { background: #faece7; color: #993c1d; }
+    .muted { color: #6b7280; font-size: 13px; }
+    .warn { color: #993556; font-size: 14px; }
+    a { color: #534ab7; }
+    section h2 { margin-top: 28px; }
+  </style>
+</head>
+<body>
+  <h1>SleepWise</h1>
+  <p class="tag">Safety-first supplement guidance for sleep.</p>
+  <div class="disclaimer">
+    Educational information from public NIH/FDA databases — <strong>not medical advice</strong>.
+    Always talk to a doctor or pharmacist before starting any supplement.
+  </div>
+
+  <label for="meds">Current medications (comma-separated)</label>
+  <input id="meds" type="text" placeholder="e.g. lorazepam, warfarin" />
+
+  <label>Health flags</label>
+  <div class="conds">
+    <label><input type="checkbox" value="pregnancy" /> Pregnant</label>
+    <label><input type="checkbox" value="breastfeeding" /> Breastfeeding</label>
+    <label><input type="checkbox" value="under_18" /> Under 18</label>
+    <label><input type="checkbox" value="kidney_disease" /> Kidney disease</label>
+    <label><input type="checkbox" value="thyroid_disorder" /> Thyroid disorder</label>
+  </div>
+
+  <button id="go">Get guidance</button>
+
+  <div id="results"></div>
+
+  <script>
+    const $ = (s) => document.querySelector(s);
+
+    function card(rec) {
+      const warnings = rec.warnings.map(w =>
+        `<p class="warn">[${w.severity}] ${w.message}</p>`).join("");
+      const evidence = rec.rationale.map(e =>
+        `<p class="muted">${e.claim} — <a href="${e.source_url}" target="_blank" rel="noopener">${e.source}</a></p>`).join("");
+      const buy = rec.buy_link
+        ? `<p><a href="${rec.buy_link}" target="_blank" rel="noopener">Where to buy ↗</a></p>` : "";
+      const pro = rec.defer_to_pro
+        ? `<p class="warn">⚠ Talk to a clinician or pharmacist before using this.</p>` : "";
+      return `<div class="card">
+        <h3>${rec.supplement} <span class="pill ${rec.status}">${rec.status}</span></h3>
+        <p>${rec.summary}</p>
+        <p class="muted">Typical dose: ${rec.dose}${rec.timing ? " · " + rec.timing : ""}</p>
+        ${pro}${warnings}${evidence}${buy}
+      </div>`;
+    }
+
+    async function run() {
+      const meds = $("#meds").value.split(",").map(s => s.trim()).filter(Boolean);
+      const conditions = [...document.querySelectorAll(".conds input:checked")].map(c => c.value);
+      const res = await fetch("/recommend", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ goal: "sleep", meds, conditions })
+      });
+      const data = await res.json();
+      let html = "";
+      if (data.recommended.length) {
+        html += "<section><h2>Worth considering</h2>" + data.recommended.map(card).join("") + "</section>";
+      }
+      if (data.not_recommended.length) {
+        html += "<section><h2>Not recommended for your profile</h2>" +
+                data.not_recommended.map(card).join("") + "</section>";
+      }
+      $("#results").innerHTML = html;
+    }
+
+    $("#go").addEventListener("click", run);
+  </script>
+</body>
+</html>
