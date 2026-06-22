@@ -1,7 +1,9 @@
 """Orchestration: input -> normalize -> safety -> evidence -> explanation -> result.
 
-This module wires the deterministic safety layer to the evidence and explanation
-steps. It contains no safety logic of its own — that lives in app/safety.py.
+This module wires the deterministic safety layer to the evidence and explanation steps.
+The only safety logic here is cross-supplement: additive-sedation stacking, which is
+still rule-based and deterministic (see `_flag_sedative_stacking`). Per-supplement safety
+lives in app/safety.py.
 """
 
 from __future__ import annotations
@@ -14,6 +16,8 @@ from .models import (
     InteractionRule,
     Recommendation,
     RecommendationResponse,
+    SafetyReason,
+    SafetyResult,
     Supplement,
     UserInput,
 )
@@ -30,6 +34,7 @@ DISCLAIMER = (
 # Affiliate note: append your tag (e.g. ?rcode=XXXX) and disclose per FTC rules before
 # treating these as monetized links.
 IHERB_SEARCH = "https://www.iherb.com/search?kw={q}"
+STACKING_SOURCE = "https://ods.od.nih.gov/factsheets/list-all/"
 
 
 def load_catalog(data_dir: Path = DATA_DIR) -> tuple[list[Supplement], list[InteractionRule]]:
@@ -53,6 +58,33 @@ def _build_buy_link(supplement: Supplement) -> str:
     return IHERB_SEARCH.format(q=supplement.buy_query)
 
 
+def _flag_sedative_stacking(evaluated: list[tuple[Supplement, SafetyResult]]) -> None:
+    """Warn when two or more sedating supplements would be suggested together.
+
+    Deterministic and rule-based — it operates on the candidate set rather than a single
+    supplement. BLOCKed items are excluded. Mutates the SafetyResults in place so the
+    warning flows through to both the structured response and the explanation.
+    """
+    sedating = [(s, r) for s, r in evaluated if s.sedating and r.status != "BLOCK"]
+    if len(sedating) < 2:
+        return
+    names = ", ".join(s.name for s, _ in sedating)
+    for _, result in sedating:
+        result.reasons.append(
+            SafetyReason(
+                severity="WARN",
+                message=(
+                    f"Combining multiple sedating supplements ({names}) can have an "
+                    "additive drowsiness / CNS-depressant effect. Choose one, or check "
+                    "with a clinician or pharmacist before stacking them."
+                ),
+                source_url=STACKING_SOURCE,
+            )
+        )
+        if result.status == "ALLOW":
+            result.status = "WARN"
+
+
 def recommend(
     user: UserInput,
     supplements: list[Supplement],
@@ -62,14 +94,17 @@ def recommend(
     """Produce a full recommendation response for the user."""
     drug_classes = normalize.to_drug_classes(user.meds, use_network=use_network)
 
+    # Pass 1: per-supplement safety.
+    evaluated = [(supp, safety.evaluate(user, supp, rules, drug_classes)) for supp in supplements]
+
+    # Pass 2: cross-supplement additive sedation.
+    _flag_sedative_stacking(evaluated)
+
+    # Pass 3: build the response.
     recommended: list[Recommendation] = []
     not_recommended: list[Recommendation] = []
-
-    for supp in supplements:
-        result = safety.evaluate(user, supp, rules, drug_classes)
+    for supp, result in evaluated:
         ev = evidence.retrieve(supp, goal=user.goal)
-        text = explain.explain(supp, result, ev)
-
         rec = Recommendation(
             supplement=supp.name,
             status=result.status,
@@ -80,9 +115,8 @@ def recommend(
             warnings=result.reasons,
             defer_to_pro=result.defer_to_pro,
             buy_link=None if result.status == "BLOCK" else _build_buy_link(supp),
-            explanation=text,
+            explanation=explain.explain(supp, result, ev),
         )
-
         if result.status == "BLOCK":
             not_recommended.append(rec)
         else:

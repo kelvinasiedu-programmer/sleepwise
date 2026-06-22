@@ -30,6 +30,7 @@ class Supplement(BaseModel):
     timing: str | None = None
     evidence_grade: str
     summary: str
+    sedating: bool = False
     evidence: list[EvidenceItem] = Field(default_factory=list)
     buy_query: str
 
