@@ -1,0 +1,10 @@
+[
+  { "query": "jet lag circadian rhythm sleep wake cycle", "relevant": ["melatonin-1"] },
+  { "query": "melatonin 0.5 to 5 mg thirty to sixty minutes before bed", "relevant": ["melatonin-2"] },
+  { "query": "tolerable upper intake level 350 mg diarrhea", "relevant": ["magnesium-3"] },
+  { "query": "magnesium binds antibiotics bisphosphonates reduce absorption separate doses", "relevant": ["magnesium-4"] },
+  { "query": "valerian benzodiazepines sedative hypnotics cns depressants additive", "relevant": ["valerian-3"] },
+  { "query": "glycine amino acid 3 grams subjective sleep quality", "relevant": ["glycine-1"] },
+  { "query": "ashwagandha not recommended pregnancy thyroid hormone immune", "relevant": ["ashwagandha-3"] },
+  { "query": "l-theanine tea leaves calm relaxed without sedation", "relevant": ["l_theanine-1"] }
+]

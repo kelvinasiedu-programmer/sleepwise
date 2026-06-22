@@ -37,6 +37,7 @@ rule engine**, and a clear "talk to a professional" signal when it matters.
 - [Configuration](#configuration)
 - [Deploy](#deploy)
 - [Testing & quality](#testing--quality)
+- [Evaluation](#evaluation)
 - [Safety & limitations](#safety--limitations)
 - [Roadmap](#roadmap)
 
@@ -80,6 +81,7 @@ input ─► normalize meds ─► SAFETY GATE ─► evidence ─► LLM explai
 | Retrieval (RAG) | From-scratch BM25; optional embeddings | Real retrieval, zero-dependency default |
 | Explanation | Optional LLM (Anthropic) + template fallback | Friendly prose, citation-locked |
 | Quality | Ruff · mypy · pytest + coverage · CI | Enforced on every push |
+| Evaluation | recall@k/MRR · safety · faithfulness | Scorecard fails CI on regression |
 
 ## Data sources
 
@@ -176,6 +178,21 @@ The tests encode the requirement that matters most — the dangerous pairs:
 If a future change ever lets a known-dangerous pair through, a test fails. Dependencies
 are kept current by Dependabot; local hygiene is enforced by `pre-commit`.
 
+## Evaluation
+
+`python -m evals.run` prints a scorecard and **fails CI if any metric regresses**. It runs
+on the deterministic explanation path, so it's reproducible with no API keys.
+
+| Metric | What it checks | Current |
+|---|---|---|
+| Retrieval recall@3 / MRR | Does BM25 surface the right evidence chunk? | 1.00 / 1.00 |
+| Safety rule accuracy | Do known profiles get the expected ALLOW/WARN/BLOCK? | 100% |
+| Explanation coverage | Does the explanation include every cited fact? | 100% |
+| Hallucinated numbers | Doses/numbers in the prose absent from the sources | 0 |
+
+The faithfulness checks (coverage + hallucinated-number detection) are the guardrail for
+the optional LLM path: if a model ever invents a dose, the harness catches it.
+
 ## Safety & limitations
 
 - This is an **educational tool**, not a clinician. It never diagnoses or prescribes.
@@ -192,6 +209,7 @@ are kept current by Dependabot; local hygiene is enforced by `pre-commit`.
 
 - [x] RAG evidence retrieval — from-scratch BM25 default, optional embedding backend
 - [x] Optional LLM explanations (Anthropic) with deterministic citation-locked fallback
+- [x] Evaluation harness — retrieval recall@k/MRR, safety scorecard, faithfulness (in CI)
 - [x] Deploy config (Render blueprint + Docker) — see [Deploy](#deploy)
 - [x] Host the live demo — [sleepwise-90oh.onrender.com](https://sleepwise-90oh.onrender.com)
 - [ ] Brand-name + live RxNorm/RxClass drug-class resolution

@@ -1,0 +1,11 @@
+[
+  { "name": "valerian + benzodiazepine", "meds": ["lorazepam"], "supplement": "valerian", "expected": "BLOCK" },
+  { "name": "valerian via brand Xanax", "meds": ["Xanax"], "supplement": "valerian", "expected": "BLOCK" },
+  { "name": "melatonin + anticoagulant", "meds": ["warfarin"], "supplement": "melatonin", "expected": "WARN" },
+  { "name": "melatonin + dosed warfarin string", "meds": ["warfarin 5mg"], "supplement": "melatonin", "expected": "WARN" },
+  { "name": "magnesium + quinolone antibiotic", "meds": ["ciprofloxacin"], "supplement": "magnesium", "expected": "WARN" },
+  { "name": "magnesium + kidney disease", "conditions": ["kidney_disease"], "supplement": "magnesium", "expected": "BLOCK" },
+  { "name": "ashwagandha in pregnancy", "conditions": ["pregnancy"], "supplement": "ashwagandha", "expected": "BLOCK" },
+  { "name": "glycine + clozapine", "meds": ["clozapine"], "supplement": "glycine", "expected": "WARN" },
+  { "name": "clean profile melatonin", "supplement": "melatonin", "expected": "ALLOW" }
+]
