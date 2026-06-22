@@ -1,6 +1,6 @@
 # SleepWise
 
-[![CI](https://github.com/<your-username>/sleepwise/actions/workflows/ci.yml/badge.svg)](https://github.com/<your-username>/sleepwise/actions/workflows/ci.yml)
+[![CI](https://github.com/kelvinasiedu-programmer/sleepwise/actions/workflows/ci.yml/badge.svg)](https://github.com/kelvinasiedu-programmer/sleepwise/actions/workflows/ci.yml)
 ![Python](https://img.shields.io/badge/python-3.10%2B-blue)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 
