@@ -58,3 +58,16 @@ jobs:
       - run: pip install -r requirements-dev.txt
       - name: Pytest + coverage gate
         run: pytest --cov --cov-report=term-missing --cov-fail-under=90
+
+  evals:
+    name: Evaluation harness
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+          cache: pip
+      - run: pip install -r requirements-dev.txt
+      - name: Run eval scorecard
+        run: python -m evals.run
