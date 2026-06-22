@@ -9,6 +9,7 @@
     "timing": "30–60 min before bed",
     "evidence_grade": "moderate",
     "summary": "A hormone that regulates the sleep–wake cycle; most useful for delayed sleep timing and jet lag.",
+    "sedating": true,
     "evidence": [
       {
         "claim": "Can modestly shorten the time it takes to fall asleep, especially for circadian-rhythm and jet-lag related sleep problems.",
@@ -101,6 +102,7 @@
     "timing": "30–120 min before bed",
     "evidence_grade": "limited",
     "summary": "A traditional sleep herb. Evidence is mixed; notable for additive sedation with other CNS depressants.",
+    "sedating": true,
     "evidence": [
       {
         "claim": "Some people report improved sleep, but clinical evidence is mixed and study quality varies.",
@@ -121,6 +123,7 @@
     "timing": "evening",
     "evidence_grade": "limited",
     "summary": "An adaptogenic herb (root extract) studied for stress and sleep. Not recommended in pregnancy.",
+    "sedating": true,
     "evidence": [
       {
         "claim": "Root-extract studies suggest possible improvements in stress and sleep measures, though trials are small.",

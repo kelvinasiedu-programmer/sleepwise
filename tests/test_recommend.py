@@ -32,3 +32,15 @@ def test_allow_options_are_sorted_before_warnings():
 def test_disclaimer_is_present():
     response = recommend.recommend(UserInput(), SUPPLEMENTS, RULES)
     assert "not medical advice" in response.disclaimer.lower()
+
+
+def test_sedative_stacking_warns_across_recommendations():
+    response = recommend.recommend(UserInput(), SUPPLEMENTS, RULES)
+    by_name = {r.supplement: r for r in response.recommended}
+    # Melatonin, Valerian, and Ashwagandha are all sedating and allowed for a clean user,
+    # so each should be flagged for additive sedation.
+    melatonin = by_name["Melatonin"]
+    assert melatonin.status == "WARN"
+    assert any("additive" in w.message.lower() for w in melatonin.warnings)
+    # A non-sedating option is left untouched.
+    assert by_name["Magnesium glycinate"].status == "ALLOW"
