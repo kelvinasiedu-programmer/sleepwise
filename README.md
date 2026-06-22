@@ -1,5 +1,6 @@
 # SleepWise
 
+[![Live demo](https://img.shields.io/badge/demo-live-brightgreen)](https://sleepwise-90oh.onrender.com)
 [![CI](https://github.com/kelvinasiedu-programmer/sleepwise/actions/workflows/ci.yml/badge.svg)](https://github.com/kelvinasiedu-programmer/sleepwise/actions/workflows/ci.yml)
 ![Python](https://img.shields.io/badge/python-3.10%20%E2%80%93%203.13-blue)
 [![Lint: Ruff](https://img.shields.io/badge/lint-ruff-261230)](https://github.com/astral-sh/ruff)
@@ -15,7 +16,7 @@ rule engine**, and a clear "talk to a professional" signal when it matters.
 > databases. It is not a diagnosis and not a substitute for a doctor or pharmacist. See
 > [Safety & limitations](#safety--limitations).
 >
-> **Live demo:** one-click deploy is configured ([Deploy](#deploy)); not yet hosted.
+> **Live demo:** **[sleepwise-90oh.onrender.com](https://sleepwise-90oh.onrender.com)** — hosted on Render's free tier, so the first load after idle can take ~50s to wake.
 
 <p align="center">
   <img src="docs/architecture.svg" width="860"
@@ -121,6 +122,8 @@ rationale.
 
 ## Deploy
 
+**Live instance:** <https://sleepwise-90oh.onrender.com>
+
 The app is a single stateless service — deploy it anywhere.
 
 **Render (one click):** push to GitHub, then on Render choose **New + → Blueprint** and
@@ -176,7 +179,8 @@ are kept current by Dependabot; local hygiene is enforced by `pre-commit`.
 - [ ] Model additive effects across recommended supplements (e.g. stacked sedatives)
 - [ ] Expand beyond sleep (one goal module at a time)
 - [x] Deploy config (Render blueprint + Docker) — see [Deploy](#deploy)
-- [ ] Host the live demo + affiliate links with FTC-compliant disclosure
+- [x] Host the live demo — [sleepwise-90oh.onrender.com](https://sleepwise-90oh.onrender.com)
+- [ ] Affiliate links with FTC-compliant disclosure
 
 ## License
 
