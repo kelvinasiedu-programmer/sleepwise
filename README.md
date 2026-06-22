@@ -1,5 +1,9 @@
 # SleepWise
 
+[![CI](https://github.com/<your-username>/sleepwise/actions/workflows/ci.yml/badge.svg)](https://github.com/<your-username>/sleepwise/actions/workflows/ci.yml)
+![Python](https://img.shields.io/badge/python-3.10%2B-blue)
+[![License: MIT](https://img.shields.io/badge/license-MIT-green)](LICENSE)
+
 **A safety-first supplement guidance engine for sleep.** You enter your goal, your
 current medications, and a few health flags; SleepWise returns evidence-backed
 sleep supplements with doses, citations, **interaction warnings checked by a
