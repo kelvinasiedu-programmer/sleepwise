@@ -2,6 +2,7 @@
 
 [![Live demo](https://img.shields.io/badge/demo-live-brightgreen)](https://sleepwise-90oh.onrender.com)
 [![CI](https://github.com/kelvinasiedu-programmer/sleepwise/actions/workflows/ci.yml/badge.svg)](https://github.com/kelvinasiedu-programmer/sleepwise/actions/workflows/ci.yml)
+[![CodeQL](https://github.com/kelvinasiedu-programmer/sleepwise/actions/workflows/codeql.yml/badge.svg)](https://github.com/kelvinasiedu-programmer/sleepwise/actions/workflows/codeql.yml)
 ![Python](https://img.shields.io/badge/python-3.10%20%E2%80%93%203.13-blue)
 [![Lint: Ruff](https://img.shields.io/badge/lint-ruff-261230)](https://github.com/astral-sh/ruff)
 [![Types: mypy](https://img.shields.io/badge/types-mypy-blue)](https://mypy-lang.org/)
