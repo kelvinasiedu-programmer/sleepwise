@@ -1,4 +1,4 @@
-"""Evidence retrieval — the *retrieval* half of RAG.
+"""Evidence retrieval - the *retrieval* half of RAG.
 
 The default backend is a from-scratch **BM25 (Okapi)** index: no dependencies, no cost,
 and it runs comfortably on a free-tier instance. An optional **embedding** backend

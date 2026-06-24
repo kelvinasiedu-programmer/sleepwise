@@ -1,4 +1,4 @@
-# Render Blueprint — https://render.com/docs/blueprint-spec
+# Render Blueprint - https://render.com/docs/blueprint-spec
 # One-click deploy: push to GitHub, then on Render choose
 # New + → Blueprint → pick this repo. Render reads this file.
 services:

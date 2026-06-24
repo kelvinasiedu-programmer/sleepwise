@@ -61,7 +61,7 @@ def _build_buy_link(supplement: Supplement) -> str:
 def _flag_sedative_stacking(evaluated: list[tuple[Supplement, SafetyResult]]) -> None:
     """Warn when two or more sedating supplements would be suggested together.
 
-    Deterministic and rule-based — it operates on the candidate set rather than a single
+    Deterministic and rule-based - it operates on the candidate set rather than a single
     supplement. BLOCKed items are excluded. Mutates the SafetyResults in place so the
     warning flows through to both the structured response and the explanation.
     """
@@ -108,7 +108,7 @@ def recommend(
         rec = Recommendation(
             supplement=supp.name,
             status=result.status,
-            dose=f"{_format_dose(supp.dose_low)}–{_format_dose(supp.dose_high)} {supp.unit}",
+            dose=f"{_format_dose(supp.dose_low)}-{_format_dose(supp.dose_high)} {supp.unit}",
             timing=supp.timing,
             summary=supp.summary,
             rationale=ev,

@@ -48,7 +48,7 @@ uvicorn app.main:app --reload
 2. If `target` is a drug class new to the project, map the relevant drug names to it in
    `app/normalize.py` (`LOCAL_DRUG_CLASSES`).
 3. **Add a test** in `tests/test_safety.py` for the dangerous pair. A new BLOCK/WARN rule
-   without a test will not be accepted — the test is how we stop a future change from
+   without a test will not be accepted - the test is how we stop a future change from
    silently re-allowing it.
 
 ## Before opening a PR

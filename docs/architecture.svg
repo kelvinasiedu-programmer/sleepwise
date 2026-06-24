@@ -17,7 +17,7 @@
   </style>
 
   <rect x="1" y="1" width="978" height="378" rx="14" fill="#FFFFFF" stroke="#E1E0D8"/>
-  <text class="hd" x="32" y="42">SleepWise — request pipeline</text>
+  <text class="hd" x="32" y="42">SleepWise - request pipeline</text>
   <text class="tag" x="32" y="64">Safety is decided before any language model runs.</text>
 
   <!-- 1 input -->
@@ -36,7 +36,7 @@
   <rect x="340" y="104" width="146" height="124" rx="12" fill="#FAECE7" stroke="#D85A30" stroke-width="2.5"/>
   <text class="lbl" x="413" y="150" text-anchor="middle" fill="#712B13">3 · SAFETY GATE</text>
   <text class="sub" x="413" y="172" text-anchor="middle">ALLOW · WARN · BLOCK</text>
-  <text class="sub" x="413" y="190" text-anchor="middle">deterministic — runs first</text>
+  <text class="sub" x="413" y="190" text-anchor="middle">deterministic - runs first</text>
   <text class="sub" x="413" y="206" text-anchor="middle">no model involved</text>
 
   <!-- 4 evidence -->

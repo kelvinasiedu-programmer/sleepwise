@@ -3,7 +3,7 @@
 [![Live demo](https://img.shields.io/badge/demo-live-brightgreen)](https://sleepwise-90oh.onrender.com)
 [![CI](https://github.com/kelvinasiedu-programmer/sleepwise/actions/workflows/ci.yml/badge.svg)](https://github.com/kelvinasiedu-programmer/sleepwise/actions/workflows/ci.yml)
 [![CodeQL](https://github.com/kelvinasiedu-programmer/sleepwise/actions/workflows/codeql.yml/badge.svg)](https://github.com/kelvinasiedu-programmer/sleepwise/actions/workflows/codeql.yml)
-![Python](https://img.shields.io/badge/python-3.10%20%E2%80%93%203.13-blue)
+![Python](https://img.shields.io/badge/python-3.10%20to%203.13-blue)
 [![Lint: Ruff](https://img.shields.io/badge/lint-ruff-261230)](https://github.com/astral-sh/ruff)
 [![Types: mypy](https://img.shields.io/badge/types-mypy-blue)](https://mypy-lang.org/)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green)](LICENSE)
@@ -17,7 +17,7 @@ rule engine**, and a clear "talk to a professional" signal when it matters.
 > databases. It is not a diagnosis and not a substitute for a doctor or pharmacist. See
 > [Safety & limitations](#safety--limitations).
 >
-> **Live demo:** **[sleepwise-90oh.onrender.com](https://sleepwise-90oh.onrender.com)** — hosted on Render's free tier, so the first load after idle can take ~50s to wake.
+> **Live demo:** **[sleepwise-90oh.onrender.com](https://sleepwise-90oh.onrender.com)** - hosted on Render's free tier, so the first load after idle can take ~50s to wake.
 
 <p align="center">
   <img src="docs/architecture.svg" width="860"
@@ -48,12 +48,12 @@ Most "AI health" demos let a language model free-associate medical claims. That 
 exactly how you hurt someone. SleepWise is built the opposite way:
 
 - **Safety is deterministic, not generative.** Whether two things can be combined is
-  decided by a hand-verified rule engine ([`app/safety.py`](app/safety.py)) — *before*
+  decided by a hand-verified rule engine ([`app/safety.py`](app/safety.py)) - *before*
   any model runs. The LLM is only allowed to *explain* the vetted output, never to
   invent or override it.
 - **Every claim is grounded, retrieved, and cited.** Evidence is pulled from a curated
-  NIH ODS / MedlinePlus corpus by a from-scratch BM25 retriever (RAG) and carried — with
-  its citation — all the way to the response.
+  NIH ODS / MedlinePlus corpus by a from-scratch BM25 retriever (RAG) and carried - with
+  its citation - all the way to the response.
 - **It fails safe.** Unknown med? Pregnancy flag? Prescription sedative? The engine
   escalates to a warning or a hard block and routes you to a clinician.
 
@@ -87,7 +87,7 @@ input ─► normalize meds ─► SAFETY GATE ─► evidence ─► LLM explai
 
 ## Data sources
 
-- [NIH Office of Dietary Supplements – Fact Sheets API](https://ods.od.nih.gov/api/)
+- [NIH Office of Dietary Supplements - Fact Sheets API](https://ods.od.nih.gov/api/)
 - [Dietary Supplement Label Database (DSLD) API](https://dsld.od.nih.gov/api-guide)
 - [MedlinePlus Herbs & Supplements](https://medlineplus.gov/druginfo/herb_All.html)
 - [openFDA Drug Label API](https://open.fda.gov/apis/drug/label/)
@@ -129,25 +129,25 @@ rationale.
 
 ## Configuration
 
-All integrations are **optional** — with no environment variables set, SleepWise runs
+All integrations are **optional** - with no environment variables set, SleepWise runs
 fully on BM25 retrieval and the deterministic explanation template (zero keys, zero cost).
 
 | Variable | Default | Effect |
 |---|---|---|
 | `SLEEPWISE_RETRIEVER` | `bm25` | Set to `embedding` for semantic retrieval (needs `OPENAI_API_KEY`) |
-| `OPENAI_API_KEY` | — | Enables the embedding retriever |
+| `OPENAI_API_KEY` | - | Enables the embedding retriever |
 | `SLEEPWISE_EMBEDDING_MODEL` | `text-embedding-3-small` | Embedding model |
-| `ANTHROPIC_API_KEY` | — | Enables LLM-written explanations (falls back to the template on any error) |
+| `ANTHROPIC_API_KEY` | - | Enables LLM-written explanations (falls back to the template on any error) |
 | `SLEEPWISE_LLM_MODEL` | `claude-haiku-4-5` | Explanation model |
 | `SLEEPWISE_RATE_LIMIT` / `SLEEPWISE_RATE_WINDOW` | `60` / `60` | Per-IP requests per window (seconds) |
 | `SLEEPWISE_CORS_ORIGINS` | `*` | Comma-separated allowed origins |
-| `SENTRY_DSN` | — | Enables Sentry error tracking (if `sentry-sdk` is installed) |
+| `SENTRY_DSN` | - | Enables Sentry error tracking (if `sentry-sdk` is installed) |
 
 ## Deploy
 
 **Live instance:** <https://sleepwise-90oh.onrender.com>
 
-The app is a single stateless service — deploy it anywhere.
+The app is a single stateless service - deploy it anywhere.
 
 **Render (one click):** push to GitHub, then on Render choose **New + → Blueprint** and
 select this repo. [`render.yaml`](render.yaml) provisions a free web service with a
@@ -167,14 +167,14 @@ The image is a slim multi-stage build that runs as a non-root user, honors the h
 
 Every push runs a GitHub Actions pipeline:
 
-- **Lint & format** — `ruff check` + `ruff format --check`
-- **Type check** — `mypy app` (zero issues required)
-- **Test** — `pytest` across **Python 3.10 – 3.13** with a **coverage gate (≥ 90%)**
-- **Evaluation** — the [scorecard](#evaluation), which fails the build on any regression
-- **Dependency audit** — `pip-audit` on the runtime dependencies
-- **CodeQL** — static security analysis, on every push and weekly
+- **Lint & format** - `ruff check` + `ruff format --check`
+- **Type check** - `mypy app` (zero issues required)
+- **Test** - `pytest` across **Python 3.10 - 3.13** with a **coverage gate (≥ 90%)**
+- **Evaluation** - the [scorecard](#evaluation), which fails the build on any regression
+- **Dependency audit** - `pip-audit` on the runtime dependencies
+- **CodeQL** - static security analysis, on every push and weekly
 
-The tests encode the requirement that matters most — the dangerous pairs:
+The tests encode the requirement that matters most - the dangerous pairs:
 
 - valerian + benzodiazepine → **BLOCK**
 - melatonin + anticoagulant → **WARN**
@@ -211,15 +211,15 @@ the optional LLM path: if a model ever invents a dose, the harness catches it.
   typos, but it is not exhaustive; live RxNorm/RxClass resolution is the planned upgrade.
 - Data entries are tagged with `verified`; unverified rows must be checked against their
   cited source before any real-world use.
-- No personal health data is stored — requests are stateless by design.
+- No personal health data is stored - requests are stateless by design.
 
 ## Roadmap
 
-- [x] RAG evidence retrieval — from-scratch BM25 default, optional embedding backend
+- [x] RAG evidence retrieval - from-scratch BM25 default, optional embedding backend
 - [x] Optional LLM explanations (Anthropic) with deterministic citation-locked fallback
-- [x] Evaluation harness — retrieval recall@k/MRR, safety scorecard, faithfulness (in CI)
-- [x] Deploy config (Render blueprint + Docker) — see [Deploy](#deploy)
-- [x] Host the live demo — [sleepwise-90oh.onrender.com](https://sleepwise-90oh.onrender.com)
+- [x] Evaluation harness - retrieval recall@k/MRR, safety scorecard, faithfulness (in CI)
+- [x] Deploy config (Render blueprint + Docker) - see [Deploy](#deploy)
+- [x] Host the live demo - [sleepwise-90oh.onrender.com](https://sleepwise-90oh.onrender.com)
 - [x] Brand-name, dosage, and fuzzy medication matching
 - [x] Additive-sedation check across recommended supplements
 - [ ] Live RxNorm/RxClass drug-class resolution

@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>SleepWise — safety-first sleep supplement guidance</title>
+  <title>SleepWise - safety-first sleep supplement guidance</title>
   <style>
     :root {
       color-scheme: light dark;
@@ -74,7 +74,7 @@
   </header>
 
   <p class="disclaimer">
-    Educational information from public NIH/FDA databases — <strong>not medical advice</strong>.
+    Educational information from public NIH/FDA databases - <strong>not medical advice</strong>.
     Always talk to a doctor or pharmacist before starting any supplement.
   </p>
 
@@ -110,7 +110,7 @@
     function el(tag, opts = {}, ...children) {
       const node = document.createElement(tag);
       if (opts.class) node.className = opts.class;
-      if (opts.text != null) node.textContent = opts.text;   // text only — never innerHTML
+      if (opts.text != null) node.textContent = opts.text;   // text only - never innerHTML
       if (opts.href && /^https?:\/\//i.test(opts.href)) {     // only allow http(s) links
         node.href = opts.href; node.target = "_blank"; node.rel = "noopener";
       }
@@ -133,7 +133,7 @@
         node.appendChild(el("p", { class: "warn", text: "[" + w.severity + "] " + w.message }));
       }
       for (const e of rec.rationale) {
-        const p = el("p", { class: "evidence", text: e.claim + " — " });
+        const p = el("p", { class: "evidence", text: e.claim + " - " });
         p.appendChild(el("a", { href: e.source_url, text: e.source }));
         node.appendChild(p);
       }

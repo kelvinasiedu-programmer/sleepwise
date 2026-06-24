@@ -1,4 +1,4 @@
-"""Deterministic safety layer — the heart of SleepWise.
+"""Deterministic safety layer - the heart of SleepWise.
 
 This module decides whether each candidate supplement is ALLOW / WARN / BLOCK for a
 given user, using hand-verified interaction rules ONLY. No language model is involved.
@@ -65,7 +65,7 @@ def evaluate(
                 )
             )
 
-    # Hard gates: never block silently — always route to a professional.
+    # Hard gates: never block silently - always route to a professional.
     if user_conditions & HARD_GATE_CONDITIONS:
         defer_to_pro = True
         status = _escalate(status, "WARN")

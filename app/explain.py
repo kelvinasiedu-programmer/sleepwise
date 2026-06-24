@@ -3,13 +3,13 @@
 Turns the *already-vetted* safety result + retrieved evidence into a short, readable
 paragraph.
 
-By default — and whenever no API key is set or the call fails — this is a deterministic,
+By default - and whenever no API key is set or the call fails - this is a deterministic,
 citation-locked template, so the project runs with no secrets. When ``ANTHROPIC_API_KEY``
 is present, an LLM rewrites the same vetted facts into friendlier prose.
 
 The cardinal rule: this layer only affects the prose. The authoritative ALLOW/WARN/BLOCK
 status and the structured ``warnings`` come from the rule engine and are returned
-separately (see app/recommend.py) — the model can never alter them.
+separately (see app/recommend.py) - the model can never alter them.
 """
 
 from __future__ import annotations
@@ -49,19 +49,19 @@ def _render_template(
     if safety_result.defer_to_pro:
         parts.append("⚠ Talk to a clinician or pharmacist before using this.")
 
-    # Warnings first — safety leads.
+    # Warnings first - safety leads.
     for reason in safety_result.reasons:
         parts.append(f"[{reason.severity}] {reason.message} (source: {reason.source_url})")
 
     # Then the supporting evidence.
     for item in evidence_items:
-        suffix = "" if item.verified else " [unverified — confirm against source]"
+        suffix = "" if item.verified else " [unverified - confirm against source]"
         parts.append(f"{item.claim} (source: {item.source}){suffix}")
 
     if not safety_result.reasons:
         parts.append(
             "No interactions were found against the medications and conditions you "
-            "entered — but this only reflects the rules in this tool and is not a "
+            "entered - but this only reflects the rules in this tool and is not a "
             "guarantee of safety."
         )
 
@@ -73,7 +73,7 @@ def _facts_block(
     safety_result: SafetyResult,
     evidence_items: list[EvidenceItem],
 ) -> str:
-    """The structured, citation-bearing facts handed to the model — nothing else."""
+    """The structured, citation-bearing facts handed to the model - nothing else."""
     lines = [
         f"Supplement: {supplement.name} ({supplement.dose_low}-{supplement.dose_high} "
         f"{supplement.unit})."

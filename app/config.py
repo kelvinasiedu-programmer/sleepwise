@@ -1,7 +1,7 @@
 """Runtime configuration via environment variables.
 
 Every feature degrades gracefully: with nothing set, SleepWise uses BM25 retrieval and
-the deterministic explanation template — fully functional, zero keys, zero cost. Set the
+the deterministic explanation template - fully functional, zero keys, zero cost. Set the
 variables below to upgrade.
 
   SLEEPWISE_RETRIEVER        "bm25" (default) | "embedding"

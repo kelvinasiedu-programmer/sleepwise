@@ -6,20 +6,20 @@
     "dose_low": 0.5,
     "dose_high": 5,
     "unit": "mg",
-    "timing": "30–60 min before bed",
+    "timing": "30-60 min before bed",
     "evidence_grade": "moderate",
-    "summary": "A hormone that regulates the sleep–wake cycle; most useful for delayed sleep timing and jet lag.",
+    "summary": "A hormone that regulates the sleep-wake cycle; most useful for delayed sleep timing and jet lag.",
     "sedating": true,
     "evidence": [
       {
         "claim": "Can modestly shorten the time it takes to fall asleep, especially for circadian-rhythm and jet-lag related sleep problems.",
-        "source": "NIH ODS — Melatonin Fact Sheet",
+        "source": "NIH ODS - Melatonin Fact Sheet",
         "source_url": "https://ods.od.nih.gov/factsheets/Melatonin-HealthProfessional/",
         "verified": true
       },
       {
-        "claim": "Lower doses (0.5–3 mg) are often as effective as higher doses; more is not necessarily better.",
-        "source": "NIH ODS — Melatonin Fact Sheet",
+        "claim": "Lower doses (0.5-3 mg) are often as effective as higher doses; more is not necessarily better.",
+        "source": "NIH ODS - Melatonin Fact Sheet",
         "source_url": "https://ods.od.nih.gov/factsheets/Melatonin-HealthProfessional/",
         "verified": true
       }
@@ -39,13 +39,13 @@
     "evidence": [
       {
         "claim": "Adequate magnesium status is linked to sleep quality; supplementation may help when dietary intake is insufficient.",
-        "source": "NIH ODS — Magnesium Fact Sheet",
+        "source": "NIH ODS - Magnesium Fact Sheet",
         "source_url": "https://ods.od.nih.gov/factsheets/Magnesium-HealthProfessional/",
         "verified": true
       },
       {
         "claim": "The tolerable upper intake level from supplements is 350 mg/day for adults; higher amounts can cause diarrhea.",
-        "source": "NIH ODS — Magnesium Fact Sheet",
+        "source": "NIH ODS - Magnesium Fact Sheet",
         "source_url": "https://ods.od.nih.gov/factsheets/Magnesium-HealthProfessional/",
         "verified": true
       }
@@ -65,7 +65,7 @@
     "evidence": [
       {
         "claim": "May promote relaxation and reduce subjective stress, which can indirectly support sleep.",
-        "source": "MedlinePlus — Herbs & Supplements",
+        "source": "MedlinePlus - Herbs & Supplements",
         "source_url": "https://medlineplus.gov/druginfo/herb_All.html",
         "verified": false
       }
@@ -85,7 +85,7 @@
     "evidence": [
       {
         "claim": "Small trials report improved subjective sleep quality and reduced next-day fatigue with ~3 g before bed.",
-        "source": "MedlinePlus — Herbs & Supplements",
+        "source": "MedlinePlus - Herbs & Supplements",
         "source_url": "https://medlineplus.gov/druginfo/herb_All.html",
         "verified": false
       }
@@ -99,14 +99,14 @@
     "dose_low": 300,
     "dose_high": 600,
     "unit": "mg",
-    "timing": "30–120 min before bed",
+    "timing": "30-120 min before bed",
     "evidence_grade": "limited",
     "summary": "A traditional sleep herb. Evidence is mixed; notable for additive sedation with other CNS depressants.",
     "sedating": true,
     "evidence": [
       {
         "claim": "Some people report improved sleep, but clinical evidence is mixed and study quality varies.",
-        "source": "NIH ODS — Valerian Fact Sheet",
+        "source": "NIH ODS - Valerian Fact Sheet",
         "source_url": "https://ods.od.nih.gov/factsheets/Valerian-HealthProfessional/",
         "verified": true
       }
@@ -127,7 +127,7 @@
     "evidence": [
       {
         "claim": "Root-extract studies suggest possible improvements in stress and sleep measures, though trials are small.",
-        "source": "MedlinePlus — Herbs & Supplements",
+        "source": "MedlinePlus - Herbs & Supplements",
         "source_url": "https://medlineplus.gov/druginfo/herb_All.html",
         "verified": false
       }

@@ -2,7 +2,7 @@
 
 `hermetic_env` runs automatically and clears every optional integration variable, so the
 suite always exercises the offline defaults (BM25 retrieval + the deterministic
-explanation template) — never the network — regardless of the developer's shell.
+explanation template) - never the network - regardless of the developer's shell.
 """
 
 import pytest

@@ -19,7 +19,7 @@ rules are covered by tests. There is no path for the model to invent an interact
 ## 2. Hand-curated interaction table instead of a licensed database
 
 **Decision:** Ship a small, hand-verified interaction table for six sleep supplements
-× common drug classes, sourced from NIH ODS / MedlinePlus / openFDA labels — rather
+× common drug classes, sourced from NIH ODS / MedlinePlus / openFDA labels - rather
 than integrating DrugBank or the Natural Medicines Database.
 
 **Why:** The authoritative supplement↔drug interaction databases are commercial and
@@ -45,9 +45,9 @@ output; with no API key it falls back to a deterministic, citation-locked templa
 
 **Why:** Structured output makes it physically hard for the model to add an
 unsupported claim. The template fallback means the project runs out-of-the-box with no
-secrets — reviewers can clone and run it immediately.
+secrets - reviewers can clone and run it immediately.
 
-## 5. Stateless — no health data stored
+## 5. Stateless - no health data stored
 
 **Decision:** Requests carry meds/conditions as input and nothing is persisted.
 
@@ -70,10 +70,10 @@ is a roadmap item, not a v1 requirement.
 on any error.
 
 **Why:** BM25 is real, well-understood retrieval that needs no model, no service, and no
-memory budget — so the deployed free-tier app does genuine RAG out of the box. The
+memory budget - so the deployed free-tier app does genuine RAG out of the box. The
 embedding path demonstrates the upgrade without forcing a dependency or a key.
 
-## 8. The LLM writes prose only — never safety
+## 8. The LLM writes prose only - never safety
 
 **Decision:** When `ANTHROPIC_API_KEY` is set, an LLM rewrites the *already-vetted* facts
 into friendlier prose. The authoritative ALLOW/WARN/BLOCK status and the structured
@@ -81,8 +81,8 @@ into friendlier prose. The authoritative ALLOW/WARN/BLOCK status and the structu
 only fills the human-readable `explanation` string. With no key, the deterministic
 template is used.
 
-**Why:** This keeps the safety invariant intact even with generation enabled — the UI
-shows engine-produced warnings regardless of what the prose says — while still letting the
+**Why:** This keeps the safety invariant intact even with generation enabled - the UI
+shows engine-produced warnings regardless of what the prose says - while still letting the
 app benefit from an LLM when one is available.
 
 ## Request flow

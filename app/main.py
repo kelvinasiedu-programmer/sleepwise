@@ -4,7 +4,7 @@
 
 Serves a minimal UI at "/" and the JSON API at "/recommend" (docs at "/docs").
 Adds request-id logging, a per-IP rate limit, CORS, response caching, and an optional
-Sentry hook — all configured by environment variables (see app/config.py), all with safe
+Sentry hook - all configured by environment variables (see app/config.py), all with safe
 defaults. The catalog is loaded once at startup.
 """
 

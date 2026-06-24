@@ -1,6 +1,6 @@
 """Map user-entered medication names to drug classes.
 
-A missed match is a safety problem — it surfaces as a false ALLOW — so beyond the
+A missed match is a safety problem - it surfaces as a false ALLOW - so beyond the
 generic-name map the matcher also:
 
   * strips dosage/strength tokens   ("warfarin 5mg" -> "warfarin"),

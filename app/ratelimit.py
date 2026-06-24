@@ -1,7 +1,7 @@
 """A tiny in-memory, fixed-window rate limiter (per key).
 
 Sufficient for a single free-tier instance. For multi-instance deployments this would
-move to a shared store (e.g. Redis) — the interface would stay the same.
+move to a shared store (e.g. Redis) - the interface would stay the same.
 """
 
 from __future__ import annotations
