@@ -79,7 +79,7 @@ input ─► normalize meds ─► SAFETY GATE ─► evidence ─► LLM explai
 | API | FastAPI + Pydantic | Typed request/response, automatic docs at `/docs` |
 | Safety | Pure-Python rule engine | Deterministic, unit-testable, no model in the loop |
 | Data | Curated JSON from NIH ODS / DSLD / MedlinePlus | Authoritative, citable |
-| Med normalization | NIH RxNorm (with offline fallback) | Reliable name → drug-class matching |
+| Med normalization | Offline drug-class map + brand/dosage/fuzzy matching | Resilient name → drug-class, no network needed |
 | Retrieval (RAG) | From-scratch BM25; optional embeddings | Real retrieval, zero-dependency default |
 | Explanation | Optional LLM (Anthropic) + template fallback | Friendly prose, citation-locked |
 | Quality | Ruff · mypy · pytest + coverage · CI | Enforced on every push |
@@ -165,11 +165,14 @@ The image is a slim multi-stage build that runs as a non-root user, honors the h
 
 ## Testing & quality
 
-Every push runs a three-stage GitHub Actions pipeline:
+Every push runs a GitHub Actions pipeline:
 
 - **Lint & format** — `ruff check` + `ruff format --check`
 - **Type check** — `mypy app` (zero issues required)
 - **Test** — `pytest` across **Python 3.10 – 3.13** with a **coverage gate (≥ 90%)**
+- **Evaluation** — the [scorecard](#evaluation), which fails the build on any regression
+- **Dependency audit** — `pip-audit` on the runtime dependencies
+- **CodeQL** — static security analysis, on every push and weekly
 
 The tests encode the requirement that matters most — the dangerous pairs:
 
@@ -204,8 +207,8 @@ the optional LLM path: if a model ever invents a dose, the harness catches it.
 - The interaction table is **hand-curated for six sleep supplements** against common
   drug classes. It is intentionally narrow and is **not** a complete interaction
   database. Absence of a warning is **not** proof of safety.
-- Medication matching is exact-string on generic names; brand names are out of scope in
-  v1 (a known limitation — see [`DECISIONS.md`](DECISIONS.md) and the roadmap).
+- Medication matching covers generic names, common brand names, embedded dosages, and
+  typos, but it is not exhaustive; live RxNorm/RxClass resolution is the planned upgrade.
 - Data entries are tagged with `verified`; unverified rows must be checked against their
   cited source before any real-world use.
 - No personal health data is stored — requests are stateless by design.
@@ -217,8 +220,9 @@ the optional LLM path: if a model ever invents a dose, the harness catches it.
 - [x] Evaluation harness — retrieval recall@k/MRR, safety scorecard, faithfulness (in CI)
 - [x] Deploy config (Render blueprint + Docker) — see [Deploy](#deploy)
 - [x] Host the live demo — [sleepwise-90oh.onrender.com](https://sleepwise-90oh.onrender.com)
-- [ ] Brand-name + live RxNorm/RxClass drug-class resolution
-- [ ] Model additive effects across recommended supplements (e.g. stacked sedatives)
+- [x] Brand-name, dosage, and fuzzy medication matching
+- [x] Additive-sedation check across recommended supplements
+- [ ] Live RxNorm/RxClass drug-class resolution
 - [ ] Semantic embeddings over the full ODS + MedlinePlus corpus
 - [ ] Expand beyond sleep (one goal module at a time)
 - [ ] Affiliate links with FTC-compliant disclosure
