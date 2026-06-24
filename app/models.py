@@ -86,3 +86,8 @@ class RecommendationResponse(BaseModel):
     disclaimer: str
     recommended: list[Recommendation] = Field(default_factory=list)
     not_recommended: list[Recommendation] = Field(default_factory=list)
+
+
+class Feedback(BaseModel):
+    useful: Literal["yes", "somewhat", "no"]
+    note: str | None = Field(default=None, max_length=500)

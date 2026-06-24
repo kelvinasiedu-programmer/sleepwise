@@ -61,3 +61,7 @@ def rate_window() -> float:
 
 def sentry_dsn() -> str | None:
     return os.getenv("SENTRY_DSN")
+
+
+def base_url() -> str:
+    return os.getenv("SLEEPWISE_BASE_URL", "https://sleepwise-90oh.onrender.com").rstrip("/")

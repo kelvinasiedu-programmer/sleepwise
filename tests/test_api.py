@@ -1,10 +1,20 @@
 """HTTP-layer tests via FastAPI's TestClient."""
 
+import pytest
 from fastapi.testclient import TestClient
 
 from app.main import app
 
 client = TestClient(app)
+
+
+@pytest.fixture(autouse=True)
+def _fresh_limiter(monkeypatch):
+    """Give each test a generous rate limiter so requests don't bleed across tests."""
+    from app import main
+    from app.ratelimit import RateLimiter
+
+    monkeypatch.setattr(main, "_limiter", RateLimiter(limit=10000, window=60))
 
 
 def test_health_reports_catalog_size():
@@ -56,3 +66,54 @@ def test_rate_limit_returns_429(monkeypatch):
     monkeypatch.setattr(main, "_limiter", RateLimiter(limit=1, window=60))
     assert client.get("/health").status_code == 200
     assert client.get("/health").status_code == 429
+
+
+def test_homepage_has_seo_and_hero():
+    response = client.get("/")
+    assert response.status_code == 200
+    assert "Check sleep supplements" in response.text
+    assert 'name="description"' in response.text
+
+
+def test_trust_pages_are_served():
+    for path in (
+        "/about",
+        "/methodology",
+        "/privacy",
+        "/sources",
+        "/medical-disclaimer",
+        "/contact",
+    ):
+        response = client.get(path)
+        assert response.status_code == 200
+        assert "SleepWise" in response.text
+
+
+def test_static_assets_are_served():
+    assert client.get("/site.css").status_code == 200
+    assert client.get("/app.js").status_code == 200
+    favicon = client.get("/favicon.svg")
+    assert favicon.status_code == 200
+    assert "svg" in favicon.headers["content-type"]
+    assert client.get("/favicon.ico").status_code == 200
+
+
+def test_robots_and_sitemap():
+    robots = client.get("/robots.txt")
+    assert robots.status_code == 200
+    assert "Sitemap:" in robots.text
+    sitemap = client.get("/sitemap.xml")
+    assert sitemap.status_code == 200
+    assert "<urlset" in sitemap.text
+
+
+def test_security_headers_present():
+    headers = client.get("/health").headers
+    assert headers["X-Content-Type-Options"] == "nosniff"
+    assert headers["X-Frame-Options"] == "DENY"
+    assert "Content-Security-Policy" in headers
+
+
+def test_feedback_accepts_valid_and_rejects_invalid():
+    assert client.post("/feedback", json={"useful": "yes"}).json() == {"ok": True}
+    assert client.post("/feedback", json={"useful": "maybe"}).status_code == 422

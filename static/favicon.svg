@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="SleepWise">
+  <rect width="64" height="64" rx="14" fill="#534ab7"/>
+  <path d="M41 38a14 14 0 1 1-12-21 11 11 0 0 0 12 21z" fill="#ffffff"/>
+  <circle cx="44" cy="20" r="2.4" fill="#ffffff"/>
+  <circle cx="50" cy="28" r="1.6" fill="#ffffff"/>
+</svg>

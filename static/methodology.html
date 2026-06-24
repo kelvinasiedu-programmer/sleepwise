@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Methodology - SleepWise</title>
+  <meta name="description" content="How SleepWise generates recommendations: a deterministic safety engine, a curated interaction table, retrieval over public medical sources, and an evaluation harness." />
+  <link rel="canonical" href="https://sleepwise-90oh.onrender.com/methodology" />
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+  <meta name="theme-color" content="#534ab7" />
+  <link rel="stylesheet" href="/site.css" />
+</head>
+<body>
+  <header class="site-header">
+    <a class="brand" href="/">SleepWise</a>
+    <nav class="site-nav">
+      <a href="/">Checker</a><a href="/methodology">Methodology</a><a href="/sources">Sources</a><a href="/about">About</a><a href="/privacy">Privacy</a>
+    </nav>
+  </header>
+  <main class="wrap prose">
+    <h1>Methodology</h1>
+    <p class="updated">Last reviewed: June 2026</p>
+
+    <p>SleepWise is built around one rule: safety decisions are made by deterministic code, not
+      by a language model. Here is how a result is produced.</p>
+
+    <h2>1. Medication normalization</h2>
+    <p>Your medications are mapped to drug classes (for example, lorazepam and Xanax both map to
+      "benzodiazepine"). The matcher handles brand names, strips dosages from free text, and
+      corrects obvious typos. A missed match is treated as a safety risk because it could hide a
+      real interaction.</p>
+
+    <h2>2. Deterministic safety engine</h2>
+    <p>Each candidate supplement is checked against a hand-verified interaction table covering
+      drug classes and health conditions. The engine returns one of three states: lower concern,
+      use caution, or ask a clinician first. A second pass flags additive sedation when two or
+      more sedating supplements would be combined. No language model is involved in this step.</p>
+
+    <h2>3. Evidence retrieval</h2>
+    <p>For each supplement, evidence is retrieved from a curated corpus drawn from public medical
+      sources using a transparent keyword-ranking (BM25) method. Every claim shown carries a
+      source link.</p>
+
+    <h2>4. Plain-language explanation</h2>
+    <p>An explanation is generated only from the facts the safety engine already approved. When a
+      language model is used, it rewrites those vetted facts into clearer prose and is never
+      allowed to add a new claim, dose, or interaction. The authoritative warnings always come
+      from the engine.</p>
+
+    <h2>How we check ourselves</h2>
+    <p>An automated evaluation suite runs on every change and measures retrieval quality, whether
+      known medication/supplement combinations get the expected outcome, and whether explanations
+      stay faithful to their sources (including a check that no invented doses slip through). A
+      change that weakens a known-dangerous combination fails the build.</p>
+
+    <h2>Limitations</h2>
+    <ul>
+      <li>The interaction table is intentionally small and is partly pending source verification.</li>
+      <li>Coverage is limited to sleep supplements; absence of a warning is not proof of safety.</li>
+      <li>It has not yet been reviewed by a licensed clinician or pharmacist.</li>
+      <li>Live drug-database resolution (RxNorm) is planned but not yet in place.</li>
+    </ul>
+
+    <p>Sources are listed on the <a href="/sources">Sources</a> page.</p>
+  </main>
+  <footer class="site-footer">
+    <p>Educational tool · not medical advice · data from NIH ODS, MedlinePlus &amp; openFDA.</p>
+    <nav>
+      <a href="/about">About</a> · <a href="/methodology">Methodology</a> · <a href="/sources">Sources</a> ·
+      <a href="/privacy">Privacy</a> · <a href="/medical-disclaimer">Medical disclaimer</a> · <a href="/contact">Contact</a>
+    </nav>
+  </footer>
+</body>
+</html>
