@@ -129,3 +129,40 @@ section.results h2 { font-size: 18px; margin: 28px 0 6px; }
 .prose p, .prose li { font-size: 15px; }
 .prose .updated { color: var(--muted); font-size: 13px; margin-top: 0; }
 .prose a { word-break: break-word; }
+
+/* Chip inputs */
+.chipbox {
+  display: flex; flex-wrap: wrap; align-items: center; gap: 6px;
+  padding: 6px 8px; border: 1px solid var(--line); border-radius: 8px;
+  background: var(--card); cursor: text;
+}
+.chipbox input[type=text] {
+  flex: 1; min-width: 150px; width: auto; border: 0; padding: 4px 2px; background: transparent;
+}
+.chipbox input[type=text]:focus { outline: none; }
+.chip {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: var(--soft); border: 1px solid var(--line); border-radius: 999px;
+  padding: 3px 10px; font-size: 14px;
+}
+.chip button {
+  border: 0; background: none; color: var(--muted); cursor: pointer;
+  padding: 0 2px; font-size: 15px; line-height: 1;
+}
+.chip button:hover { color: var(--block-fg); }
+
+/* Result actions + printable report */
+.result-actions { display: flex; gap: 8px; margin: 16px 0 0; }
+.result-actions button {
+  padding: 7px 16px; font-size: 14px; background: transparent;
+  border: 1px solid var(--accent); border-radius: 8px; color: var(--accent);
+}
+.print-only { display: none; }
+@media print {
+  .site-header, .hero, .disclaimer, form.checker, .usecases, .site-footer,
+  .status-line, .result-actions, .feedback, .buy { display: none !important; }
+  .print-only { display: block; border-bottom: 1px solid #000; padding-bottom: 8px; margin-bottom: 12px; }
+  body { background: #fff; color: #000; }
+  .card { break-inside: avoid; }
+  a { color: #000; text-decoration: none; }
+}

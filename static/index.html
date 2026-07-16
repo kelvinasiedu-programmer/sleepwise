@@ -13,7 +13,7 @@
   <meta property="og:description" content="Check sleep supplements against your medications and health flags using public medical sources." />
   <meta property="og:url" content="https://sleepwise-90oh.onrender.com/" />
   <meta name="twitter:card" content="summary" />
-  <link rel="stylesheet" href="/site.css" />
+  <link rel="stylesheet" href="/site.css?v=2" />
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
@@ -59,11 +59,17 @@
     </p>
 
     <form id="form" class="checker" autocomplete="off">
-      <label class="field" for="meds">Current medications <span class="opt">(comma-separated)</span></label>
-      <input id="meds" type="text" placeholder="e.g. lorazepam, warfarin, Xanax 1mg" />
+      <label class="field" for="meds">Current medications <span class="opt">(press Enter after each)</span></label>
+      <div class="chipbox">
+        <input id="meds" type="text" list="meds-list" placeholder="Start typing, e.g. lorazepam, Xanax 1mg" />
+      </div>
+      <datalist id="meds-list"></datalist>
 
       <label class="field" for="supps">Supplements you already take <span class="opt">(optional)</span></label>
-      <input id="supps" type="text" placeholder="e.g. melatonin" />
+      <div class="chipbox">
+        <input id="supps" type="text" list="supps-list" placeholder="e.g. melatonin" />
+      </div>
+      <datalist id="supps-list"></datalist>
 
       <span class="field" id="flags-label">Health flags</span>
       <div class="conds" role="group" aria-labelledby="flags-label">
@@ -103,6 +109,6 @@
     </nav>
   </footer>
 
-  <script src="/app.js"></script>
+  <script src="/app.js?v=2"></script>
 </body>
 </html>

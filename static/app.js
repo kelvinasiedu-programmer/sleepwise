@@ -22,6 +22,88 @@ function pill(status) {
   return el("span", { class: "pill pill-" + status, text: LABELS[status] || status });
 }
 
+/* Chip inputs: tokenize entries, keep free text working for unlisted meds. */
+
+function chipInput(inputId) {
+  const input = byId(inputId);
+  const box = input.parentElement;
+  const values = [];
+
+  function render() {
+    box.querySelectorAll(".chip").forEach((chip) => chip.remove());
+    for (const value of values) {
+      const remove = el("button", { text: "×" });
+      remove.type = "button";
+      remove.setAttribute("aria-label", "Remove " + value);
+      remove.addEventListener("click", () => {
+        values.splice(values.indexOf(value), 1);
+        render();
+      });
+      box.insertBefore(el("span", { class: "chip", text: value }, remove), input);
+    }
+  }
+
+  function commit() {
+    for (const part of input.value.split(",")) {
+      const value = part.trim();
+      if (value && !values.some((v) => v.toLowerCase() === value.toLowerCase())) {
+        values.push(value);
+      }
+    }
+    input.value = "";
+    render();
+  }
+
+  input.addEventListener("keydown", (event) => {
+    if (event.key === "Enter" || event.key === ",") {
+      event.preventDefault();
+      commit();
+    } else if (event.key === "Backspace" && input.value === "" && values.length) {
+      values.pop();
+      render();
+    }
+  });
+  input.addEventListener("change", commit); // fires on datalist pick and on blur
+  box.addEventListener("click", () => input.focus());
+
+  return {
+    getValues() {
+      commit(); // sweep any residual free text so submitting without Enter still works
+      return [...values];
+    },
+    setValues(next) {
+      values.length = 0;
+      values.push(...next);
+      input.value = "";
+      render();
+    },
+  };
+}
+
+function fillDatalist(id, items) {
+  const list = byId(id);
+  list.replaceChildren();
+  for (const item of items) {
+    const option = document.createElement("option");
+    option.value = item;
+    list.appendChild(option);
+  }
+}
+
+async function loadSuggestions() {
+  try {
+    const res = await fetch("/api/suggestions");
+    if (!res.ok) return;
+    const data = await res.json();
+    fillDatalist("meds-list", data.medications);
+    fillDatalist("supps-list", data.supplements);
+  } catch (_) {
+    /* autocomplete is optional; free text always works */
+  }
+}
+
+/* Results rendering */
+
 function summaryPanel(data) {
   const allow = data.recommended.filter((r) => r.status === "ALLOW").map((r) => r.supplement);
   const warn = data.recommended.filter((r) => r.status === "WARN").map((r) => r.supplement);
@@ -35,9 +117,13 @@ function summaryPanel(data) {
     p.appendChild(document.createTextNode(names.join(", ")));
     return p;
   };
-  panel.appendChild(line("Lower concern, worth discussing:", allow));
-  panel.appendChild(line("Use caution:", warn));
-  panel.appendChild(line("Ask a clinician before combining:", block));
+  for (const row of [
+    line("Lower concern, worth discussing:", allow),
+    line("Use caution:", warn),
+    line("Ask a clinician before combining:", block),
+  ]) {
+    if (row) panel.appendChild(row);
+  }
 
   const reasons = new Set();
   for (const r of [...data.recommended, ...data.not_recommended]) {
@@ -110,6 +196,131 @@ function pharmacistQuestions(data) {
   return box;
 }
 
+/* Copy / print report ("bring this to your pharmacist") */
+
+function reportText(profile, data) {
+  const allow = data.recommended.filter((r) => r.status === "ALLOW").map((r) => r.supplement);
+  const warn = data.recommended.filter((r) => r.status === "WARN").map((r) => r.supplement);
+  const block = data.not_recommended.map((r) => r.supplement);
+  const lines = [
+    "SleepWise check (educational, not medical advice)",
+    "Generated: " + new Date().toLocaleDateString(),
+    "Medications: " + (profile.meds.join(", ") || "none entered"),
+    "Supplements already taken: " + (profile.current_supplements.join(", ") || "none entered"),
+    "Health flags: " + (profile.conditions.join(", ") || "none"),
+    "",
+  ];
+  if (allow.length) lines.push("Lower concern: " + allow.join(", "));
+  if (warn.length) lines.push("Use caution: " + warn.join(", "));
+  if (block.length) lines.push("Ask a clinician first: " + block.join(", "));
+  const warnings = new Set();
+  for (const r of [...data.recommended, ...data.not_recommended]) {
+    for (const w of r.warnings) warnings.add(w.message);
+  }
+  if (warnings.size) {
+    lines.push("", "Warnings:");
+    for (const w of warnings) lines.push("- " + w);
+  }
+  lines.push("", "Bring this to your pharmacist or clinician. Details: " + location.origin);
+  return lines.join("\n");
+}
+
+function actionsRow(profile, data) {
+  const row = el("div", { class: "result-actions" });
+  const copy = el("button", { text: "Copy summary" });
+  copy.type = "button";
+  copy.addEventListener("click", async () => {
+    try {
+      await navigator.clipboard.writeText(reportText(profile, data));
+      copy.textContent = "Copied";
+    } catch (_) {
+      copy.textContent = "Copy failed";
+    }
+    setTimeout(() => (copy.textContent = "Copy summary"), 2000);
+  });
+  const print = el("button", { text: "Print report" });
+  print.type = "button";
+  print.addEventListener("click", () => window.print());
+  row.append(copy, print);
+  return row;
+}
+
+function printHeader(profile) {
+  return el(
+    "div",
+    { class: "print-only" },
+    el("h2", { text: "SleepWise report (educational, not medical advice)" }),
+    el("p", {
+      text:
+        "Generated " +
+        new Date().toLocaleDateString() +
+        ". Bring this to your pharmacist or clinician.",
+    }),
+    el("p", {
+      text:
+        "Medications: " +
+        (profile.meds.join(", ") || "none entered") +
+        " | Supplements: " +
+        (profile.current_supplements.join(", ") || "none") +
+        " | Flags: " +
+        (profile.conditions.join(", ") || "none"),
+    })
+  );
+}
+
+/* Form flow */
+
+let medsChips;
+let suppsChips;
+
+async function run(event) {
+  if (event) event.preventDefault();
+  const status = byId("status");
+  const results = byId("results");
+  const button = byId("go");
+  status.removeAttribute("role");
+
+  const profile = {
+    goal: "sleep",
+    meds: medsChips.getValues(),
+    conditions: [...document.querySelectorAll(".conds input:checked")].map((c) => c.value),
+    current_supplements: suppsChips.getValues(),
+  };
+
+  button.disabled = true;
+  status.textContent = "Checking…";
+  results.replaceChildren();
+
+  try {
+    const res = await fetch("/recommend", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(profile),
+    });
+    if (!res.ok) throw new Error("Request failed (" + res.status + ")");
+    const data = await res.json();
+
+    const frag = document.createDocumentFragment();
+    frag.appendChild(printHeader(profile));
+    frag.appendChild(summaryPanel(data));
+    if (data.recommended.length) frag.appendChild(section("Worth considering", data.recommended));
+    if (data.not_recommended.length)
+      frag.appendChild(section("Not recommended for your profile", data.not_recommended));
+    const ask = pharmacistQuestions(data);
+    if (ask) frag.appendChild(ask);
+    frag.appendChild(actionsRow(profile, data));
+    frag.appendChild(feedbackWidget());
+    results.appendChild(frag);
+    status.textContent = "";
+    results.scrollIntoView({ behavior: "smooth", block: "start" });
+  } catch (err) {
+    status.setAttribute("role", "alert");
+    status.textContent = "Something went wrong: " + err.message + ". Please try again.";
+  } finally {
+    button.disabled = false;
+  }
+}
+
 function feedbackWidget() {
   const box = el("div", { class: "feedback" });
   box.appendChild(el("span", { text: "Was this useful?" }));
@@ -140,55 +351,15 @@ function feedbackWidget() {
   return box;
 }
 
-async function run(event) {
-  if (event) event.preventDefault();
-  const status = byId("status");
-  const results = byId("results");
-  const button = byId("go");
-  status.removeAttribute("role");
-
-  const meds = byId("meds").value.split(",").map((s) => s.trim()).filter(Boolean);
-  const current_supplements = byId("supps").value.split(",").map((s) => s.trim()).filter(Boolean);
-  const conditions = [...document.querySelectorAll(".conds input:checked")].map((c) => c.value);
-
-  button.disabled = true;
-  status.textContent = "Checking…";
-  results.replaceChildren();
-
-  try {
-    const res = await fetch("/recommend", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ goal: "sleep", meds, conditions, current_supplements }),
-    });
-    if (!res.ok) throw new Error("Request failed (" + res.status + ")");
-    const data = await res.json();
-
-    const frag = document.createDocumentFragment();
-    frag.appendChild(summaryPanel(data));
-    if (data.recommended.length) frag.appendChild(section("Worth considering", data.recommended));
-    if (data.not_recommended.length)
-      frag.appendChild(section("Not recommended for your profile", data.not_recommended));
-    const ask = pharmacistQuestions(data);
-    if (ask) frag.appendChild(ask);
-    frag.appendChild(feedbackWidget());
-    results.appendChild(frag);
-    status.textContent = "";
-    results.scrollIntoView({ behavior: "smooth", block: "start" });
-  } catch (err) {
-    status.setAttribute("role", "alert");
-    status.textContent = "Something went wrong: " + err.message + ". Please try again.";
-  } finally {
-    button.disabled = false;
-  }
-}
-
 function tryExample() {
-  byId("meds").value = "lorazepam";
-  byId("supps").value = "melatonin";
+  medsChips.setValues(["lorazepam"]);
+  suppsChips.setValues(["melatonin"]);
   document.querySelectorAll(".conds input:checked").forEach((c) => (c.checked = false));
   run();
 }
 
+medsChips = chipInput("meds");
+suppsChips = chipInput("supps");
 byId("form").addEventListener("submit", run);
 byId("example").addEventListener("click", tryExample);
+loadSuggestions();

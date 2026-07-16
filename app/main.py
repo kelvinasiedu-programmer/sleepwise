@@ -27,6 +27,7 @@ from . import config, pages
 from . import recommend as rec
 from .cache import LRUCache
 from .models import Feedback, InteractionRule, RecommendationResponse, UserInput
+from .normalize import LOCAL_DRUG_CLASSES
 from .ratelimit import RateLimiter
 from .retrieval import load_corpus
 
@@ -157,14 +158,21 @@ for _path, _filename in _PAGES.items():
     )
 
 
+# no-cache means "revalidate before reuse": browsers get cheap 304s day to day but pick
+# up new CSS/JS immediately after a deploy instead of running stale cached assets.
+_REVALIDATE = {"Cache-Control": "no-cache"}
+
+
 @app.get("/site.css", include_in_schema=False)
 def site_css() -> FileResponse:
-    return FileResponse(STATIC_DIR / "site.css", media_type="text/css")
+    return FileResponse(STATIC_DIR / "site.css", media_type="text/css", headers=_REVALIDATE)
 
 
 @app.get("/app.js", include_in_schema=False)
 def app_js() -> FileResponse:
-    return FileResponse(STATIC_DIR / "app.js", media_type="application/javascript")
+    return FileResponse(
+        STATIC_DIR / "app.js", media_type="application/javascript", headers=_REVALIDATE
+    )
 
 
 @app.get("/favicon.svg", include_in_schema=False)
@@ -254,6 +262,15 @@ def interaction_page(slug: str) -> HTMLResponse:
 @app.get("/health")
 def health() -> dict:
     return {"status": "ok", "supplements": len(SUPPLEMENTS), "rules": len(RULES)}
+
+
+@app.get("/api/suggestions", include_in_schema=False)
+def api_suggestions() -> dict:
+    """Autocomplete lists for the form. Free text still works for anything unlisted."""
+    return {
+        "medications": sorted({name.title() for name in LOCAL_DRUG_CLASSES}),
+        "supplements": [s.name for s in SUPPLEMENTS],
+    }
 
 
 def _cache_key(user: UserInput) -> str:

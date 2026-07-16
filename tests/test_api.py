@@ -114,6 +114,15 @@ def test_security_headers_present():
     assert "Content-Security-Policy" in headers
 
 
+def test_suggestions_endpoint_lists_meds_and_supplements():
+    response = client.get("/api/suggestions")
+    assert response.status_code == 200
+    body = response.json()
+    assert "Xanax" in body["medications"]
+    assert "Warfarin" in body["medications"]
+    assert "Melatonin" in body["supplements"]
+
+
 def test_feedback_accepts_valid_and_rejects_invalid():
     assert client.post("/feedback", json={"useful": "yes"}).json() == {"ok": True}
     assert client.post("/feedback", json={"useful": "maybe"}).status_code == 422
