@@ -19,15 +19,16 @@ import uuid
 from collections.abc import Awaitable, Callable
 from pathlib import Path
 
-from fastapi import FastAPI, Request, Response
+from fastapi import FastAPI, HTTPException, Request, Response
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, HTMLResponse, JSONResponse, PlainTextResponse
 
-from . import config
+from . import config, pages
 from . import recommend as rec
 from .cache import LRUCache
-from .models import Feedback, RecommendationResponse, UserInput
+from .models import Feedback, InteractionRule, RecommendationResponse, UserInput
 from .ratelimit import RateLimiter
+from .retrieval import load_corpus
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(name)s %(message)s")
 logger = logging.getLogger("sleepwise")
@@ -88,6 +89,11 @@ app.add_middleware(
 )
 
 SUPPLEMENTS, RULES = rec.load_catalog()
+_CORPUS = load_corpus()
+_SUPP_BY_ID = {s.id: s for s in SUPPLEMENTS}
+_INTERACTIONS: dict[str, InteractionRule] = {}
+for _rule in RULES:
+    _INTERACTIONS.setdefault(pages.interaction_slug(_rule), _rule)
 _limiter = RateLimiter(config.rate_limit(), config.rate_window())
 _cache: LRUCache[str, RecommendationResponse] = LRUCache(maxsize=256)
 
@@ -176,10 +182,28 @@ def robots() -> str:
     return f"User-agent: *\nAllow: /\nSitemap: {config.base_url()}/sitemap.xml\n"
 
 
+@app.get("/.well-known/security.txt", response_class=PlainTextResponse, include_in_schema=False)
+def security_txt() -> str:
+    return (
+        "Contact: https://github.com/kelvinasiedu-programmer/sleepwise/issues\n"
+        "Expires: 2027-06-30T00:00:00.000Z\n"
+        "Preferred-Languages: en\n"
+        f"Canonical: {config.base_url()}/.well-known/security.txt\n"
+        "Policy: https://github.com/kelvinasiedu-programmer/sleepwise/blob/main/SECURITY.md\n"
+    )
+
+
 @app.get("/sitemap.xml", include_in_schema=False)
 def sitemap() -> Response:
     base = config.base_url()
-    paths = ["/", *_PAGES.keys()]
+    paths = [
+        "/",
+        *_PAGES.keys(),
+        "/supplements",
+        "/interactions",
+        *(f"/supplements/{s.id}" for s in SUPPLEMENTS),
+        *(f"/interactions/{slug}" for slug in _INTERACTIONS),
+    ]
     urls = "".join(f"<url><loc>{base}{path}</loc></url>" for path in paths)
     xml = (
         '<?xml version="1.0" encoding="UTF-8"?>'
@@ -187,6 +211,44 @@ def sitemap() -> Response:
         f"{urls}</urlset>"
     )
     return Response(content=xml, media_type="application/xml")
+
+
+@app.get("/supplements", response_class=HTMLResponse, include_in_schema=False)
+def supplements_index() -> HTMLResponse:
+    return HTMLResponse(
+        pages.render_supplement_index(SUPPLEMENTS, f"{config.base_url()}/supplements")
+    )
+
+
+@app.get("/supplements/{supp_id}", response_class=HTMLResponse, include_in_schema=False)
+def supplement_page(supp_id: str) -> HTMLResponse:
+    supplement = _SUPP_BY_ID.get(supp_id)
+    if supplement is None:
+        raise HTTPException(status_code=404, detail="Unknown supplement")
+    chunks = [c for c in _CORPUS if c.supplement_id == supp_id]
+    canonical = f"{config.base_url()}/supplements/{supp_id}"
+    return HTMLResponse(pages.render_supplement(supplement, chunks, RULES, canonical))
+
+
+@app.get("/interactions", response_class=HTMLResponse, include_in_schema=False)
+def interactions_index() -> HTMLResponse:
+    entries = [
+        (slug, f"{_SUPP_BY_ID[rule.supplement_id].name} and {pages.humanize_target(rule)}")
+        for slug, rule in sorted(_INTERACTIONS.items())
+        if rule.supplement_id in _SUPP_BY_ID
+    ]
+    return HTMLResponse(
+        pages.render_interaction_index(entries, f"{config.base_url()}/interactions")
+    )
+
+
+@app.get("/interactions/{slug}", response_class=HTMLResponse, include_in_schema=False)
+def interaction_page(slug: str) -> HTMLResponse:
+    rule = _INTERACTIONS.get(slug)
+    if rule is None or rule.supplement_id not in _SUPP_BY_ID:
+        raise HTTPException(status_code=404, detail="Unknown interaction")
+    canonical = f"{config.base_url()}/interactions/{slug}"
+    return HTMLResponse(pages.render_interaction(rule, _SUPP_BY_ID[rule.supplement_id], canonical))
 
 
 @app.get("/health")
