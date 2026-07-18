@@ -44,14 +44,14 @@ CONDITION_TERMS = {
 }
 
 _NAV = (
-    '<nav class="site-nav">'
+    '<nav class="site-nav" aria-label="Primary">'
     '<a href="/">Checker</a><a href="/supplements">Supplements</a>'
     '<a href="/interactions">Interactions</a><a href="/methodology">Methodology</a>'
     '<a href="/about">About</a></nav>'
 )
 _FOOTER = (
     '<footer class="site-footer"><p>Educational tool · not medical advice · '
-    "data from NIH ODS, MedlinePlus &amp; openFDA.</p><nav>"
+    'data from NIH ODS, MedlinePlus &amp; openFDA.</p><nav aria-label="Footer">'
     '<a href="/about">About</a> · <a href="/methodology">Methodology</a> · '
     '<a href="/sources">Sources</a> · <a href="/supplements">Supplements</a> · '
     '<a href="/interactions">Interactions</a> · '
@@ -97,9 +97,10 @@ def _shell(title: str, description: str, canonical: str, body: str, head_extra: 
         f'<link rel="canonical" href="{escape(canonical)}"/>'
         '<link rel="icon" href="/favicon.svg" type="image/svg+xml"/>'
         '<meta name="theme-color" content="#534ab7"/>'
-        f'<link rel="stylesheet" href="/site.css"/>{head_extra}</head><body>'
+        f'<link rel="stylesheet" href="/site.css?v=3"/>{head_extra}</head><body>'
+        '<a class="skip-link" href="#main">Skip to main content</a>'
         '<header class="site-header"><a class="brand" href="/">SleepWise</a>'
-        f'{_NAV}</header><main class="wrap prose">{body}{_DISCLAIMER}</main>{_FOOTER}'
+        f'{_NAV}</header><main id="main" class="wrap prose">{body}{_DISCLAIMER}</main>{_FOOTER}'
         "</body></html>"
     )
 

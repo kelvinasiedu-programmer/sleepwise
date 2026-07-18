@@ -95,3 +95,19 @@ def test_editorial_policy_page_discloses_review_status():
     text = client.get("/editorial-policy").text
     assert "Editorial policy" in text
     assert "not yet been independently reviewed" in text
+
+
+def test_accessibility_landmarks_on_all_page_types():
+    # Home, a trust page, and both server-rendered content page types must carry the
+    # skip link, a main landmark target, and labeled navigation landmarks.
+    for path in (
+        "/",
+        "/about",
+        "/supplements/melatonin",
+        "/interactions/valerian-and-benzodiazepine",
+    ):
+        text = client.get(path).text
+        assert 'class="skip-link"' in text, path
+        assert 'id="main"' in text, path
+        assert 'aria-label="Primary"' in text, path
+        assert 'aria-label="Footer"' in text, path

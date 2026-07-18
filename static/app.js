@@ -311,8 +311,9 @@ async function run(event) {
     frag.appendChild(actionsRow(profile, data));
     frag.appendChild(feedbackWidget());
     results.appendChild(frag);
-    status.textContent = "";
-    results.scrollIntoView({ behavior: "smooth", block: "start" });
+    status.textContent = "Results ready below.";
+    const noMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    results.scrollIntoView({ behavior: noMotion ? "auto" : "smooth", block: "start" });
   } catch (err) {
     status.setAttribute("role", "alert");
     status.textContent = "Something went wrong: " + err.message + ". Please try again.";
