@@ -85,6 +85,18 @@ template is used.
 shows engine-produced warnings regardless of what the prose says - while still letting the
 app benefit from an LLM when one is available.
 
+## 9. Cautious language is enforced, not promised
+
+**Decision:** The eval harness scans every generated explanation and every rendered
+content page for definitive-claim phrasing ("is safe", "guaranteed", "will cure", and
+similar) and fails CI on any hit. Every result carries the disclaimer, and the
+professional-help path is shown with every result: free walk-in pharmacist consultations,
+plus the HHS health-center finder for people without a regular clinician.
+
+**Why:** In a health tool, "we use careful wording" is worthless as a promise unless a
+machine checks it. Encoding the banned-claims list as a failing test makes cautious
+wording a tested property of the system, the same way the dangerous-pair rules are.
+
 ## Request flow
 
 ```

@@ -13,17 +13,45 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-from app import explain, safety
+from app import explain, pages, safety
 from app.evidence import retrieve
 from app.models import UserInput
 from app.normalize import to_drug_classes
-from app.recommend import load_catalog
+from app.recommend import load_catalog, recommend
 from app.retrieval import BM25Index, load_corpus, tokenize
 from evals import metrics
 
 DATASETS = Path(__file__).resolve().parent / "datasets"
 RECALL_K = 3
-THRESHOLDS = {"recall@3": 0.8, "mrr": 0.8, "safety": 1.0, "coverage": 1.0, "hallucinations": 0}
+THRESHOLDS = {
+    "recall@3": 0.8,
+    "mrr": 0.8,
+    "safety": 1.0,
+    "coverage": 1.0,
+    "hallucinations": 0,
+    "definitive_claims": 0,
+}
+
+# Phrases that would turn an educational result into a definitive medical claim.
+# Cautious wording is a requirement of the system, not a style preference, so it is
+# enforced here: any hit fails the scorecard and therefore CI.
+PROHIBITED_PHRASES = [
+    "is safe",
+    "are safe",
+    "perfectly safe",
+    "completely safe",
+    "totally safe",
+    "guaranteed",
+    "will cure",
+    "will treat",
+    "will fix",
+    "proven to cure",
+    "no side effects",
+    "risk-free",
+    "no risk",
+    "cannot interact",
+    "you should take",
+]
 
 
 def _load(name: str):
@@ -71,10 +99,51 @@ def run_faithfulness() -> tuple[float, int]:
     return metrics.mean(coverages), hallucinations
 
 
+def _count_violations(text: str) -> int:
+    lowered = text.lower()
+    return sum(1 for phrase in PROHIBITED_PHRASES if phrase in lowered)
+
+
+def run_language_safety() -> int:
+    """Scan every generated explanation and rendered content page for definitive claims."""
+    supplements, rules = load_catalog()
+    violations = 0
+
+    profiles = [
+        UserInput(),
+        UserInput(meds=["lorazepam", "warfarin"], current_supplements=["melatonin"]),
+        UserInput(conditions=["pregnancy", "kidney_disease"]),
+    ]
+    for user in profiles:
+        response = recommend(user, supplements, rules)
+        for rec in [*response.recommended, *response.not_recommended]:
+            violations += _count_violations(rec.explanation)
+        violations += 0 if "not medical advice" in response.disclaimer.lower() else 1
+
+    corpus = load_corpus()
+    for supplement in supplements:
+        chunks = [c for c in corpus if c.supplement_id == supplement.id]
+        violations += _count_violations(
+            pages.render_supplement(supplement, chunks, rules, "https://example.test")
+        )
+    by_id = {s.id: s for s in supplements}
+    seen: set[str] = set()
+    for rule in rules:
+        slug = pages.interaction_slug(rule)
+        if slug in seen:
+            continue
+        seen.add(slug)
+        violations += _count_violations(
+            pages.render_interaction(rule, by_id[rule.supplement_id], "https://example.test")
+        )
+    return violations
+
+
 def main() -> int:
     recall, mrr = run_retrieval()
     safety_pass = run_safety()
     cov, halluc = run_faithfulness()
+    claims = run_language_safety()
 
     rows = [
         ("Retrieval recall@3", recall, THRESHOLDS["recall@3"], recall >= THRESHOLDS["recall@3"]),
@@ -91,6 +160,12 @@ def main() -> int:
             halluc,
             THRESHOLDS["hallucinations"],
             halluc <= THRESHOLDS["hallucinations"],
+        ),
+        (
+            "Definitive-claim phrases",
+            claims,
+            THRESHOLDS["definitive_claims"],
+            claims <= THRESHOLDS["definitive_claims"],
         ),
     ]
 

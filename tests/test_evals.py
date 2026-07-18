@@ -29,3 +29,16 @@ def test_coverage():
 def test_hallucinated_numbers():
     assert metrics.hallucinated_numbers("take 50 mg", "facts say 5 mg") == ["50"]
     assert metrics.hallucinated_numbers("take 5 mg", "facts say 5 mg") == []
+
+
+def test_count_violations_flags_definitive_claims():
+    from evals.run import _count_violations
+
+    assert _count_violations("This supplement is safe and guaranteed to work") == 2
+    assert _count_violations("May support sleep; discuss with a pharmacist first.") == 0
+
+
+def test_language_safety_scan_is_clean():
+    from evals.run import run_language_safety
+
+    assert run_language_safety() == 0

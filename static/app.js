@@ -179,20 +179,30 @@ function section(title, recs) {
   return sec;
 }
 
-function pharmacistQuestions(data) {
-  const hasFlags =
-    data.not_recommended.length ||
-    data.recommended.some((r) => r.status === "WARN" || r.defer_to_pro);
-  if (!hasFlags) return null;
-  const box = el("div", { class: "ask" }, el("h2", { text: "Questions to ask your pharmacist" }));
+function pharmacistQuestions() {
+  // Always shown: the endpoint of every result is a professional conversation.
+  const box = el("div", { class: "ask" }, el("h2", { text: "Talk to a professional" }));
   const ul = el("ul");
   [
-    "Are any of these safe to combine with my current medications?",
+    "Are any of these reasonable to combine with my current medications?",
     "Could any of these add to drowsiness or affect my other medicines?",
     "What dose and timing would you suggest for me specifically?",
     "Is there a non-supplement step I should try first?",
   ].forEach((q) => ul.appendChild(el("li", { text: q })));
   box.appendChild(ul);
+  const connect = el("p", {
+    text:
+      "Pharmacist consultations are free at any pharmacy, no appointment needed. " +
+      "No regular clinician? ",
+  });
+  connect.appendChild(
+    el("a", {
+      href: "https://findahealthcenter.hrsa.gov/",
+      text: "Find low-cost care near you (HHS)",
+    })
+  );
+  connect.appendChild(document.createTextNode("."));
+  box.appendChild(connect);
   return box;
 }
 
@@ -306,8 +316,7 @@ async function run(event) {
     if (data.recommended.length) frag.appendChild(section("Worth considering", data.recommended));
     if (data.not_recommended.length)
       frag.appendChild(section("Not recommended for your profile", data.not_recommended));
-    const ask = pharmacistQuestions(data);
-    if (ask) frag.appendChild(ask);
+    frag.appendChild(pharmacistQuestions());
     frag.appendChild(actionsRow(profile, data));
     frag.appendChild(feedbackWidget());
     results.appendChild(frag);
