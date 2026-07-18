@@ -59,6 +59,7 @@ _PAGES = {
     "/sources": "sources.html",
     "/medical-disclaimer": "medical-disclaimer.html",
     "/contact": "contact.html",
+    "/editorial-policy": "editorial-policy.html",
 }
 
 

@@ -70,3 +70,28 @@ def test_security_txt_served():
     assert response.status_code == 200
     assert "Contact:" in response.text
     assert "Expires:" in response.text
+
+
+def test_supplement_page_has_truthful_medical_schema():
+    text = client.get("/supplements/melatonin").text
+    assert "application/ld+json" in text
+    assert '"MedicalWebPage"' in text
+    assert '"DietarySupplement"' in text
+    assert '"lastReviewed"' in text
+    # No fabricated reviewer: schema must not claim clinician review that never happened.
+    assert "reviewedBy" not in text
+    assert '"Physician"' not in text
+
+
+def test_interaction_page_has_schema_and_provenance():
+    text = client.get("/interactions/valerian-and-benzodiazepine").text
+    assert '"MedicalWebPage"' in text
+    assert '"lastReviewed"' in text
+    assert "not yet independently reviewed by a clinician" in text
+    assert "reviewedBy" not in text
+
+
+def test_editorial_policy_page_discloses_review_status():
+    text = client.get("/editorial-policy").text
+    assert "Editorial policy" in text
+    assert "not yet been independently reviewed" in text

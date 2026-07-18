@@ -9,10 +9,16 @@ here - everything comes from the vetted data.
 
 from __future__ import annotations
 
+import json
 from html import escape
 
 from .models import InteractionRule, Supplement
 from .retrieval import CorpusChunk
+
+# When the content was last checked against its cited sources. Shown on every content
+# page and carried into the MedicalWebPage schema. There is no clinician "reviewedBy"
+# on purpose: no clinician has reviewed this yet, and the schema must not claim one.
+LAST_REVIEWED = "2026-06-24"
 
 DRUG_CLASS_TERMS = {
     "benzodiazepine": "benzodiazepines (e.g. lorazepam, Xanax)",
@@ -48,9 +54,16 @@ _FOOTER = (
     "data from NIH ODS, MedlinePlus &amp; openFDA.</p><nav>"
     '<a href="/about">About</a> · <a href="/methodology">Methodology</a> · '
     '<a href="/sources">Sources</a> · <a href="/supplements">Supplements</a> · '
-    '<a href="/interactions">Interactions</a> · <a href="/privacy">Privacy</a> · '
+    '<a href="/interactions">Interactions</a> · '
+    '<a href="/editorial-policy">Editorial policy</a> · <a href="/privacy">Privacy</a> · '
     '<a href="/medical-disclaimer">Medical disclaimer</a> · <a href="/contact">Contact</a>'
     "</nav></footer>"
+)
+
+_PROVENANCE = (
+    '<p class="updated">Compiled from the cited public medical sources · '
+    "last source-reviewed June 2026 · not yet independently reviewed by a clinician "
+    '(<a href="/editorial-policy">editorial policy</a>)</p>'
 )
 _DISCLAIMER = (
     '<p class="disclaimer">Educational information from public NIH/FDA databases - '
@@ -75,7 +88,7 @@ def interaction_slug(rule: InteractionRule) -> str:
     return f"{rule.supplement_id}-and-{rule.target}".replace("_", "-")
 
 
-def _shell(title: str, description: str, canonical: str, body: str) -> str:
+def _shell(title: str, description: str, canonical: str, body: str, head_extra: str = "") -> str:
     return (
         '<!doctype html><html lang="en"><head><meta charset="utf-8"/>'
         '<meta name="viewport" content="width=device-width, initial-scale=1"/>'
@@ -84,10 +97,55 @@ def _shell(title: str, description: str, canonical: str, body: str) -> str:
         f'<link rel="canonical" href="{escape(canonical)}"/>'
         '<link rel="icon" href="/favicon.svg" type="image/svg+xml"/>'
         '<meta name="theme-color" content="#534ab7"/>'
-        '<link rel="stylesheet" href="/site.css"/></head><body>'
+        f'<link rel="stylesheet" href="/site.css"/>{head_extra}</head><body>'
         '<header class="site-header"><a class="brand" href="/">SleepWise</a>'
         f'{_NAV}</header><main class="wrap prose">{body}{_DISCLAIMER}</main>{_FOOTER}'
         "</body></html>"
+    )
+
+
+def _jsonld(payload: dict) -> str:
+    return f'<script type="application/ld+json">{json.dumps(payload)}</script>'
+
+
+def _supplement_schema(supplement: Supplement, chunks: list[CorpusChunk], canonical: str) -> str:
+    """MedicalWebPage + DietarySupplement markup with truthful fields only.
+
+    Deliberately absent: reviewedBy / medical credentials. Adding them without a real
+    reviewer would be fabricated structured data.
+    """
+    dose = f"{_fmt(supplement.dose_low)}-{_fmt(supplement.dose_high)} {supplement.unit}"
+    return _jsonld(
+        {
+            "@context": "https://schema.org",
+            "@type": "MedicalWebPage",
+            "name": f"{supplement.name} for sleep: evidence, dose, and interactions",
+            "url": canonical,
+            "lastReviewed": LAST_REVIEWED,
+            "about": {
+                "@type": "DietarySupplement",
+                "name": supplement.name,
+                "recommendedIntake": (
+                    f"{dose} (general range from public sources, not personal advice)"
+                ),
+            },
+            "citation": sorted({c.source_url for c in chunks}),
+            "publisher": {"@type": "Organization", "name": "SleepWise"},
+        }
+    )
+
+
+def _interaction_schema(title: str, rule: InteractionRule, canonical: str) -> str:
+    return _jsonld(
+        {
+            "@context": "https://schema.org",
+            "@type": "MedicalWebPage",
+            "name": f"{title}: what to know",
+            "url": canonical,
+            "lastReviewed": LAST_REVIEWED,
+            "citation": [rule.source_url],
+            "publisher": {"@type": "Organization", "name": "SleepWise"},
+        }
     )
 
 
@@ -135,6 +193,7 @@ def render_supplement(
     timing = f" ({escape(supplement.timing)})" if supplement.timing else ""
     body = (
         f"<h1>{escape(supplement.name)} for sleep</h1>"
+        f"{_PROVENANCE}"
         f"<p>{escape(supplement.summary)}</p>"
         f"<h2>What the evidence says</h2><ul>{evidence}</ul>"
         f"<h2>Typical dose</h2><p>{dose}{timing}. Evidence grade: "
@@ -153,6 +212,7 @@ def render_supplement(
         "concerns, from public medical sources.",
         canonical,
         body,
+        head_extra=_supplement_schema(supplement, chunks, canonical),
     )
 
 
@@ -193,6 +253,7 @@ def render_interaction(rule: InteractionRule, supplement: Supplement, canonical:
     title = f"{supplement.name} and {target}"
     body = (
         f"<h1>{escape(supplement.name)} and {escape(target)}</h1>"
+        f"{_PROVENANCE}"
         f"<p>{escape(answer)}</p>"
         "<h2>Why it may matter</h2>"
         f'<p>{escape(rule.message)} <a href="{escape(rule.source_url)}">Source</a>.</p>'
@@ -208,4 +269,5 @@ def render_interaction(rule: InteractionRule, supplement: Supplement, canonical:
         "medical sources.",
         canonical,
         body,
+        head_extra=_interaction_schema(title, rule, canonical),
     )

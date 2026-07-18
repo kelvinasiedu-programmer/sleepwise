@@ -83,6 +83,7 @@ def test_trust_pages_are_served():
         "/sources",
         "/medical-disclaimer",
         "/contact",
+        "/editorial-policy",
     ):
         response = client.get(path)
         assert response.status_code == 200
