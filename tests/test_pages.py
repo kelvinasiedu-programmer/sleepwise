@@ -97,6 +97,20 @@ def test_editorial_policy_page_discloses_review_status():
     assert "not yet been independently reviewed" in text
 
 
+def test_terms_page_carries_liability_and_independence_language():
+    # Collapse whitespace so assertions are immune to HTML line wrapping.
+    text = " ".join(client.get("/terms").text.split())
+    assert "No warranties" in text
+    assert "Limitation of liability" in text
+    assert "not affiliated with, sponsored by, or endorsed by" in text
+
+
+def test_sources_page_disclaims_government_endorsement():
+    text = client.get("/sources").text
+    assert "does not imply any" in text
+    assert "endorsement" in text
+
+
 def test_accessibility_landmarks_on_all_page_types():
     # Home, a trust page, and both server-rendered content page types must carry the
     # skip link, a main landmark target, and labeled navigation landmarks.

@@ -55,7 +55,8 @@ _FOOTER = (
     '<a href="/about">About</a> · <a href="/methodology">Methodology</a> · '
     '<a href="/sources">Sources</a> · <a href="/supplements">Supplements</a> · '
     '<a href="/interactions">Interactions</a> · '
-    '<a href="/editorial-policy">Editorial policy</a> · <a href="/privacy">Privacy</a> · '
+    '<a href="/editorial-policy">Editorial policy</a> · <a href="/terms">Terms</a> · '
+    '<a href="/privacy">Privacy</a> · '
     '<a href="/medical-disclaimer">Medical disclaimer</a> · <a href="/contact">Contact</a>'
     "</nav></footer>"
 )
