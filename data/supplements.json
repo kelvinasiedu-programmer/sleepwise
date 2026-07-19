@@ -2,7 +2,9 @@
   {
     "id": "melatonin",
     "name": "Melatonin",
-    "aliases": ["n-acetyl-5-methoxytryptamine"],
+    "aliases": [
+      "n-acetyl-5-methoxytryptamine"
+    ],
     "dose_low": 0.5,
     "dose_high": 5,
     "unit": "mg",
@@ -13,15 +15,15 @@
     "evidence": [
       {
         "claim": "Can modestly shorten the time it takes to fall asleep, especially for circadian-rhythm and jet-lag related sleep problems.",
-        "source": "NIH ODS - Melatonin Fact Sheet",
-        "source_url": "https://ods.od.nih.gov/factsheets/Melatonin-HealthProfessional/",
+        "source": "NIH NCCIH - Melatonin: What You Need To Know",
+        "source_url": "https://www.nccih.nih.gov/health/melatonin-what-you-need-to-know",
         "verified": true
       },
       {
         "claim": "Lower doses (0.5-3 mg) are often as effective as higher doses; more is not necessarily better.",
-        "source": "NIH ODS - Melatonin Fact Sheet",
-        "source_url": "https://ods.od.nih.gov/factsheets/Melatonin-HealthProfessional/",
-        "verified": true
+        "source": "NIH NCCIH - Melatonin: What You Need To Know",
+        "source_url": "https://www.nccih.nih.gov/health/melatonin-what-you-need-to-know",
+        "verified": false
       }
     ],
     "buy_query": "melatonin"
@@ -29,7 +31,9 @@
   {
     "id": "magnesium",
     "name": "Magnesium glycinate",
-    "aliases": ["magnesium bisglycinate"],
+    "aliases": [
+      "magnesium bisglycinate"
+    ],
     "dose_low": 200,
     "dose_high": 400,
     "unit": "mg",
@@ -55,7 +59,9 @@
   {
     "id": "l_theanine",
     "name": "L-theanine",
-    "aliases": ["theanine"],
+    "aliases": [
+      "theanine"
+    ],
     "dose_low": 200,
     "dose_high": 400,
     "unit": "mg",
@@ -95,7 +101,9 @@
   {
     "id": "valerian",
     "name": "Valerian",
-    "aliases": ["valeriana officinalis"],
+    "aliases": [
+      "valeriana officinalis"
+    ],
     "dose_low": 300,
     "dose_high": 600,
     "unit": "mg",
@@ -116,7 +124,9 @@
   {
     "id": "ashwagandha",
     "name": "Ashwagandha",
-    "aliases": ["withania somnifera"],
+    "aliases": [
+      "withania somnifera"
+    ],
     "dose_low": 250,
     "dose_high": 600,
     "unit": "mg",

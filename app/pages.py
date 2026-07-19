@@ -112,10 +112,11 @@ def _jsonld(payload: dict) -> str:
 def _supplement_schema(supplement: Supplement, chunks: list[CorpusChunk], canonical: str) -> str:
     """MedicalWebPage + DietarySupplement markup with truthful fields only.
 
-    Deliberately absent: reviewedBy / medical credentials. Adding them without a real
-    reviewer would be fabricated structured data.
+    Deliberately absent: reviewedBy / medical credentials, and recommendedIntake -
+    machine-readable dose guidance stays out of structured data until the dataset has
+    independent clinical review. Adding either without a real reviewer would be
+    fabricated structured data.
     """
-    dose = f"{_fmt(supplement.dose_low)}-{_fmt(supplement.dose_high)} {supplement.unit}"
     return _jsonld(
         {
             "@context": "https://schema.org",
@@ -126,9 +127,6 @@ def _supplement_schema(supplement: Supplement, chunks: list[CorpusChunk], canoni
             "about": {
                 "@type": "DietarySupplement",
                 "name": supplement.name,
-                "recommendedIntake": (
-                    f"{dose} (general range from public sources, not personal advice)"
-                ),
             },
             "citation": sorted({c.source_url for c in chunks}),
             "publisher": {"@type": "Organization", "name": "SleepWise"},

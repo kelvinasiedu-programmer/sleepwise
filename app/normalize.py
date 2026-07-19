@@ -16,6 +16,8 @@ from __future__ import annotations
 import difflib
 import re
 
+from .models import MedicationResolution
+
 LOCAL_DRUG_CLASSES: dict[str, str] = {
     # anticoagulants / antiplatelets
     "warfarin": "anticoagulant",
@@ -129,9 +131,33 @@ def _match(med: str) -> str | None:
     return None
 
 
+def resolve_medications(meds: list[str]) -> list[MedicationResolution]:
+    """Resolve every entered medication to an explicit outcome.
+
+    A non-empty entry is never dropped: it comes back either recognized (with its
+    drug class) or unrecognized. Callers must treat any unrecognized entry as making
+    the profile incomplete - an unmatched medication must never silently produce a
+    reassuring personalized result.
+    """
+    resolutions: list[MedicationResolution] = []
+    for med in meds:
+        name = med.strip()
+        if not name:
+            continue
+        drug_class = _match(name)
+        resolutions.append(
+            MedicationResolution(
+                input=name,
+                status="recognized" if drug_class is not None else "unrecognized",
+                drug_class=drug_class,
+            )
+        )
+    return resolutions
+
+
 def to_drug_classes(meds: list[str], use_network: bool = False) -> set[str]:
     """Resolve medication names to a set of drug classes."""
-    classes = {cls for med in meds if (cls := _match(med)) is not None}
+    classes = {r.drug_class for r in resolve_medications(meds) if r.drug_class is not None}
     if use_network:
         classes |= _resolve_via_rxnorm(meds)
     return classes

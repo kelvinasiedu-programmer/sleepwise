@@ -3,33 +3,33 @@
     "id": "melatonin-1",
     "supplement_id": "melatonin",
     "text": "Melatonin is a hormone that signals the body's sleep-wake cycle; supplements are most effective for circadian-rhythm problems and jet lag.",
-    "source": "NIH ODS Melatonin Fact Sheet",
-    "source_url": "https://ods.od.nih.gov/factsheets/Melatonin-Consumer/",
+    "source": "NIH NCCIH - Melatonin: What You Need To Know",
+    "source_url": "https://www.nccih.nih.gov/health/melatonin-what-you-need-to-know",
     "verified": true
   },
   {
     "id": "melatonin-2",
     "supplement_id": "melatonin",
     "text": "For sleep onset, doses of 0.5 to 5 mg taken 30 to 60 minutes before bed are typical; lower doses are often as effective as higher ones.",
-    "source": "NIH ODS Melatonin Fact Sheet",
-    "source_url": "https://ods.od.nih.gov/factsheets/Melatonin-Consumer/",
-    "verified": true
+    "source": "NIH NCCIH - Melatonin: What You Need To Know",
+    "source_url": "https://www.nccih.nih.gov/health/melatonin-what-you-need-to-know",
+    "verified": false
   },
   {
     "id": "melatonin-3",
     "supplement_id": "melatonin",
     "text": "Short-term melatonin use is generally well tolerated; side effects can include daytime drowsiness, headache, and dizziness.",
-    "source": "NIH ODS Melatonin Fact Sheet",
-    "source_url": "https://ods.od.nih.gov/factsheets/Melatonin-Consumer/",
-    "verified": true
+    "source": "NIH NCCIH - Melatonin: What You Need To Know",
+    "source_url": "https://www.nccih.nih.gov/health/melatonin-what-you-need-to-know",
+    "verified": false
   },
   {
     "id": "melatonin-4",
     "supplement_id": "melatonin",
     "text": "Melatonin may interact with anticoagulants, immunosuppressants, diabetes medications, and blood-pressure drugs.",
-    "source": "NIH ODS Melatonin Fact Sheet",
-    "source_url": "https://ods.od.nih.gov/factsheets/Melatonin-Consumer/",
-    "verified": true
+    "source": "NIH NCCIH - Melatonin: What You Need To Know",
+    "source_url": "https://www.nccih.nih.gov/health/melatonin-what-you-need-to-know",
+    "verified": false
   },
   {
     "id": "magnesium-1",

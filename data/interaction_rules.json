@@ -32,7 +32,7 @@
     "target": "anticoagulant",
     "severity": "WARN",
     "message": "Melatonin may affect bleeding risk and interact with anticoagulants. Discuss with your prescriber before combining.",
-    "source_url": "https://ods.od.nih.gov/factsheets/Melatonin-HealthProfessional/",
+    "source_url": "https://www.nccih.nih.gov/health/melatonin-what-you-need-to-know",
     "verified": true
   },
   {
@@ -41,8 +41,8 @@
     "target": "antiplatelet",
     "severity": "WARN",
     "message": "Melatonin may add to antiplatelet effects and bleeding risk. Discuss with your prescriber before combining.",
-    "source_url": "https://ods.od.nih.gov/factsheets/Melatonin-HealthProfessional/",
-    "verified": true
+    "source_url": "https://www.nccih.nih.gov/health/melatonin-what-you-need-to-know",
+    "verified": false
   },
   {
     "supplement_id": "melatonin",
@@ -50,8 +50,8 @@
     "target": "antihypertensive",
     "severity": "WARN",
     "message": "Melatonin can influence blood pressure and may interact with antihypertensive medications. Monitor with your clinician.",
-    "source_url": "https://ods.od.nih.gov/factsheets/Melatonin-HealthProfessional/",
-    "verified": true
+    "source_url": "https://www.nccih.nih.gov/health/melatonin-what-you-need-to-know",
+    "verified": false
   },
   {
     "supplement_id": "melatonin",
@@ -59,8 +59,8 @@
     "target": "antidiabetic",
     "severity": "WARN",
     "message": "Melatonin may affect blood glucose. If you take antidiabetic medication, monitor levels and consult your clinician.",
-    "source_url": "https://ods.od.nih.gov/factsheets/Melatonin-HealthProfessional/",
-    "verified": true
+    "source_url": "https://www.nccih.nih.gov/health/melatonin-what-you-need-to-know",
+    "verified": false
   },
   {
     "supplement_id": "melatonin",
@@ -68,8 +68,8 @@
     "target": "immunosuppressant",
     "severity": "WARN",
     "message": "Melatonin can stimulate immune activity and may counteract immunosuppressant therapy. Consult your prescriber.",
-    "source_url": "https://ods.od.nih.gov/factsheets/Melatonin-HealthProfessional/",
-    "verified": true
+    "source_url": "https://www.nccih.nih.gov/health/melatonin-what-you-need-to-know",
+    "verified": false
   },
   {
     "supplement_id": "melatonin",
@@ -77,8 +77,8 @@
     "target": "benzodiazepine",
     "severity": "WARN",
     "message": "Melatonin adds to the sedative effect of benzodiazepines. Use caution and avoid activities requiring alertness.",
-    "source_url": "https://ods.od.nih.gov/factsheets/Melatonin-HealthProfessional/",
-    "verified": true
+    "source_url": "https://www.nccih.nih.gov/health/melatonin-what-you-need-to-know",
+    "verified": false
   },
   {
     "supplement_id": "magnesium",

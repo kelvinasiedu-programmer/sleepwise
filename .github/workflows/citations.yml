@@ -1,0 +1,24 @@
+name: Citations
+
+on:
+  schedule:
+    - cron: "0 7 * * 1"
+  push:
+    branches: [main]
+    paths:
+      - "data/**"
+      - "scripts/check_citations.py"
+  workflow_dispatch:
+
+jobs:
+  check:
+    name: Citation links reachable
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+      - run: pip install httpx
+      - name: Check every cited source URL
+        run: python scripts/check_citations.py

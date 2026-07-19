@@ -12,6 +12,22 @@ from pydantic import BaseModel, Field, StringConstraints
 
 Severity = Literal["ALLOW", "WARN", "BLOCK"]
 
+# How much the response can honestly claim to be about *this* user:
+#   personalized - every entered medication was recognized, so the safety engine ran
+#   incomplete   - at least one medication was not recognized; personalized
+#                  classification is withheld so a missed match can never masquerade
+#                  as a clean result
+#   general      - nothing was entered; output is a labeled educational overview
+ProfileStatus = Literal["personalized", "incomplete", "general"]
+
+
+class MedicationResolution(BaseModel):
+    """The fate of one entered medication. Nothing is ever dropped silently."""
+
+    input: str
+    status: Literal["recognized", "unrecognized"]
+    drug_class: str | None = None
+
 
 class EvidenceItem(BaseModel):
     claim: str
@@ -84,6 +100,12 @@ class Recommendation(BaseModel):
 class RecommendationResponse(BaseModel):
     goal: str
     disclaimer: str
+    profile_status: ProfileStatus = "personalized"
+    medications: list[MedicationResolution] = Field(default_factory=list)
+    unrecognized_meds: list[str] = Field(default_factory=list)
+    notice: str | None = None
+    engine_version: str = ""
+    dataset_version: str = ""
     recommended: list[Recommendation] = Field(default_factory=list)
     not_recommended: list[Recommendation] = Field(default_factory=list)
 

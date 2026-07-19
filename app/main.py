@@ -44,7 +44,7 @@ _SECURITY_HEADERS = {
     "Strict-Transport-Security": "max-age=63072000; includeSubDomains",
     "Content-Security-Policy": (
         "default-src 'self'; img-src 'self' data:; style-src 'self'; "
-        "script-src 'self' 'unsafe-inline'; connect-src 'self'; base-uri 'self'; "
+        "script-src 'self'; connect-src 'self'; base-uri 'self'; "
         "form-action 'self'; frame-ancestors 'none'; object-src 'none'"
     ),
 }
@@ -83,12 +83,16 @@ app = FastAPI(
     description="Safety-first supplement guidance for sleep. Educational, not medical advice.",
     version="0.1.0",
 )
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=config.cors_origins(),
-    allow_methods=["GET", "POST"],
-    allow_headers=["*"],
-)
+# The web app is same-origin; cross-origin API access is opt-in via configuration
+# rather than a wildcard default.
+_cors_origins = config.cors_origins()
+if _cors_origins:
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=_cors_origins,
+        allow_methods=["GET", "POST"],
+        allow_headers=["*"],
+    )
 
 SUPPLEMENTS, RULES = rec.load_catalog()
 _CORPUS = load_corpus()
@@ -262,7 +266,13 @@ def interaction_page(slug: str) -> HTMLResponse:
 
 @app.get("/health")
 def health() -> dict:
-    return {"status": "ok", "supplements": len(SUPPLEMENTS), "rules": len(RULES)}
+    return {
+        "status": "ok",
+        "supplements": len(SUPPLEMENTS),
+        "rules": len(RULES),
+        "engine_version": rec.SAFETY_ENGINE_VERSION,
+        "dataset_version": rec.DATASET_VERSION,
+    }
 
 
 @app.get("/api/suggestions", include_in_schema=False)

@@ -29,7 +29,10 @@
     <p>Your medications are mapped to drug classes (for example, lorazepam and Xanax both map to
       "benzodiazepine"). The matcher handles brand names, strips dosages from free text, and
       corrects obvious typos. A missed match is treated as a safety risk because it could hide a
-      real interaction.</p>
+      real interaction, so if any medication is not recognized, SleepWise says so and shows
+      general information only - it never produces a personalized result from an incomplete
+      picture. Entering nothing produces a clearly labeled general overview, not personalized
+      guidance.</p>
 
     <h2>2. Deterministic safety engine</h2>
     <p>Each candidate supplement is checked against a hand-verified interaction table covering

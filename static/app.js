@@ -4,6 +4,8 @@ const byId = (id) => document.getElementById(id);
 
 // Softer, less medically-definitive labels for display (the API keeps ALLOW/WARN/BLOCK).
 const LABELS = { ALLOW: "Lower concern", WARN: "Use caution", BLOCK: "Ask a clinician first" };
+// Plain-language prefixes for warning lines (no raw status tokens in prose).
+const WARN_PREFIX = { WARN: "Caution: ", BLOCK: "Important: " };
 
 function el(tag, opts = {}, ...children) {
   const node = document.createElement(tag);
@@ -140,8 +142,9 @@ function summaryPanel(data) {
   return panel;
 }
 
-function card(rec) {
-  const head = el("div", { class: "card-head" }, el("h3", { text: rec.supplement }), pill(rec.status));
+function card(rec, hidePill) {
+  const head = el("div", { class: "card-head" }, el("h3", { text: rec.supplement }));
+  if (!hidePill) head.appendChild(pill(rec.status));
   const node = el("div", { class: "card" }, head, el("p", { text: rec.summary }));
   node.appendChild(
     el("p", {
@@ -155,7 +158,9 @@ function card(rec) {
     );
   }
   for (const w of rec.warnings) {
-    node.appendChild(el("p", { class: "warn", text: "[" + w.severity + "] " + w.message }));
+    node.appendChild(
+      el("p", { class: "warn", text: (WARN_PREFIX[w.severity] || "") + w.message })
+    );
   }
   for (const e of rec.rationale) {
     const p = el("p", { class: "evidence", text: e.claim + " - " });
@@ -173,10 +178,23 @@ function card(rec) {
   return node;
 }
 
-function section(title, recs) {
-  const sec = el("section", { class: "results" }, el("h2", { text: title }));
-  for (const r of recs) sec.appendChild(card(r));
+function section(title, recs, hidePill) {
+  const heading = el("h2", { text: title });
+  heading.tabIndex = -1; // focus target so keyboard/SR users land on the results
+  const sec = el("section", { class: "results" }, heading);
+  for (const r of recs) sec.appendChild(card(r, hidePill));
   return sec;
+}
+
+function noticeBanner(data) {
+  const box = el("div", { class: "notice" });
+  if (data.profile_status === "incomplete" && data.unrecognized_meds.length) {
+    box.appendChild(
+      el("p", { class: "notice-head", text: "Not recognized: " + data.unrecognized_meds.join(", ") })
+    );
+  }
+  box.appendChild(el("p", { text: data.notice }));
+  return box;
 }
 
 function pharmacistQuestions() {
@@ -311,18 +329,39 @@ async function run(event) {
     const data = await res.json();
 
     const frag = document.createDocumentFragment();
-    frag.appendChild(printHeader(profile));
-    frag.appendChild(summaryPanel(data));
-    if (data.recommended.length) frag.appendChild(section("Worth considering", data.recommended));
-    if (data.not_recommended.length)
-      frag.appendChild(section("Not recommended for your profile", data.not_recommended));
+    const personalized = data.profile_status === "personalized";
+    if (data.notice) frag.appendChild(noticeBanner(data));
+    if (personalized) {
+      frag.appendChild(printHeader(profile));
+      frag.appendChild(summaryPanel(data));
+      if (data.recommended.length) frag.appendChild(section("Worth considering", data.recommended));
+      if (data.not_recommended.length)
+        frag.appendChild(section("Not recommended for your profile", data.not_recommended));
+    } else {
+      // Incomplete or empty profile: clearly labeled general education with no
+      // personalized classification pills.
+      frag.appendChild(
+        section(
+          "General information about sleep supplements",
+          [...data.recommended, ...data.not_recommended],
+          true
+        )
+      );
+    }
     frag.appendChild(pharmacistQuestions());
-    frag.appendChild(actionsRow(profile, data));
+    if (personalized) frag.appendChild(actionsRow(profile, data));
     frag.appendChild(feedbackWidget());
     results.appendChild(frag);
-    status.textContent = "Results ready below.";
+    status.textContent =
+      data.profile_status === "incomplete"
+        ? "Some medications were not recognized. Showing general information only."
+        : data.profile_status === "general"
+          ? "General overview ready below."
+          : "Results ready below.";
     const noMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     results.scrollIntoView({ behavior: noMotion ? "auto" : "smooth", block: "start" });
+    const firstHeading = results.querySelector("h2");
+    if (firstHeading) firstHeading.focus({ preventScroll: true });
   } catch (err) {
     status.setAttribute("role", "alert");
     status.textContent = "Something went wrong: " + err.message + ". Please try again.";

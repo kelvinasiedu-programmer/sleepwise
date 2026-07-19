@@ -34,7 +34,7 @@ def test_supplement_page_has_evidence_and_checker_link():
     response = client.get("/supplements/melatonin")
     assert response.status_code == 200
     assert "Melatonin for sleep" in response.text
-    assert "ods.od.nih.gov" in response.text  # evidence keeps its citation
+    assert "nih.gov" in response.text  # evidence keeps its citation
     assert "not medical advice" in response.text.lower()
 
 

@@ -47,7 +47,8 @@ def embeddings_enabled() -> bool:
 
 
 def cors_origins() -> list[str]:
-    raw = os.getenv("SLEEPWISE_CORS_ORIGINS", "*")
+    # Empty by default: the app is same-origin, so cross-origin access is opt-in.
+    raw = os.getenv("SLEEPWISE_CORS_ORIGINS", "")
     return [origin.strip() for origin in raw.split(",") if origin.strip()]
 
 

@@ -38,3 +38,12 @@ def test_typo_resolves_via_fuzzy_match():
 
 def test_unrelated_drug_does_not_false_match():
     assert normalize.to_drug_classes(["ibuprofen"]) == set()
+
+
+def test_resolve_reports_every_nonempty_entry():
+    resolutions = normalize.resolve_medications(["warfarin", "zzznotadrug", "   "])
+    assert [r.input for r in resolutions] == ["warfarin", "zzznotadrug"]
+    assert resolutions[0].status == "recognized"
+    assert resolutions[0].drug_class == "anticoagulant"
+    assert resolutions[1].status == "unrecognized"
+    assert resolutions[1].drug_class is None
