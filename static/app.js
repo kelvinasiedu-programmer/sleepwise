@@ -210,8 +210,8 @@ function pharmacistQuestions() {
   box.appendChild(ul);
   const connect = el("p", {
     text:
-      "Pharmacist consultations are free at any pharmacy, no appointment needed. " +
-      "No regular clinician? ",
+      "Many pharmacists can answer medication questions, though availability and any fee " +
+      "vary - contact your pharmacy to confirm. No regular clinician? ",
   });
   connect.appendChild(
     el("a", {
