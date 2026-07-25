@@ -193,3 +193,5 @@ section.results h2 { font-size: 18px; margin: 28px 0 6px; }
 .notice p { margin: 0; }
 .notice .notice-head { font-weight: 700; color: var(--warn-fg); margin: 0 0 4px; }
 section.results h2:focus { outline: none; }
+/* Publication gate labelling */
+.unconfirmed { color: var(--muted); font-style: italic; font-weight: 400; }

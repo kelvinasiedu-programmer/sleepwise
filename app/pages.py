@@ -129,7 +129,8 @@ def _supplement_schema(supplement: Supplement, chunks: list[CorpusChunk], canoni
                 "@type": "DietarySupplement",
                 "name": supplement.name,
             },
-            "citation": sorted({c.source_url for c in chunks}),
+            # Only source-confirmed claims are cited in structured data.
+            "citation": sorted({c.source_url for c in chunks if c.verified}),
             "publisher": {"@type": "Organization", "name": "SleepWise"},
         }
     )
@@ -176,16 +177,29 @@ def render_supplement(
     rules: list[InteractionRule],
     canonical: str,
 ) -> str:
-    evidence = "".join(
-        f'<li>{escape(c.text)} <a href="{escape(c.source_url)}">{escape(c.source)}</a></li>'
-        for c in chunks
-    )
+    # Publication gate: only claims confirmed against their cited source are rendered.
+    confirmed = [c for c in chunks if c.verified]
+    if confirmed:
+        evidence = "".join(
+            f'<li>{escape(c.text)} <a href="{escape(c.source_url)}">{escape(c.source)}</a></li>'
+            for c in confirmed
+        )
+    else:
+        evidence = (
+            "<li>No source-confirmed evidence to show yet. Statements we could not confirm "
+            "against their cited source have been withheld pending review.</li>"
+        )
     supp_rules = [r for r in rules if r.supplement_id == supplement.id]
     interactions = ""
     if supp_rules:
         rows = "".join(
-            f"<li><strong>{escape(humanize_target(r))}:</strong> {escape(r.message)} "
-            f'(<a href="/interactions/{escape(interaction_slug(r))}">details</a>)</li>'
+            f"<li><strong>{escape(humanize_target(r))}:</strong> {escape(r.message)}"
+            + (
+                ""
+                if r.verified
+                else " <em>(precautionary: not yet confirmed against a source)</em>"
+            )
+            + f' (<a href="/interactions/{escape(interaction_slug(r))}">details</a>)</li>'
             for r in supp_rules
         )
         interactions = f"<h2>Interaction concerns</h2><ul>{rows}</ul>"
@@ -251,12 +265,20 @@ def render_interaction(rule: InteractionRule, supplement: Supplement, canonical:
             "automatically unsafe, but it is worth checking before you combine them."
         )
     title = f"{supplement.name} and {target}"
+    caveat = (
+        ""
+        if rule.verified
+        else "<p><em>This concern is shown as a precaution. We have not yet confirmed it "
+        "against the cited source, and it is pending review by a licensed pharmacist "
+        '(see <a href="/editorial-policy">editorial policy</a>).</em></p>'
+    )
     body = (
         f"<h1>{escape(supplement.name)} and {escape(target)}</h1>"
         f"{_PROVENANCE}"
         f"<p>{escape(answer)}</p>"
         "<h2>Why it may matter</h2>"
         f'<p>{escape(rule.message)} <a href="{escape(rule.source_url)}">Source</a>.</p>'
+        f"{caveat}"
         "<h2>What to ask a pharmacist</h2><ul>"
         f"<li>Given my medicines, is {escape(supplement.name)} a reasonable option for me?</li>"
         "<li>If not, is there a safer alternative for sleep?</li>"

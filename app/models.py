@@ -82,6 +82,11 @@ class SafetyReason(BaseModel):
     severity: Severity
     message: str
     source_url: str
+    # False when the underlying rule's claim has not been confirmed against its cited
+    # source. Such a warning still fires - suppressing a plausible caution to tidy up a
+    # citation would make the tool less safe - but it is labelled as precautionary
+    # rather than presented as substantiated.
+    verified: bool = True
 
 
 class SafetyResult(BaseModel):

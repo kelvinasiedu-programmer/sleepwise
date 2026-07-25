@@ -16,6 +16,16 @@ _retriever: Retriever = get_retriever()
 
 
 def retrieve(supplement: Supplement, goal: str = "sleep", k: int = 3) -> list[EvidenceItem]:
-    """Return up to ``k`` evidence chunks most relevant to the goal for this supplement."""
+    """Return up to ``k`` verified evidence chunks for this supplement.
+
+    Publication gate: a chunk whose claim has not been confirmed against its cited
+    source is never rendered. Showing an unconfirmed statement next to a citation
+    implies a substantiation that does not exist, so the honest output for a supplement
+    with no verified evidence is no evidence at all.
+
+    Retrieval quality is measured over the whole corpus (see evals/); this filter is
+    about what may be published, not about how well the retriever ranks.
+    """
     query = f"{goal} {supplement.name} benefits dose risks interactions"
-    return _retriever.search(query, supplement.id, k)
+    found = _retriever.search(query, supplement.id, k)
+    return [item for item in found if item.verified]

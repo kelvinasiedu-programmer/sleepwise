@@ -97,6 +97,7 @@ def evaluate(
                     severity=rule.severity,
                     message=rule.message,
                     source_url=rule.source_url,
+                    verified=rule.verified,
                 )
             )
 

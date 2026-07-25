@@ -173,6 +173,23 @@ def test_kidney_disease_blocks_magnesium_without_link():
 # --- response metadata -------------------------------------------------------------
 
 
+def test_only_source_confirmed_evidence_is_published():
+    # Publication gate: an unconfirmed claim must never render next to a citation.
+    for user in (UserInput(), UserInput(meds=["warfarin"])):
+        for rec in _all_items(_run(user)):
+            assert all(item.verified for item in rec.rationale), rec.supplement
+
+
+def test_unconfirmed_warnings_still_fire_but_are_labelled():
+    # Suppressing a plausible caution to tidy up a citation would make the tool less
+    # safe, so the warning stays and carries verified=False for the UI to label.
+    response = _run(UserInput(meds=["oxycodone"]))
+    valerian = next(r for r in _all_items(response) if r.supplement == "Valerian")
+    opioid = [w for w in valerian.warnings if "opioid" in w.message.lower()]
+    assert opioid, "valerian/opioid caution must still be shown"
+    assert opioid[0].verified is False
+
+
 def test_disclaimer_and_versions_are_present():
     response = _run(UserInput(meds=["warfarin"]))
     assert "not medical advice" in response.disclaimer.lower()

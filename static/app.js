@@ -158,14 +158,36 @@ function card(rec, hidePill) {
     );
   }
   for (const w of rec.warnings) {
-    node.appendChild(
-      el("p", { class: "warn", text: (WARN_PREFIX[w.severity] || "") + w.message })
-    );
+    const line = el("p", { class: "warn", text: (WARN_PREFIX[w.severity] || "") + w.message });
+    // A warning we have not confirmed against its source still shows - hiding a
+    // plausible caution would be less safe - but it is labelled, not dressed up as
+    // substantiated.
+    if (w.verified === false) {
+      line.appendChild(
+        el("span", {
+          class: "unconfirmed",
+          text: " (precautionary: not yet confirmed against a source)",
+        })
+      );
+    }
+    node.appendChild(line);
   }
   for (const e of rec.rationale) {
     const p = el("p", { class: "evidence", text: e.claim + " - " });
     p.appendChild(el("a", { href: e.source_url, text: e.source }));
     node.appendChild(p);
+  }
+  // Only source-confirmed evidence reaches the client, so an empty list means we have
+  // nothing substantiated to say - which is stated rather than papered over.
+  if (!rec.rationale.length) {
+    node.appendChild(
+      el("p", {
+        class: "evidence",
+        text:
+          "No source-confirmed evidence to show for this supplement yet. Statements we " +
+          "could not confirm against their cited source have been withheld pending review.",
+      })
+    );
   }
   // Commerce is switched off in the checker: a buying prompt does not belong next to
   // guidance that has not been clinician-reviewed.
