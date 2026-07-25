@@ -1,0 +1,100 @@
+{
+  "_note": "Illustrative sample data for a demonstration. These associations are textbook-level groupings used to exercise the rules engine; they have NOT been reviewed by a sleep-medicine clinician and are not a triage instrument.",
+
+  "red_flags": [
+    {
+      "id": "drowsy-driving",
+      "triggers": ["drowsy-driving"],
+      "urgency": "urgent",
+      "message": "You reported falling asleep while driving or operating machinery. That carries a real risk of injury to you and to other people. Please arrange to be seen by a clinician promptly, and avoid driving or operating machinery while you feel sleepy until you can speak to someone."
+    },
+    {
+      "id": "witnessed-pauses",
+      "triggers": ["witnessed-pauses"],
+      "urgency": "prompt",
+      "message": "You said someone has seen you stop breathing, gasp, or choke during sleep. This is worth raising with a clinician soon rather than waiting, so it can be looked into properly."
+    },
+    {
+      "id": "sleep-attacks",
+      "triggers": ["sleep-attacks"],
+      "urgency": "prompt",
+      "message": "You said you fall asleep suddenly during activities without meaning to. That is worth raising with a clinician soon rather than waiting."
+    }
+  ],
+
+  "topics": [
+    {
+      "id": "insomnia",
+      "name": "Difficulty falling or staying asleep",
+      "min_matches": 2,
+      "triggers": ["trouble-falling-asleep", "night-waking", "early-waking", "mind-racing", "worry-about-sleep"],
+      "summary": "Your selections describe trouble getting to sleep or staying asleep. Many things can cause this, including stress, schedule, pain, mood, and other conditions.",
+      "discuss": [
+        "How long has this been going on, and how many nights a week?",
+        "What does a typical night look like from getting into bed to getting up?",
+        "Could anything I take, including caffeine, alcohol, or medication, be involved?",
+        "Would a structured approach such as CBT for insomnia be appropriate for me?"
+      ]
+    },
+    {
+      "id": "breathing",
+      "name": "Breathing during sleep",
+      "min_matches": 2,
+      "triggers": ["loud-snoring", "witnessed-pauses", "morning-headache", "wake-unrefreshed", "daytime-sleepiness"],
+      "summary": "Your selections include snoring, breathing interruptions, or waking unrefreshed. A clinician can decide whether a sleep study or other assessment is appropriate.",
+      "discuss": [
+        "Do my symptoms warrant an assessment of my breathing during sleep?",
+        "Has anyone observed my breathing overnight, and should they?",
+        "Are there risks I should know about while this is unassessed?"
+      ]
+    },
+    {
+      "id": "restless-legs",
+      "name": "Leg discomfort or movement at night",
+      "min_matches": 2,
+      "triggers": ["leg-urge", "leg-relief-movement", "limb-jerks"],
+      "summary": "Your selections describe an urge to move your legs or movements during sleep. A clinician can look at possible contributors, including things measurable with simple blood tests.",
+      "discuss": [
+        "Are there tests worth doing to look for contributing causes?",
+        "Could anything I currently take be making this worse?",
+        "What non-medication approaches are worth trying first?"
+      ]
+    },
+    {
+      "id": "body-clock",
+      "name": "Sleep timing and body clock",
+      "min_matches": 2,
+      "triggers": ["late-body-clock", "shift-or-jetlag", "sleep-fine-when-free", "trouble-falling-asleep"],
+      "summary": "Your selections suggest your natural sleep timing may not line up with your required schedule, rather than an inability to sleep as such.",
+      "discuss": [
+        "Does my sleep timing look shifted rather than disrupted?",
+        "How should I use light exposure and timing during my day?",
+        "What is realistic given my school or work schedule?"
+      ]
+    },
+    {
+      "id": "daytime-function",
+      "name": "Daytime sleepiness",
+      "min_matches": 1,
+      "triggers": ["daytime-sleepiness", "sleep-attacks", "wake-unrefreshed"],
+      "summary": "Your selections include feeling sleepy or unrefreshed during the day. Daytime sleepiness has many possible causes and is worth investigating rather than pushing through.",
+      "discuss": [
+        "How sleepy am I compared with what is expected, and can that be measured?",
+        "What should I avoid doing while I feel this sleepy?",
+        "Which explanations would you want to look into first?"
+      ]
+    },
+    {
+      "id": "habits",
+      "name": "Habits and routine around sleep",
+      "min_matches": 2,
+      "triggers": ["screens-late", "caffeine-late", "alcohol-to-sleep", "irregular-bedtime"],
+      "summary": "Your selections include routine factors that commonly affect sleep. These are often worth addressing alongside, not instead of, any other concern on this list.",
+      "discuss": [
+        "Which of my habits would you look at first?",
+        "What is a realistic change to try first?",
+        "How long should I try it before deciding whether it helped?"
+      ]
+    }
+  ]
+}

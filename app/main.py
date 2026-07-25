@@ -23,10 +23,17 @@ from fastapi import FastAPI, HTTPException, Request, Response
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, HTMLResponse, JSONResponse, PlainTextResponse
 
-from . import config, pages
+from . import config, pages, symptoms
 from . import recommend as rec
 from .cache import LRUCache
-from .models import Feedback, InteractionRule, RecommendationResponse, UserInput
+from .models import (
+    Feedback,
+    InteractionRule,
+    RecommendationResponse,
+    SymptomResponse,
+    SymptomSelection,
+    UserInput,
+)
 from .normalize import LOCAL_DRUG_CLASSES
 from .ratelimit import RateLimiter
 from .retrieval import load_corpus
@@ -53,6 +60,7 @@ _CSP_EXEMPT = {"/docs", "/redoc", "/openapi.json"}
 
 # Trust / content pages served from static HTML.
 _PAGES = {
+    "/organizer": "organizer.html",
     "/about": "about.html",
     "/methodology": "methodology.html",
     "/privacy": "privacy.html",
@@ -96,6 +104,7 @@ if _cors_origins:
     )
 
 SUPPLEMENTS, RULES = rec.load_catalog()
+SYMPTOM_CARDS, SYMPTOM_TOPICS, SYMPTOM_RED_FLAGS = symptoms.load_symptom_data()
 _CORPUS = load_corpus()
 _SUPP_BY_ID = {s.id: s for s in SUPPLEMENTS}
 _INTERACTIONS: dict[str, InteractionRule] = {}
@@ -178,6 +187,13 @@ def site_css() -> FileResponse:
 def app_js() -> FileResponse:
     return FileResponse(
         STATIC_DIR / "app.js", media_type="application/javascript", headers=_REVALIDATE
+    )
+
+
+@app.get("/organizer.js", include_in_schema=False)
+def organizer_js() -> FileResponse:
+    return FileResponse(
+        STATIC_DIR / "organizer.js", media_type="application/javascript", headers=_REVALIDATE
     )
 
 
@@ -304,6 +320,25 @@ def recommend_endpoint(user: UserInput) -> RecommendationResponse:
     result = rec.recommend(user, SUPPLEMENTS, RULES)
     _cache.put(key, result)
     return result
+
+
+@app.get("/api/symptom-cards")
+def symptom_cards() -> dict:
+    """The fixed card set. Cards are served, never generated, and carry no free text."""
+    return {
+        "cards": [card.model_dump() for card in SYMPTOM_CARDS],
+        "organizer_version": symptoms.ORGANIZER_VERSION,
+    }
+
+
+@app.post("/symptoms", response_model=SymptomResponse)
+def symptoms_endpoint(selection: SymptomSelection) -> SymptomResponse:
+    """Organize selections into red flags and unranked topics.
+
+    Not cached and not logged: the request body is a health selection, and the response
+    is a pure function of it, so there is nothing worth keeping.
+    """
+    return symptoms.evaluate(selection, SYMPTOM_CARDS, SYMPTOM_TOPICS, SYMPTOM_RED_FLAGS)
 
 
 @app.post("/feedback")

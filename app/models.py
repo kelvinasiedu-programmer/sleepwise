@@ -121,6 +121,60 @@ class RecommendationResponse(BaseModel):
     not_recommended: list[Recommendation] = Field(default_factory=list)
 
 
+# --- Symptom organizer -------------------------------------------------------------
+# Fixed cards and fixed rules. Nothing here is ranked, scored, or probabilistic, and
+# there is no "ruled out" state: absence of a symptom is not absence of a condition.
+
+SymptomAnswer = Literal["applies", "not_applies", "unsure"]
+
+
+class SymptomCard(BaseModel):
+    id: str
+    prompt: str
+    group: str
+    followups: list[str] = Field(default_factory=list)
+
+
+class SymptomTopic(BaseModel):
+    id: str
+    name: str
+    summary: str
+    triggers: list[str] = Field(default_factory=list)
+    min_matches: int = 1
+    discuss: list[str] = Field(default_factory=list)
+
+
+class RedFlag(BaseModel):
+    id: str
+    triggers: list[str] = Field(default_factory=list)
+    urgency: Literal["urgent", "prompt"]
+    message: str
+
+
+class TopicMatch(BaseModel):
+    topic: str
+    summary: str
+    because: list[str] = Field(default_factory=list)
+    discuss: list[str] = Field(default_factory=list)
+
+
+class SymptomSelection(BaseModel):
+    # Card id -> answer. Bounded to the fixed card set size; no free text is accepted,
+    # so no identifying information can reach the server.
+    answers: dict[str, SymptomAnswer] = Field(default_factory=dict, max_length=60)
+
+
+class SymptomResponse(BaseModel):
+    intro: str
+    selected: list[str] = Field(default_factory=list)
+    unsure: list[str] = Field(default_factory=list)
+    red_flags: list[RedFlag] = Field(default_factory=list)
+    topics: list[TopicMatch] = Field(default_factory=list)
+    notice: str | None = None
+    closing: str
+    organizer_version: str = ""
+
+
 class Feedback(BaseModel):
     useful: Literal["yes", "somewhat", "no"]
     note: str | None = Field(default=None, max_length=500)

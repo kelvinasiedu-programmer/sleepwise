@@ -1,0 +1,134 @@
+[
+  {
+    "id": "trouble-falling-asleep",
+    "prompt": "It regularly takes me more than 30 minutes to fall asleep",
+    "group": "getting to sleep",
+    "followups": ["duration", "frequency"]
+  },
+  {
+    "id": "night-waking",
+    "prompt": "I wake up during the night and struggle to get back to sleep",
+    "group": "staying asleep",
+    "followups": ["frequency"]
+  },
+  {
+    "id": "early-waking",
+    "prompt": "I wake earlier than I want to and cannot fall back asleep",
+    "group": "staying asleep",
+    "followups": ["frequency"]
+  },
+  {
+    "id": "mind-racing",
+    "prompt": "My mind races or I worry when I am trying to sleep",
+    "group": "getting to sleep",
+    "followups": []
+  },
+  {
+    "id": "worry-about-sleep",
+    "prompt": "I feel anxious about whether I will sleep well",
+    "group": "getting to sleep",
+    "followups": []
+  },
+  {
+    "id": "loud-snoring",
+    "prompt": "I have been told I snore loudly most nights",
+    "group": "breathing",
+    "followups": []
+  },
+  {
+    "id": "witnessed-pauses",
+    "prompt": "Someone has seen me stop breathing, gasp, or choke while asleep",
+    "group": "breathing",
+    "followups": []
+  },
+  {
+    "id": "wake-unrefreshed",
+    "prompt": "I wake up feeling unrefreshed even after enough hours in bed",
+    "group": "daytime",
+    "followups": ["duration"]
+  },
+  {
+    "id": "morning-headache",
+    "prompt": "I often wake with a headache or a very dry mouth",
+    "group": "breathing",
+    "followups": []
+  },
+  {
+    "id": "daytime-sleepiness",
+    "prompt": "I feel sleepy during the day even when I have slept",
+    "group": "daytime",
+    "followups": ["duration", "frequency"]
+  },
+  {
+    "id": "drowsy-driving",
+    "prompt": "I have felt myself falling asleep while driving or operating machinery",
+    "group": "daytime",
+    "followups": []
+  },
+  {
+    "id": "sleep-attacks",
+    "prompt": "I fall asleep suddenly during activities, without meaning to",
+    "group": "daytime",
+    "followups": []
+  },
+  {
+    "id": "leg-urge",
+    "prompt": "I get an uncomfortable urge to move my legs when resting in the evening",
+    "group": "movement",
+    "followups": ["frequency"]
+  },
+  {
+    "id": "leg-relief-movement",
+    "prompt": "Moving my legs makes that uncomfortable feeling better",
+    "group": "movement",
+    "followups": []
+  },
+  {
+    "id": "limb-jerks",
+    "prompt": "I or a bed partner notice my legs jerking or kicking during sleep",
+    "group": "movement",
+    "followups": []
+  },
+  {
+    "id": "late-body-clock",
+    "prompt": "I naturally fall asleep and wake much later than I would like",
+    "group": "timing",
+    "followups": ["duration"]
+  },
+  {
+    "id": "shift-or-jetlag",
+    "prompt": "My schedule shifts a lot (shift work, travel across time zones, irregular hours)",
+    "group": "timing",
+    "followups": []
+  },
+  {
+    "id": "sleep-fine-when-free",
+    "prompt": "I sleep well when I can choose my own hours, but not on a fixed schedule",
+    "group": "timing",
+    "followups": []
+  },
+  {
+    "id": "screens-late",
+    "prompt": "I use bright screens in bed or right up until I try to sleep",
+    "group": "habits",
+    "followups": []
+  },
+  {
+    "id": "caffeine-late",
+    "prompt": "I have caffeine in the afternoon or evening",
+    "group": "habits",
+    "followups": []
+  },
+  {
+    "id": "alcohol-to-sleep",
+    "prompt": "I use alcohol to help me fall asleep",
+    "group": "habits",
+    "followups": []
+  },
+  {
+    "id": "irregular-bedtime",
+    "prompt": "My bedtime and wake time vary a lot from day to day",
+    "group": "habits",
+    "followups": []
+  }
+]
