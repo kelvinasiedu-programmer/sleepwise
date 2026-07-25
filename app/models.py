@@ -22,11 +22,17 @@ ProfileStatus = Literal["personalized", "incomplete", "general"]
 
 
 class MedicationResolution(BaseModel):
-    """The fate of one entered medication. Nothing is ever dropped silently."""
+    """The fate of one entered medication. Nothing is ever dropped silently.
+
+    `ambiguous` means the entry matched more than one distinct drug entity (for example
+    "warfarin lorazepam" typed into a single field). Resolving it to the first match
+    would silently discard the rest, so it is treated as unresolved.
+    """
 
     input: str
-    status: Literal["recognized", "unrecognized"]
+    status: Literal["recognized", "unrecognized", "ambiguous"]
     drug_class: str | None = None
+    detail: str | None = None
 
 
 class EvidenceItem(BaseModel):

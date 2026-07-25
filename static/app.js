@@ -167,14 +167,8 @@ function card(rec, hidePill) {
     p.appendChild(el("a", { href: e.source_url, text: e.source }));
     node.appendChild(p);
   }
-  // Buy links are de-emphasized and marked sponsored/nofollow until safety is clear.
-  if (rec.buy_link) {
-    const buy = el("p", { class: "buy" });
-    buy.appendChild(
-      el("a", { href: rec.buy_link, text: "Find this supplement", rel: "nofollow sponsored noopener" })
-    );
-    node.appendChild(buy);
-  }
+  // Commerce is switched off in the checker: a buying prompt does not belong next to
+  // guidance that has not been clinician-reviewed.
   return node;
 }
 

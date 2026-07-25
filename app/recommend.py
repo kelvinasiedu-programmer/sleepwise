@@ -53,14 +53,12 @@ GENERAL_NOTICE = (
     "medications and health flags to see interaction concerns relevant to you."
 )
 INCOMPLETE_NOTICE = (
-    "We could not recognize: {names}. Because a missed medication could hide a real "
-    "interaction, the information below is general only - not personalized to you. "
-    "Check the spelling, or bring your medication list to a pharmacist."
+    "We could not confirm these entries: {names}. Because an unread medication or "
+    "supplement could hide a real interaction, the information below is general only - "
+    "not personalized to you. Check the spelling, enter one item per field, or bring "
+    "your full list to a pharmacist."
 )
 
-# Affiliate note: append your tag (e.g. ?rcode=XXXX) and disclose per FTC rules before
-# treating these as monetized links.
-IHERB_SEARCH = "https://www.iherb.com/search?kw={q}"
 STACKING_SOURCE = "https://ods.od.nih.gov/factsheets/list-all/"
 
 
@@ -81,34 +79,61 @@ def _format_dose(value: float) -> str:
     return str(int(value)) if float(value).is_integer() else str(value)
 
 
-def _buy_link(supplement: Supplement, result: SafetyResult, profile: ProfileStatus) -> str | None:
-    """Commerce gating invariant: ALLOW only, never deferred, never on incomplete profiles."""
-    if profile == "incomplete":
-        return None
-    if result.status != "ALLOW" or result.defer_to_pro:
-        return None
-    return IHERB_SEARCH.format(q=supplement.buy_query)
+def _resolve_supplements(
+    entries: list[str], supplements: list[Supplement]
+) -> tuple[list[Supplement], list[str]]:
+    """Match entered supplements against the catalog by id, name, or alias.
 
-
-def _flag_sedative_stacking(evaluated: list[tuple[Supplement, SafetyResult]]) -> None:
-    """Warn when two or more sedating supplements would be suggested together.
-
-    Deterministic and rule-based - it operates on the candidate set rather than a single
-    supplement. BLOCKed items are excluded. Mutates the SafetyResults in place so the
-    warning flows through to both the structured response and the explanation.
+    Anything we cannot place is returned as unrecognized so the caller can mark the
+    profile incomplete. Previously this input was accepted and then ignored, which meant
+    an unknown entry produced a confident-looking personalized result.
     """
-    sedating = [(s, r) for s, r in evaluated if s.sedating and r.status != "BLOCK"]
-    if len(sedating) < 2:
+    lookup: dict[str, Supplement] = {}
+    for supplement in supplements:
+        for key in (supplement.id, supplement.name, *supplement.aliases):
+            lookup[" ".join(key.lower().split())] = supplement
+
+    recognized: list[Supplement] = []
+    unrecognized: list[str] = []
+    for raw in entries:
+        key = " ".join(raw.strip().lower().split())
+        if not key:
+            continue
+        match = lookup.get(key)
+        if match is None:
+            match = next(
+                (s for known, s in lookup.items() if len(known) > 3 and known in key), None
+            )
+        if match is None:
+            unrecognized.append(raw.strip())
+        elif match not in recognized:
+            recognized.append(match)
+    return recognized, unrecognized
+
+
+def _flag_sedative_stacking(
+    evaluated: list[tuple[Supplement, SafetyResult]], already_taking: list[Supplement]
+) -> None:
+    """Warn when a candidate would be added on top of a sedating supplement in use.
+
+    This is measured against what the user actually reports taking, not against the other
+    candidates on the page: the alternatives are options to choose between, so treating
+    them as one simultaneous stack produced warnings unrelated to the user's situation.
+    """
+    existing_sedating = [s.name for s in already_taking if s.sedating]
+    if not existing_sedating:
         return
-    names = ", ".join(s.name for s, _ in sedating)
-    for _, result in sedating:
+    existing = ", ".join(existing_sedating)
+    for supplement, result in evaluated:
+        if not supplement.sedating or result.status == "BLOCK":
+            continue
         result.reasons.append(
             SafetyReason(
                 severity="WARN",
                 message=(
-                    f"Combining multiple sedating supplements ({names}) can have an "
-                    "additive drowsiness / CNS-depressant effect. Choose one, or check "
-                    "with a clinician or pharmacist before stacking them."
+                    f"You reported already taking {existing}. Adding another sedating "
+                    "supplement can have an additive drowsiness / CNS-depressant effect. "
+                    "Check with a clinician or pharmacist before combining them."
                 ),
                 source_url=STACKING_SOURCE,
             )
@@ -118,11 +143,17 @@ def _flag_sedative_stacking(evaluated: list[tuple[Supplement, SafetyResult]]) ->
 
 
 def _assess_profile(
-    user: UserInput, resolutions: list[MedicationResolution]
+    user: UserInput,
+    resolutions: list[MedicationResolution],
+    unresolved_supplements: list[str],
 ) -> tuple[ProfileStatus, list[str]]:
-    unrecognized = [r.input for r in resolutions if r.status == "unrecognized"]
-    if unrecognized:
-        return "incomplete", unrecognized
+    # Anything we could not resolve - unrecognized OR ambiguous, medication or
+    # supplement - makes the picture incomplete. Only a fully resolved profile earns a
+    # personalized classification.
+    unresolved = [r.input for r in resolutions if r.status != "recognized"]
+    unresolved += unresolved_supplements
+    if unresolved:
+        return "incomplete", unresolved
     if not resolutions and not user.conditions and not user.current_supplements:
         return "general", []
     return "personalized", []
@@ -133,10 +164,10 @@ def _build_items(
     supplements: list[Supplement],
     rules: list[InteractionRule],
     drug_classes: set[str],
-    profile: ProfileStatus,
+    already_taking: list[Supplement],
 ) -> tuple[list[Recommendation], list[Recommendation]]:
     evaluated = [(supp, safety.evaluate(user, supp, rules, drug_classes)) for supp in supplements]
-    _flag_sedative_stacking(evaluated)
+    _flag_sedative_stacking(evaluated, already_taking)
 
     recommended: list[Recommendation] = []
     not_recommended: list[Recommendation] = []
@@ -151,7 +182,10 @@ def _build_items(
             rationale=ev,
             warnings=result.reasons,
             defer_to_pro=result.defer_to_pro,
-            buy_link=_buy_link(supp, result, profile),
+            # Commerce is switched off across the checker. Purchase prompts next to
+            # guidance that is not clinician-reviewed put a buying nudge where a
+            # professional conversation belongs; the field stays for API compatibility.
+            buy_link=None,
             explanation=explain.explain(supp, result, ev),
         )
         if result.status == "BLOCK":
@@ -172,13 +206,15 @@ def recommend(
 ) -> RecommendationResponse:
     """Produce a full recommendation response for the user."""
     resolutions = normalize.resolve_medications(user.meds)
-    profile, unrecognized = _assess_profile(user, resolutions)
+    taking, unresolved_supplements = _resolve_supplements(user.current_supplements, supplements)
+    profile, unrecognized = _assess_profile(user, resolutions, unresolved_supplements)
 
     if profile == "personalized":
         drug_classes = {r.drug_class for r in resolutions if r.drug_class is not None}
         if use_network:
             drug_classes |= normalize._resolve_via_rxnorm(user.meds)
         effective_user = user
+        already_taking = taking
         notice = None
     else:
         # Incomplete and general profiles get the same treatment: no personalized
@@ -186,6 +222,7 @@ def recommend(
         # is general education (including generic cautions like sedative stacking).
         drug_classes = set()
         effective_user = UserInput(goal=user.goal)
+        already_taking = []
         notice = (
             INCOMPLETE_NOTICE.format(names=", ".join(unrecognized))
             if profile == "incomplete"
@@ -193,7 +230,7 @@ def recommend(
         )
 
     recommended, not_recommended = _build_items(
-        effective_user, supplements, rules, drug_classes, profile
+        effective_user, supplements, rules, drug_classes, already_taking
     )
 
     return RecommendationResponse(
