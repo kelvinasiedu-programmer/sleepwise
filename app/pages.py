@@ -43,11 +43,14 @@ CONDITION_TERMS = {
     "under_18": "being under 18",
 }
 
+# Must match the nav in every static page. A nav that changes between pages makes links
+# appear to vanish as you browse; tests/test_pages.py asserts they stay in step.
 _NAV = (
     '<nav class="site-nav" aria-label="Primary">'
-    '<a href="/">Checker</a><a href="/supplements">Supplements</a>'
-    '<a href="/interactions">Interactions</a><a href="/methodology">Methodology</a>'
-    '<a href="/about">About</a></nav>'
+    '<a href="/">Checker</a><a href="/organizer">Organizer</a>'
+    '<a href="/supplements">Supplements</a><a href="/interactions">Interactions</a>'
+    '<a href="/methodology">Methodology</a><a href="/sources">Sources</a>'
+    '<a href="/about">About</a><a href="/privacy">Privacy</a></nav>'
 )
 _FOOTER = (
     '<footer class="site-footer"><p>Educational tool · not medical advice · '

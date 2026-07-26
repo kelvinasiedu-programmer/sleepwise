@@ -59,6 +59,38 @@ def test_unknown_interaction_returns_404():
     assert client.get("/interactions/melatonin-and-coffee").status_code == 404
 
 
+def test_primary_nav_is_identical_on_every_page_type():
+    """Regression: the nav differed between static, server-rendered, and organizer
+    pages, so links appeared to vanish as you browsed."""
+    import re
+
+    expected = [
+        "/",
+        "/organizer",
+        "/supplements",
+        "/interactions",
+        "/methodology",
+        "/sources",
+        "/about",
+        "/privacy",
+    ]
+
+    def nav_links(html: str) -> list[str]:
+        block = re.search(r'<nav class="site-nav"[^>]*>(.*?)</nav>', html, re.S)
+        assert block, "primary nav not found"
+        return re.findall(r'href="([^"]+)"', block.group(1))
+
+    for path in (
+        "/",  # homepage
+        "/organizer",  # organizer
+        "/about",  # static trust page
+        "/supplements",  # server-rendered index
+        "/supplements/melatonin",  # server-rendered detail
+        "/interactions/valerian-and-benzodiazepine",
+    ):
+        assert nav_links(client.get(path).text) == expected, path
+
+
 def test_sitemap_excludes_noindexed_pages():
     # Listing a page that tells crawlers not to index it contradicts itself.
     sitemap = client.get("/sitemap.xml").text
