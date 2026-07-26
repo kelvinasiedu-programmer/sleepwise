@@ -59,6 +59,13 @@ def test_unknown_interaction_returns_404():
     assert client.get("/interactions/melatonin-and-coffee").status_code == 404
 
 
+def test_sitemap_excludes_noindexed_pages():
+    # Listing a page that tells crawlers not to index it contradicts itself.
+    sitemap = client.get("/sitemap.xml").text
+    assert "/organizer" not in sitemap
+    assert 'content="noindex"' in client.get("/organizer").text
+
+
 def test_sitemap_includes_content_pages():
     sitemap = client.get("/sitemap.xml").text
     assert "/supplements/melatonin" in sitemap

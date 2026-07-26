@@ -71,6 +71,11 @@ _PAGES = {
     "/terms": "terms.html",
 }
 
+# Pages that carry <meta name="robots" content="noindex">. They are reachable and linked
+# in the nav, but kept out of the sitemap: listing a noindexed page contradicts itself,
+# and a demonstration symptom tool has no business ranking for real health queries.
+_NOINDEX = {"/organizer"}
+
 
 def _init_sentry() -> None:
     dsn = config.sentry_dsn()
@@ -231,7 +236,7 @@ def sitemap() -> Response:
     base = config.base_url()
     paths = [
         "/",
-        *_PAGES.keys(),
+        *(path for path in _PAGES if path not in _NOINDEX),
         "/supplements",
         "/interactions",
         *(f"/supplements/{s.id}" for s in SUPPLEMENTS),
