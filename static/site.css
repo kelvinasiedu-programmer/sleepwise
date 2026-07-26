@@ -227,3 +227,14 @@ section.results h2:focus { outline: none; }
 @media print {
   .site-header, .site-nav, .deck-actions, .result-actions, .deck-hint, .btn { display: none !important; }
 }
+/* Scenario picker */
+.scenario-grid { display: grid; gap: 10px; margin: 14px 0 0; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); }
+.scenario-btn {
+  display: grid; gap: 4px; text-align: left; padding: 13px 15px;
+  border: 1px solid var(--line); border-radius: 10px; background: var(--card);
+  color: var(--fg); cursor: pointer; font-family: inherit; font-size: 15px; font-weight: 400;
+}
+.scenario-btn:hover { border-color: var(--accent); }
+.scenario-btn[disabled] { opacity: .55; cursor: progress; }
+.scenario-label { font-weight: 700; }
+.scenario-desc { color: var(--muted); font-size: 13px; line-height: 1.45; }

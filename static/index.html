@@ -13,7 +13,7 @@
   <meta property="og:description" content="Check sleep supplements against your medications and health flags using public medical sources." />
   <meta property="og:url" content="https://sleepwise-90oh.onrender.com/" />
   <meta name="twitter:card" content="summary" />
-  <link rel="stylesheet" href="/site.css?v=6" />
+  <link rel="stylesheet" href="/site.css?v=7" />
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
@@ -33,6 +33,7 @@
     <a class="brand" href="/">SleepWise</a>
     <nav class="site-nav" aria-label="Primary">
       <a href="/">Checker</a>
+      <a href="/organizer">Organizer</a>
       <a href="/supplements">Supplements</a>
       <a href="/interactions">Interactions</a>
       <a href="/methodology">Methodology</a>
@@ -44,48 +45,33 @@
 
   <main id="main" class="wrap">
     <section class="hero">
-      <h1>Check sleep supplements against your medications before you buy.</h1>
-      <p class="sub">SleepWise flags common interaction concerns for melatonin, magnesium, valerian, ashwagandha, L-theanine, and glycine using public medical sources, so you can have a smarter pharmacist conversation.</p>
+      <h1>A safety-first engine for sleep supplement interactions</h1>
+      <p class="sub">SleepWise decides what is safe using deterministic rules that run
+        <em>before</em> any language model, so a model can never talk the system into a
+        reassuring answer. Pick a scenario below to watch the engine handle interactions,
+        hard gates, and input it cannot read.</p>
       <ul class="trust">
-        <li>Medication and supplement interaction flags</li>
-        <li>A public medical-source link on every result you can check yourself</li>
-        <li>Educational only, built to support a pharmacist or clinician conversation</li>
+        <li>Rules engine decides; the model only rewrites already-vetted facts</li>
+        <li>Unreadable input fails closed instead of producing a confident result</li>
+        <li>Every published claim is confirmed against a public medical source, or withheld</li>
       </ul>
-      <p class="sources-strip">Data from NIH Office of Dietary Supplements, MedlinePlus, and openFDA.</p>
+      <p class="sources-strip">Sample data drawn from NIH Office of Dietary Supplements, MedlinePlus, and openFDA.</p>
     </section>
 
     <p class="disclaimer">
-      Educational information from public NIH/FDA databases - <strong>not medical advice</strong>.
-      Do not enter emergency symptoms. Always talk to a doctor or pharmacist before starting any supplement.
+      <strong>This is an engineering demonstration on sample data.</strong> It is not medical
+      advice, it has not been reviewed by a licensed pharmacist or clinician, and it runs
+      fixed example profiles rather than your own details. Always talk to a doctor or
+      pharmacist about your own medications and supplements.
     </p>
 
-    <form id="form" class="checker" autocomplete="off">
-      <label class="field" for="meds">Current medications <span class="opt">(press Enter after each)</span></label>
-      <div class="chipbox">
-        <input id="meds" type="text" list="meds-list" placeholder="Start typing, e.g. lorazepam, Xanax 1mg" />
-      </div>
-      <datalist id="meds-list"></datalist>
-
-      <label class="field" for="supps">Supplements you already take <span class="opt">(optional)</span></label>
-      <div class="chipbox">
-        <input id="supps" type="text" list="supps-list" placeholder="e.g. melatonin" />
-      </div>
-      <datalist id="supps-list"></datalist>
-
-      <span class="field" id="flags-label">Health flags</span>
-      <div class="conds" role="group" aria-labelledby="flags-label">
-        <label><input type="checkbox" value="pregnancy" /> Pregnant</label>
-        <label><input type="checkbox" value="breastfeeding" /> Breastfeeding</label>
-        <label><input type="checkbox" value="under_18" /> Under 18</label>
-        <label><input type="checkbox" value="kidney_disease" /> Kidney disease</label>
-      </div>
-
-      <div class="cta-row">
-        <button id="go" type="submit" class="btn btn-primary">Check my supplements</button>
-        <button id="example" type="button" class="btn btn-secondary">Try an example</button>
-      </div>
-      <p class="privacy-note">No account needed. Your entries are used only to generate this guidance and are not stored or sold. <a href="/privacy">Privacy</a>.</p>
-    </form>
+    <section aria-labelledby="scenarios-heading">
+      <h2 id="scenarios-heading" class="field">Run a scenario</h2>
+      <p class="privacy-note">Pick a profile to run it through the safety engine. There is no
+        free-text entry: this is a demonstration of the engine, not a tool for checking your
+        own medications. Nothing you do here is stored. <a href="/privacy">Privacy</a>.</p>
+      <div id="scenarios" class="scenario-grid"></div>
+    </section>
 
     <p id="status" class="status-line" aria-live="polite"></p>
     <div id="results" role="region" aria-label="Results"></div>
@@ -109,6 +95,6 @@
     </nav>
   </footer>
 
-  <script src="/app.js?v=6"></script>
+  <script src="/app.js?v=7"></script>
 </body>
 </html>

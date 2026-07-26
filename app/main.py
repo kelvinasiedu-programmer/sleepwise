@@ -105,6 +105,9 @@ if _cors_origins:
 
 SUPPLEMENTS, RULES = rec.load_catalog()
 SYMPTOM_CARDS, SYMPTOM_TOPICS, SYMPTOM_RED_FLAGS = symptoms.load_symptom_data()
+SCENARIOS: list[dict] = json.loads(
+    (Path(__file__).resolve().parent.parent / "data" / "scenarios.json").read_text(encoding="utf-8")
+)
 _CORPUS = load_corpus()
 _SUPP_BY_ID = {s.id: s for s in SUPPLEMENTS}
 _INTERACTIONS: dict[str, InteractionRule] = {}
@@ -320,6 +323,17 @@ def recommend_endpoint(user: UserInput) -> RecommendationResponse:
     result = rec.recommend(user, SUPPLEMENTS, RULES)
     _cache.put(key, result)
     return result
+
+
+@app.get("/api/scenarios")
+def scenarios() -> dict:
+    """The fixed demonstration profiles the checker UI runs.
+
+    The UI offers these instead of free-text entry, so the page cannot be used to get
+    guidance about a real person's own medications. The /recommend API below stays open
+    because it is the engine itself, and inspecting it is the point of the project.
+    """
+    return {"scenarios": SCENARIOS}
 
 
 @app.get("/api/symptom-cards")

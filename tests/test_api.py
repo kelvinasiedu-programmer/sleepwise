@@ -75,6 +75,38 @@ def test_homepage_has_seo_and_hero():
     assert 'name="description"' in response.text
 
 
+def test_scenarios_endpoint_serves_fixed_profiles():
+    body = client.get("/api/scenarios").json()
+    ids = {s["id"] for s in body["scenarios"]}
+    # The set must keep covering the interesting engine paths.
+    assert {"blood-thinner", "benzodiazepine", "hard-gate", "kidney", "ambiguous", "none"} <= ids
+    for scenario in body["scenarios"]:
+        assert scenario["label"] and scenario["description"]
+        assert set(scenario["profile"]) == {"goal", "meds", "conditions", "current_supplements"}
+
+
+def test_homepage_has_no_free_text_health_input():
+    # The demonstration framing is structural: there is nowhere to type your own
+    # medications, so the page cannot be used for personal guidance.
+    text = client.get("/").text
+    assert 'id="meds"' not in text
+    assert 'id="supps"' not in text
+    assert 'type="checkbox"' not in text
+    assert 'id="scenarios"' in text
+    assert "engineering demonstration on sample data" in text
+
+
+def test_every_scenario_runs_through_the_engine():
+    for scenario in client.get("/api/scenarios").json()["scenarios"]:
+        response = client.post("/recommend", json=scenario["profile"])
+        assert response.status_code == 200, scenario["id"]
+        body = response.json()
+        items = body["recommended"] + body["not_recommended"]
+        assert items, scenario["id"]
+        # Commerce stays off for every scenario.
+        assert all(item["buy_link"] is None for item in items), scenario["id"]
+
+
 def test_trust_pages_are_served():
     for path in (
         "/about",

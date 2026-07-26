@@ -1,0 +1,62 @@
+[
+  {
+    "id": "blood-thinner",
+    "label": "Takes a blood thinner",
+    "description": "Warfarin. Shows a medication-class interaction raising a caution.",
+    "profile": { "goal": "sleep", "meds": ["warfarin"], "conditions": [], "current_supplements": [] }
+  },
+  {
+    "id": "benzodiazepine",
+    "label": "Takes a benzodiazepine",
+    "description": "Lorazepam. Shows the engine withholding an option pending a clinician conversation.",
+    "profile": { "goal": "sleep", "meds": ["lorazepam"], "conditions": [], "current_supplements": [] }
+  },
+  {
+    "id": "brand-name",
+    "label": "Enters a brand name",
+    "description": "Xanax 1mg. Shows brand-name and dosage-strength resolution reaching the same rules as the generic.",
+    "profile": { "goal": "sleep", "meds": ["Xanax 1mg"], "conditions": [], "current_supplements": [] }
+  },
+  {
+    "id": "antibiotic",
+    "label": "On an antibiotic course",
+    "description": "Ciprofloxacin. Shows a timing-of-dosing concern rather than a do-not-combine one.",
+    "profile": { "goal": "sleep", "meds": ["ciprofloxacin"], "conditions": [], "current_supplements": [] }
+  },
+  {
+    "id": "already-taking",
+    "label": "Already takes melatonin",
+    "description": "Shows the additive-sedation check running against what the person already takes.",
+    "profile": { "goal": "sleep", "meds": [], "conditions": [], "current_supplements": ["melatonin"] }
+  },
+  {
+    "id": "hard-gate",
+    "label": "Pregnant",
+    "description": "Shows a hard gate: every option defers to a clinician regardless of the individual rules.",
+    "profile": { "goal": "sleep", "meds": [], "conditions": ["pregnancy"], "current_supplements": [] }
+  },
+  {
+    "id": "kidney",
+    "label": "Has kidney disease",
+    "description": "Shows a condition that both gates globally and blocks one supplement outright.",
+    "profile": { "goal": "sleep", "meds": [], "conditions": ["kidney_disease"], "current_supplements": [] }
+  },
+  {
+    "id": "ambiguous",
+    "label": "Two medications in one entry",
+    "description": "Warfarin and lorazepam typed together. Shows the engine refusing to guess and falling back to general information instead of quietly dropping one.",
+    "profile": { "goal": "sleep", "meds": ["warfarin lorazepam"], "conditions": [], "current_supplements": [] }
+  },
+  {
+    "id": "unknown",
+    "label": "An unrecognized medication",
+    "description": "Shows an unreadable entry making the profile incomplete rather than producing a confident result.",
+    "profile": { "goal": "sleep", "meds": ["quetiapine"], "conditions": [], "current_supplements": [] }
+  },
+  {
+    "id": "none",
+    "label": "No medications",
+    "description": "Shows the labelled general overview an empty profile receives.",
+    "profile": { "goal": "sleep", "meds": [], "conditions": [], "current_supplements": [] }
+  }
+]

@@ -24,83 +24,35 @@ function pill(status) {
   return el("span", { class: "pill pill-" + status, text: LABELS[status] || status });
 }
 
-/* Chip inputs: tokenize entries, keep free text working for unlisted meds. */
+/* Scenarios.
+ *
+ * The checker runs fixed demonstration profiles. There is deliberately no free-text
+ * entry, so the page cannot be used to get guidance about a real person's medications.
+ */
 
-function chipInput(inputId) {
-  const input = byId(inputId);
-  const box = input.parentElement;
-  const values = [];
-
-  function render() {
-    box.querySelectorAll(".chip").forEach((chip) => chip.remove());
-    for (const value of values) {
-      const remove = el("button", { text: "×" });
-      remove.type = "button";
-      remove.setAttribute("aria-label", "Remove " + value);
-      remove.addEventListener("click", () => {
-        values.splice(values.indexOf(value), 1);
-        render();
-      });
-      box.insertBefore(el("span", { class: "chip", text: value }, remove), input);
-    }
-  }
-
-  function commit() {
-    for (const part of input.value.split(",")) {
-      const value = part.trim();
-      if (value && !values.some((v) => v.toLowerCase() === value.toLowerCase())) {
-        values.push(value);
-      }
-    }
-    input.value = "";
-    render();
-  }
-
-  input.addEventListener("keydown", (event) => {
-    if (event.key === "Enter" || event.key === ",") {
-      event.preventDefault();
-      commit();
-    } else if (event.key === "Backspace" && input.value === "" && values.length) {
-      values.pop();
-      render();
-    }
-  });
-  input.addEventListener("change", commit); // fires on datalist pick and on blur
-  box.addEventListener("click", () => input.focus());
-
-  return {
-    getValues() {
-      commit(); // sweep any residual free text so submitting without Enter still works
-      return [...values];
-    },
-    setValues(next) {
-      values.length = 0;
-      values.push(...next);
-      input.value = "";
-      render();
-    },
-  };
+function setButtonsDisabled(disabled) {
+  for (const b of document.querySelectorAll(".scenario-btn")) b.disabled = disabled;
 }
 
-function fillDatalist(id, items) {
-  const list = byId(id);
-  list.replaceChildren();
-  for (const item of items) {
-    const option = document.createElement("option");
-    option.value = item;
-    list.appendChild(option);
-  }
-}
-
-async function loadSuggestions() {
+async function loadScenarios() {
+  const grid = byId("scenarios");
+  let scenarios;
   try {
-    const res = await fetch("/api/suggestions");
-    if (!res.ok) return;
-    const data = await res.json();
-    fillDatalist("meds-list", data.medications);
-    fillDatalist("supps-list", data.supplements);
+    const res = await fetch("/api/scenarios");
+    scenarios = (await res.json()).scenarios;
   } catch (_) {
-    /* autocomplete is optional; free text always works */
+    grid.replaceChildren(
+      el("p", { class: "status-line", text: "Could not load scenarios. Please reload the page." })
+    );
+    return;
+  }
+  for (const scenario of scenarios) {
+    const b = el("button", { class: "scenario-btn" });
+    b.type = "button";
+    b.appendChild(el("span", { class: "scenario-label", text: scenario.label }));
+    b.appendChild(el("span", { class: "scenario-desc", text: scenario.description }));
+    b.addEventListener("click", () => run(scenario));
+    grid.appendChild(b);
   }
 }
 
@@ -312,27 +264,17 @@ function printHeader(profile) {
   );
 }
 
-/* Form flow */
+/* Scenario flow */
 
-let medsChips;
-let suppsChips;
-
-async function run(event) {
-  if (event) event.preventDefault();
+async function run(scenario) {
   const status = byId("status");
   const results = byId("results");
-  const button = byId("go");
   status.removeAttribute("role");
 
-  const profile = {
-    goal: "sleep",
-    meds: medsChips.getValues(),
-    conditions: [...document.querySelectorAll(".conds input:checked")].map((c) => c.value),
-    current_supplements: suppsChips.getValues(),
-  };
+  const profile = scenario.profile;
 
-  button.disabled = true;
-  status.textContent = "Checking…";
+  setButtonsDisabled(true);
+  status.textContent = "Running scenario: " + scenario.label + "...";
   results.replaceChildren();
 
   try {
@@ -382,7 +324,7 @@ async function run(event) {
     status.setAttribute("role", "alert");
     status.textContent = "Something went wrong: " + err.message + ". Please try again.";
   } finally {
-    button.disabled = false;
+    setButtonsDisabled(false);
   }
 }
 
@@ -416,15 +358,4 @@ function feedbackWidget() {
   return box;
 }
 
-function tryExample() {
-  medsChips.setValues(["lorazepam"]);
-  suppsChips.setValues(["melatonin"]);
-  document.querySelectorAll(".conds input:checked").forEach((c) => (c.checked = false));
-  run();
-}
-
-medsChips = chipInput("meds");
-suppsChips = chipInput("supps");
-byId("form").addEventListener("submit", run);
-byId("example").addEventListener("click", tryExample);
-loadSuggestions();
+loadScenarios();
