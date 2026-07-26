@@ -8,16 +8,15 @@
 [![Types: mypy](https://img.shields.io/badge/types-mypy-blue)](https://mypy-lang.org/)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 
-**A safety-first supplement guidance engine for sleep.** You enter your goal, your
-current medications, and a few health flags; SleepWise returns evidence-backed sleep
-supplements with doses, citations, **interaction warnings checked by a deterministic
-rule engine**, and a clear "talk to a professional" signal when it matters.
+**How do you build an AI health tool that cannot give unsafe advice?**
 
-> ⚠️ **Not medical advice.** SleepWise surfaces general information from public NIH/FDA
-> databases. It is not a diagnosis and not a substitute for a doctor or pharmacist. See
-> [Safety & limitations](#safety--limitations).
->
-> **Live demo:** **[sleepwise-90oh.onrender.com](https://sleepwise-90oh.onrender.com)** - hosted on Render's free tier, so the first load after idle can take ~50s to wake.
+SleepWise is a working answer to that question: two deterministic safety engines for the
+sleep domain, where the rules decide and a language model is never allowed near a safety
+call. It is an engineering demonstration, not a consumer health product, and the
+difference is structural rather than a disclaimer - see [What this is](#what-this-is).
+
+> **Live demo:** **[sleepwise-90oh.onrender.com](https://sleepwise-90oh.onrender.com)**
+> Hosted on Render's free tier, so the first load after idle takes ~50s to wake.
 
 <p align="center">
   <img src="docs/architecture.svg" width="860"
@@ -30,72 +29,121 @@ rule engine**, and a clear "talk to a professional" signal when it matters.
 
 ## Contents
 
-- [Why this project is interesting](#why-this-project-is-interesting-the-engineering-not-the-supplements)
-- [Architecture](#architecture)
+- [What this is](#what-this-is)
+- [The core idea](#the-core-idea)
+- [Two engines](#two-engines)
+- [What an external review found](#what-an-external-review-found)
 - [Tech stack](#tech-stack)
-- [Data sources](#data-sources)
 - [Quickstart](#quickstart)
 - [Configuration](#configuration)
 - [Deploy](#deploy)
 - [Testing & quality](#testing--quality)
 - [Evaluation](#evaluation)
-- [Safety & limitations](#safety--limitations)
+- [Safety, evidence & limitations](#safety-evidence--limitations)
 - [Roadmap](#roadmap)
 
-## Why this project is interesting (the engineering, not the supplements)
+## What this is
 
-Most "AI health" demos let a language model free-associate medical claims. That is
-exactly how you hurt someone. SleepWise is built the opposite way:
+An **engineering demonstration on sample data**. It has not been reviewed by a licensed
+pharmacist or clinician, and it is not built to guide anyone's health decisions.
 
-- **Safety is deterministic, not generative.** Whether two things can be combined is
-  decided by a hand-verified rule engine ([`app/safety.py`](app/safety.py)) - *before*
-  any model runs. The LLM is only allowed to *explain* the vetted output, never to
-  invent or override it.
-- **Every claim is grounded, retrieved, and cited.** Evidence is pulled from a curated
-  NIH ODS / MedlinePlus corpus by a from-scratch BM25 retriever (RAG) and carried - with
-  its citation - all the way to the response.
-- **It fails safe.** Unknown med? Pregnancy flag? Prescription sedative? The engine
-  escalates to a warning or a hard block and routes you to a clinician.
+That framing is enforced by the design, not by a banner:
 
-The design choices are written up in [`DECISIONS.md`](DECISIONS.md), with a longer
-narrative in [`docs/CASE_STUDY.md`](docs/CASE_STUDY.md).
+- The checker takes **no free-text health input at all**. It runs ten fixed scenario
+  profiles, so the page cannot be used to look up your own medications.
+- The symptom organizer accepts **only fixed card IDs**, so no identifying information
+  can reach the server.
+- Nothing is stored. No accounts, no database, no health data in logs.
+- Commerce is switched off entirely: a buying prompt does not belong next to guidance
+  nothing has clinically validated.
 
-## Architecture
+The data is illustrative, labelled as such, and a
+[clinical review packet](docs/CLINICAL_REVIEW_PACKET.md) is prepared for the pharmacist
+review that would be required before any of it guided a real decision.
 
-The safety layer is the gate: it returns ALLOW / WARN / BLOCK *before* any model runs,
-so a hallucination can never reach a safety decision. A curated knowledge base feeds the
-safety and evidence stages (see the diagram above).
+## The core idea
+
+Most "AI health" demos hand the question to a model and print what comes back. That is
+fine for a toy and dangerous the moment the answer touches medication. SleepWise inverts
+it:
+
+- **Safety is deterministic and runs first.** Whether two things can be combined is
+  decided by a rule engine ([`app/safety.py`](app/safety.py)) *before* any model runs. The
+  LLM may only restate already-vetted facts, and cannot invent or override one.
+- **It fails closed.** An unrecognized medication, an ambiguous entry ("warfarin
+  lorazepam" in one field), or an unknown supplement makes the profile *incomplete* and
+  withholds the personalized verdict entirely. A missed match must never surface as a
+  reassuring result.
+- **Unconfirmed claims are withheld.** Every claim records whether it was confirmed
+  against its cited source; unconfirmed ones are not published and never enter the
+  structured data. Where nothing is confirmed, the page says so instead of filling space.
+- **Except warnings, which are labelled rather than hidden.** Deleting a plausible
+  caution to tidy up a citation would make the tool less safe for the person who needs
+  it. See [`editorial policy`](https://sleepwise-90oh.onrender.com/editorial-policy).
+
+Reasoning is written up in [`DECISIONS.md`](DECISIONS.md), with a narrative in
+[`docs/CASE_STUDY.md`](docs/CASE_STUDY.md).
+
+## Two engines
+
+Both are deterministic, rule-driven, and covered by tests that encode the safety
+requirements rather than the implementation.
+
+**1. Interaction checker** (`/`) - maps medications to drug classes, evaluates them
+against a curated interaction table, applies global hard gates (pregnancy, breastfeeding,
+under 18, kidney disease), and runs an additive-sedation pass against what the user
+already takes.
 
 ```
-input ─► normalize meds ─► SAFETY GATE ─► evidence ─► LLM explain ─► result
-                           ALLOW/WARN/BLOCK
-                           (deterministic, first)
+input ─► resolve meds ─► SAFETY GATE ─► evidence (RAG) ─► LLM explain ─► result
+                         ALLOW/WARN/BLOCK          deterministic, first
 ```
+
+**2. Symptom organizer** (`/organizer`) - answers fixed cards into unranked topics to
+raise with a clinician, each showing why it appeared and what to ask.
+
+```
+cards ─► RED FLAGS ─► topic rules ─► unranked topics + questions
+         escalation first
+```
+
+The organizer never ranks, scores, or expresses a likelihood; never asserts or excludes a
+condition; treats "not sure" as *not* a match; and escalates before anything that could
+read as reassurance. Every one of those is a test in
+[`tests/test_symptoms.py`](tests/test_symptoms.py).
+
+## What an external review found
+
+The project was put through a hostile third-party review that reproduced findings against
+the live service. It found four real safety defects, all since fixed with regression
+tests:
+
+| Defect | Effect | Fix |
+|---|---|---|
+| Multi-entity input resolved to the first match | `"warfarin lorazepam"` silently dropped lorazepam and returned a confident result missing a benzodiazepine interaction | Resolution returns every match and refuses to guess (new `ambiguous` state) |
+| Kidney disease was not a hard gate | Non-magnesium items came back clean | Global hard gate + condition alias normalization |
+| `current_supplements` accepted then ignored | Unknown entries produced personalized output | Resolved against the catalog; unknown ⇒ incomplete |
+| Sedation stacking computed across candidates | Warnings unrelated to the user's input | Computed against the reported stack only |
+
+It also found that only ~12 of 27 sampled claims were directly supported by the page they
+cited, which is what prompted the publication gate above. The
+[audit trail is in the commit history](https://github.com/kelvinasiedu-programmer/sleepwise/commits/main).
 
 ## Tech stack
 
 | Layer | Choice | Why |
 |---|---|---|
-| API | FastAPI + Pydantic | Typed request/response, automatic docs at `/docs` |
-| Safety | Pure-Python rule engine | Deterministic, unit-testable, no model in the loop |
-| Data | Curated JSON from NIH ODS / DSLD / MedlinePlus | Authoritative, citable |
-| Med normalization | Offline drug-class map + brand/dosage/fuzzy matching | Resilient name → drug-class, no network needed |
+| API | FastAPI + Pydantic | Typed contracts, automatic docs at `/docs` |
+| Safety | Pure-Python rule engines | Deterministic, unit-testable, no model in the loop |
+| Data | Curated JSON from NIH ODS / MedlinePlus / NCCIH / openFDA | Public, citable, inspectable |
+| Med normalization | Offline drug-class map + brand/dosage/fuzzy/ambiguity handling | Resilient, no network needed |
 | Retrieval (RAG) | From-scratch BM25; optional embeddings | Real retrieval, zero-dependency default |
 | Explanation | Optional LLM (Anthropic) + template fallback | Friendly prose, citation-locked |
-| Quality | Ruff · mypy · pytest + coverage · CI | Enforced on every push |
-| Evaluation | recall@k/MRR · safety · faithfulness | Scorecard fails CI on regression |
-
-## Data sources
-
-- [NIH Office of Dietary Supplements - Fact Sheets API](https://ods.od.nih.gov/api/)
-- [Dietary Supplement Label Database (DSLD) API](https://dsld.od.nih.gov/api-guide)
-- [MedlinePlus Herbs & Supplements](https://medlineplus.gov/druginfo/herb_All.html)
-- [openFDA Drug Label API](https://open.fda.gov/apis/drug/label/)
-- [NIH RxNorm (RxNav)](https://rxnav.nlm.nih.gov/)
+| Frontend | Vanilla JS, no build step | DOM built with `textContent` only; no XSS surface |
+| Quality | Ruff · mypy · pytest + coverage · CodeQL · pip-audit | Enforced on every push |
+| Evaluation | recall@k/MRR · safety · faithfulness · claim linter | Scorecard fails CI on regression |
 
 ## Quickstart
-
-**Run the app:**
 
 ```bash
 python -m venv .venv
@@ -105,127 +153,137 @@ uvicorn app.main:app --reload
 # UI at http://127.0.0.1:8000  ·  API docs at http://127.0.0.1:8000/docs
 ```
 
-**Develop (tests, lint, types):**
+**Develop:**
 
 ```bash
 pip install -r requirements-dev.txt
-pytest          # tests + coverage
-ruff check .    # lint
-ruff format .   # format
-mypy app        # types
+pytest            # tests + coverage gate
+ruff check .      # lint
+mypy app          # types
+python -m evals.run   # evaluation scorecard
 ```
 
-### Example request
+### Try the engine directly
+
+The UI runs fixed scenarios, but the API is open - inspecting the engine is the point of
+the project.
 
 ```bash
+# A benzodiazepine user: valerian is withheld pending a clinician
 curl -X POST http://127.0.0.1:8000/recommend \
   -H "Content-Type: application/json" \
-  -d '{"meds": ["lorazepam"], "conditions": []}'
-```
+  -d '{"meds": ["lorazepam"]}'
 
-Valerian comes back in `not_recommended` (BLOCK: additive CNS depression with a
-benzodiazepine) with no purchase link, while safe options are returned with cited
-rationale.
+# Two drugs in one field: the engine refuses to guess
+curl -X POST http://127.0.0.1:8000/recommend \
+  -H "Content-Type: application/json" \
+  -d '{"meds": ["warfarin lorazepam"]}'   # -> profile_status: "incomplete"
+```
 
 ## Configuration
 
-All integrations are **optional** - with no environment variables set, SleepWise runs
-fully on BM25 retrieval and the deterministic explanation template (zero keys, zero cost).
+All integrations are **optional**. With no environment variables set, SleepWise runs
+fully on BM25 retrieval and the deterministic explanation template - zero keys, zero cost.
 
 | Variable | Default | Effect |
 |---|---|---|
 | `SLEEPWISE_RETRIEVER` | `bm25` | Set to `embedding` for semantic retrieval (needs `OPENAI_API_KEY`) |
 | `OPENAI_API_KEY` | - | Enables the embedding retriever |
-| `SLEEPWISE_EMBEDDING_MODEL` | `text-embedding-3-small` | Embedding model |
 | `ANTHROPIC_API_KEY` | - | Enables LLM-written explanations (falls back to the template on any error) |
 | `SLEEPWISE_LLM_MODEL` | `claude-haiku-4-5` | Explanation model |
 | `SLEEPWISE_RATE_LIMIT` / `SLEEPWISE_RATE_WINDOW` | `60` / `60` | Per-IP requests per window (seconds) |
-| `SLEEPWISE_CORS_ORIGINS` | `*` | Comma-separated allowed origins |
+| `SLEEPWISE_CORS_ORIGINS` | *(empty)* | Comma-separated origins. Empty means same-origin only |
 | `SENTRY_DSN` | - | Enables Sentry error tracking (if `sentry-sdk` is installed) |
 
 ## Deploy
 
 **Live instance:** <https://sleepwise-90oh.onrender.com>
 
-The app is a single stateless service - deploy it anywhere.
+A single stateless service - deploy it anywhere.
 
-**Render (one click):** push to GitHub, then on Render choose **New + → Blueprint** and
-select this repo. [`render.yaml`](render.yaml) provisions a free web service with a
-`/health` check and auto-deploy on push.
+**Render (one click):** push to GitHub, then choose **New + → Blueprint** and select this
+repo. [`render.yaml`](render.yaml) provisions a free web service with a `/health` check
+and auto-deploy on push.
 
-**Docker (Railway / Fly / Cloud Run / anywhere):**
+**Docker:**
 
 ```bash
 docker build -t sleepwise .
-docker run -p 8000:8000 sleepwise   # http://localhost:8000
+docker run -p 8000:8000 sleepwise
 ```
 
-The image is a slim multi-stage build that runs as a non-root user, honors the host's
-`$PORT`, and ships a container `HEALTHCHECK` against `/health`.
+Slim multi-stage build, non-root user, honors `$PORT`, ships a container `HEALTHCHECK`.
 
 ## Testing & quality
 
-Every push runs a GitHub Actions pipeline:
+**107 tests, ~96% coverage.** Every push runs:
 
 - **Lint & format** - `ruff check` + `ruff format --check`
-- **Type check** - `mypy app` (zero issues required)
+- **Type check** - `mypy app`, zero issues required
 - **Test** - `pytest` across **Python 3.10 - 3.13** with a **coverage gate (≥ 90%)**
-- **Evaluation** - the [scorecard](#evaluation), which fails the build on any regression
-- **Dependency audit** - `pip-audit` on the runtime dependencies
+- **Evaluation** - the [scorecard](#evaluation), which fails the build on regression
+- **Dependency audit** - `pip-audit` on runtime dependencies
 - **CodeQL** - static security analysis, on every push and weekly
+- **Citations** - every cited URL checked for reachability, weekly and on data changes
 
-The tests encode the requirement that matters most - the dangerous pairs:
+The tests encode requirements, not implementation. A change that lets any of these
+through goes red:
 
-- valerian + benzodiazepine → **BLOCK**
-- melatonin + anticoagulant → **WARN**
-- magnesium + quinolone antibiotic → **WARN**
-- magnesium + kidney disease → **BLOCK**
-- ashwagandha in pregnancy → **BLOCK**
-- clean profile → **ALLOW**
-
-If a future change ever lets a known-dangerous pair through, a test fails. Dependencies
-are kept current by Dependabot; local hygiene is enforced by `pre-commit`.
+- valerian + benzodiazepine → **withheld**
+- two medications in one field → **incomplete**, never a confident result
+- kidney disease → every option defers, no exceptions
+- pregnancy / breastfeeding / under 18 → global hard gate
+- unrecognized medication or supplement → **incomplete**
+- a purchase link appearing anywhere → **fails**
+- symptom organizer emitting a percentage, a ranking, or "you have" → **fails**
 
 ## Evaluation
 
-`python -m evals.run` prints a scorecard and **fails CI if any metric regresses**. It runs
-on the deterministic explanation path, so it's reproducible with no API keys.
+`python -m evals.run` prints a scorecard and **fails CI on any regression**. It runs on
+the deterministic path, so it reproduces with no API keys.
 
 | Metric | What it checks | Current |
 |---|---|---|
 | Retrieval recall@3 / MRR | Does BM25 surface the right evidence chunk? | 1.00 / 1.00 |
-| Safety rule accuracy | Do known profiles get the expected ALLOW/WARN/BLOCK? | 100% |
+| Safety rule accuracy | Do known profiles get the expected outcome? | 100% |
 | Explanation coverage | Does the explanation include every cited fact? | 100% |
-| Hallucinated numbers | Doses/numbers in the prose absent from the sources | 0 |
+| Hallucinated numbers | Doses in the prose absent from the sources | 0 |
+| Definitive-claim phrases | Language that would overstate certainty | 0 |
 
-The faithfulness checks (coverage + hallucinated-number detection) are the guardrail for
-the optional LLM path: if a model ever invents a dose, the harness catches it.
+The faithfulness checks are the guardrail for the optional LLM path: if a model ever
+invents a dose, the harness catches it before a human would.
 
-## Safety & limitations
+## Safety, evidence & limitations
 
-- This is an **educational tool**, not a clinician. It never diagnoses or prescribes.
-- The interaction table is **hand-curated for six sleep supplements** against common
-  drug classes. It is intentionally narrow and is **not** a complete interaction
-  database. Absence of a warning is **not** proof of safety.
-- Medication matching covers generic names, common brand names, embedded dosages, and
-  typos, but it is not exhaustive; live RxNorm/RxClass resolution is the planned upgrade.
-- Data entries are tagged with `verified`; unverified rows must be checked against their
-  cited source before any real-world use.
-- No personal health data is stored - requests are stateless by design.
+Stated plainly, because a demonstration that hides its edges is not a good demonstration.
+
+- **No licensed review.** No pharmacist or clinician has reviewed the data. The
+  [review packet](docs/CLINICAL_REVIEW_PACKET.md) exists for when one does.
+- **Sample data.** The interaction table covers six sleep supplements against common drug
+  classes. It is narrow by design and is **not** an interaction database. Absence of a
+  warning is not proof of safety.
+- **Citations are database-level, not claim-level.** A link means "this is the public
+  source this topic draws from", not "this exact sentence appears there". Claims not
+  confirmed against their source are withheld from display.
+- **Matching is not exhaustive.** Generic names, common brands, embedded dosages, typos,
+  and multi-drug ambiguity are handled; live RxNorm resolution is the planned upgrade.
+- **No personal health data is stored.** Stateless by design; the symptom organizer keeps
+  answers in the browser tab only.
 
 ## Roadmap
 
-- [x] RAG evidence retrieval - from-scratch BM25 default, optional embedding backend
-- [x] Optional LLM explanations (Anthropic) with deterministic citation-locked fallback
-- [x] Evaluation harness - retrieval recall@k/MRR, safety scorecard, faithfulness (in CI)
-- [x] Deploy config (Render blueprint + Docker) - see [Deploy](#deploy)
-- [x] Host the live demo - [sleepwise-90oh.onrender.com](https://sleepwise-90oh.onrender.com)
-- [x] Brand-name, dosage, and fuzzy medication matching
-- [x] Additive-sedation check across recommended supplements
+- [x] RAG evidence retrieval - from-scratch BM25, optional embedding backend
+- [x] Optional LLM explanations with a deterministic citation-locked fallback
+- [x] Evaluation harness in CI - retrieval, safety, faithfulness, claim linter
+- [x] Deployed live (Render blueprint + Docker)
+- [x] Brand-name, dosage, fuzzy, and ambiguous medication handling
+- [x] Additive-sedation check against the user's actual stack
+- [x] Fail-closed profile states and commerce removal
+- [x] Publication gate withholding unconfirmed claims
+- [x] Symptom organizer with red-flag escalation
+- [ ] Licensed pharmacist review of the interaction table and dose ranges
 - [ ] Live RxNorm/RxClass drug-class resolution
-- [ ] Semantic embeddings over the full ODS + MedlinePlus corpus
-- [ ] Expand beyond sleep (one goal module at a time)
-- [ ] Affiliate links with FTC-compliant disclosure
+- [ ] Claim-level, section-anchored citations
 
 ## License
 
