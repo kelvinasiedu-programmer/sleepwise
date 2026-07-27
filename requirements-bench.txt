@@ -5,8 +5,8 @@
 # support a script nobody runs in CI would be a poor trade. Install it deliberately:
 #
 #     pip install -r requirements-bench.txt
-sentence-transformers>=3.0
+sentence-transformers>=5.6.1
 
 # Demo recording: scripts/record_demo.py (also needs: playwright install chromium)
-playwright>=1.48
-pillow>=10.0
+playwright>=1.61.0
+pillow>=12.3.0
