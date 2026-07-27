@@ -1,0 +1,31 @@
+{
+  "_note": "Benchmark set for comparing retrieval backends. Separate from retrieval_cases.json (the CI regression set) so adding hard queries here cannot destabilise the build. Queries are grouped by type: 'lexical' shares vocabulary with the target chunk, 'paraphrase' deliberately does not.",
+
+  "cases": [
+    { "type": "lexical", "query": "jet lag circadian rhythm sleep wake cycle", "relevant": ["melatonin-1"] },
+    { "type": "lexical", "query": "melatonin 0.5 to 5 mg thirty to sixty minutes before bed", "relevant": ["melatonin-2"] },
+    { "type": "lexical", "query": "melatonin side effects daytime drowsiness well tolerated", "relevant": ["melatonin-3"] },
+    { "type": "lexical", "query": "melatonin interact anticoagulants immunosuppressants diabetes medications", "relevant": ["melatonin-4"] },
+    { "type": "lexical", "query": "magnesium essential mineral nerve muscle glycinate form", "relevant": ["magnesium-1"] },
+    { "type": "lexical", "query": "tolerable upper intake level 350 mg per day supplemental", "relevant": ["magnesium-3"] },
+    { "type": "lexical", "query": "magnesium binds antibiotics bisphosphonates absorption separate doses", "relevant": ["magnesium-4"] },
+    { "type": "lexical", "query": "l-theanine amino acid tea leaves calm relaxed without sedation", "relevant": ["l_theanine-1"] },
+    { "type": "lexical", "query": "glycine 3 grams before bed subjective sleep quality", "relevant": ["glycine-1"] },
+    { "type": "lexical", "query": "valerian benzodiazepines sedative hypnotics CNS depressants additive", "relevant": ["valerian-3"] },
+    { "type": "lexical", "query": "valerian 300 to 600 mg extract before bed", "relevant": ["valerian-2"] },
+    { "type": "lexical", "query": "ashwagandha root extract 250 to 600 mg per day", "relevant": ["ashwagandha-2"] },
+
+    { "type": "paraphrase", "query": "will it leave me groggy the next morning", "relevant": ["melatonin-3"] },
+    { "type": "paraphrase", "query": "does it clash with my blood thinner", "relevant": ["melatonin-4"] },
+    { "type": "paraphrase", "query": "is there a ceiling on how much is safe to take daily", "relevant": ["magnesium-3"] },
+    { "type": "paraphrase", "query": "should I space this out from my prescription pills", "relevant": ["magnesium-4"] },
+    { "type": "paraphrase", "query": "what is in green tea that makes you feel calm", "relevant": ["l_theanine-1"] },
+    { "type": "paraphrase", "query": "something to take the edge off coffee jitters", "relevant": ["l_theanine-3"] },
+    { "type": "paraphrase", "query": "which amino acid helps you drop off faster", "relevant": ["glycine-1", "glycine-2"] },
+    { "type": "paraphrase", "query": "herbal remedy where the studies disagree with each other", "relevant": ["valerian-1"] },
+    { "type": "paraphrase", "query": "risky to use while expecting a baby", "relevant": ["ashwagandha-3"] },
+    { "type": "paraphrase", "query": "taking this alongside anxiety medication makes you very drowsy", "relevant": ["valerian-3"] },
+    { "type": "paraphrase", "query": "does my body already make this on its own", "relevant": ["melatonin-1"] },
+    { "type": "paraphrase", "query": "gentle on the stomach compared with other forms", "relevant": ["magnesium-1"] }
+  ]
+}

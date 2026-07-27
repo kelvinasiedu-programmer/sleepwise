@@ -73,6 +73,30 @@ on any error.
 memory budget - so the deployed free-tier app does genuine RAG out of the box. The
 embedding path demonstrates the upgrade without forcing a dependency or a key.
 
+**Measured, not assumed.** `scripts/benchmark_retrieval.py` compares both over 24 queries
+(full results in [`docs/RETRIEVAL_BENCHMARK.md`](docs/RETRIEVAL_BENCHMARK.md)):
+
+| Backend | all recall@3 / MRR | lexical | paraphrase |
+|---|---|---|---|
+| BM25 | 0.75 / 0.74 | 1.00 / 1.00 | 0.50 / 0.47 |
+| MiniLM embeddings | 0.94 / 0.93 | 1.00 / 1.00 | 0.88 / 0.85 |
+
+BM25 is perfect on queries that share vocabulary with the target and roughly a coin flip
+on paraphrases; embeddings match it on the former and nearly double it on the latter.
+
+**Why that does not change the default.** The app never passes a user's own words to the
+retriever. The query is assembled from the supplement name and fixed terms
+(`"sleep melatonin benefits dose risks interactions"`), and retrieval is then filtered to
+that supplement's own chunks - which is the lexical, small-candidate-set case where BM25
+scores 1.00. Adding a transformer stack to a 512 MB container to serve twenty documents
+would cost startup time, memory, and reproducibility for no measured gain *on the queries
+this system actually issues*.
+
+**What would change it.** Free-text user questions. The paraphrase column is a direct
+measure of what BM25 would cost the moment someone types "will it leave me groggy"
+instead of "melatonin side effects drowsiness" - and at that point the embedding backend
+already exists behind a flag. The benchmark is the trigger condition, written down.
+
 ## 8. The LLM writes prose only - never safety
 
 **Decision:** When `ANTHROPIC_API_KEY` is set, an LLM rewrites the *already-vetted* facts

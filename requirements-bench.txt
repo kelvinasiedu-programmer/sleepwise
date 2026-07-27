@@ -1,0 +1,8 @@
+# Retrieval benchmark only: scripts/benchmark_retrieval.py
+#
+# Kept out of requirements-dev.txt on purpose. This pulls a full torch stack, and CI
+# installs dev requirements on four Python versions per run; paying that download to
+# support a script nobody runs in CI would be a poor trade. Install it deliberately:
+#
+#     pip install -r requirements-bench.txt
+sentence-transformers>=3.0
