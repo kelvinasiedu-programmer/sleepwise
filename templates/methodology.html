@@ -1,25 +1,12 @@
-<!doctype html>
-<html lang="en">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Methodology - SleepWise</title>
-  <meta name="description" content="How SleepWise generates recommendations: a deterministic safety engine, a curated interaction table, retrieval over public medical sources, and an evaluation harness." />
-  <link rel="canonical" href="https://sleepwise-90oh.onrender.com/methodology" />
-  <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
-  <meta name="theme-color" content="#534ab7" />
-  <link rel="stylesheet" href="/site.css" />
-</head>
-<body>
-  <a class="skip-link" href="#main">Skip to main content</a>
-  <header class="site-header">
-    <a class="brand" href="/">SleepWise</a>
-    <nav class="site-nav" aria-label="Primary">
-      <a href="/">Checker</a><a href="/organizer">Organizer</a><a href="/supplements">Supplements</a><a href="/interactions">Interactions</a><a href="/methodology">Methodology</a><a href="/sources">Sources</a><a href="/about">About</a><a href="/privacy">Privacy</a>
-    </nav>
-  </header>
-  <main id="main" class="wrap prose">
-    <h1>Methodology</h1>
+{% extends "base.html" %}
+
+{% block title %}Methodology - SleepWise{% endblock %}
+{% block description %}How SleepWise generates recommendations: a deterministic safety engine, a curated interaction table, retrieval over public medical sources, and an evaluation harness.{% endblock %}
+{% block main_class %}wrap prose{% endblock %}
+{% block footer_note %}Educational tool · not medical advice · data from NIH ODS, MedlinePlus &amp; openFDA.{% endblock %}
+
+{% block content %}
+<h1>Methodology</h1>
     <p class="updated">Last reviewed: June 2026</p>
 
     <p>SleepWise is built around one rule: safety decisions are made by deterministic code, not
@@ -66,13 +53,4 @@
     </ul>
 
     <p>Sources are listed on the <a href="/sources">Sources</a> page.</p>
-  </main>
-  <footer class="site-footer">
-    <p>Educational tool · not medical advice · data from NIH ODS, MedlinePlus &amp; openFDA.</p>
-    <nav aria-label="Footer">
-      <a href="/about">About</a> · <a href="/methodology">Methodology</a> · <a href="/sources">Sources</a> ·
-      <a href="/editorial-policy">Editorial policy</a> · <a href="/terms">Terms</a> · <a href="/privacy">Privacy</a> · <a href="/medical-disclaimer">Medical disclaimer</a> · <a href="/contact">Contact</a>
-    </nav>
-  </footer>
-</body>
-</html>
+{% endblock %}

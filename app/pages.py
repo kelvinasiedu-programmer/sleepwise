@@ -11,6 +11,7 @@ from __future__ import annotations
 
 import json
 from html import escape
+from typing import NamedTuple
 
 from .models import InteractionRule, Supplement
 from .retrieval import CorpusChunk
@@ -19,6 +20,21 @@ from .retrieval import CorpusChunk
 # page and carried into the MedicalWebPage schema. There is no clinician "reviewedBy"
 # on purpose: no clinician has reviewed this yet, and the schema must not claim one.
 LAST_REVIEWED = "2026-06-24"
+
+
+class ContentPage(NamedTuple):
+    """A content page's unique parts.
+
+    The surrounding document - nav, footer, disclaimer, head - comes from
+    templates/base.html via templates/content.html, so this module no longer carries a
+    second copy of the site shell.
+    """
+
+    title: str
+    description: str
+    body: str
+    schema: str = ""
+
 
 DRUG_CLASS_TERMS = {
     "benzodiazepine": "benzodiazepines (e.g. lorazepam, Xanax)",
@@ -43,36 +59,10 @@ CONDITION_TERMS = {
     "under_18": "being under 18",
 }
 
-# Must match the nav in every static page. A nav that changes between pages makes links
-# appear to vanish as you browse; tests/test_pages.py asserts they stay in step.
-_NAV = (
-    '<nav class="site-nav" aria-label="Primary">'
-    '<a href="/">Checker</a><a href="/organizer">Organizer</a>'
-    '<a href="/supplements">Supplements</a><a href="/interactions">Interactions</a>'
-    '<a href="/methodology">Methodology</a><a href="/sources">Sources</a>'
-    '<a href="/about">About</a><a href="/privacy">Privacy</a></nav>'
-)
-_FOOTER = (
-    '<footer class="site-footer"><p>Educational tool · not medical advice · '
-    'data from NIH ODS, MedlinePlus &amp; openFDA.</p><nav aria-label="Footer">'
-    '<a href="/about">About</a> · <a href="/methodology">Methodology</a> · '
-    '<a href="/sources">Sources</a> · <a href="/supplements">Supplements</a> · '
-    '<a href="/interactions">Interactions</a> · '
-    '<a href="/editorial-policy">Editorial policy</a> · <a href="/terms">Terms</a> · '
-    '<a href="/privacy">Privacy</a> · '
-    '<a href="/medical-disclaimer">Medical disclaimer</a> · <a href="/contact">Contact</a>'
-    "</nav></footer>"
-)
-
 _PROVENANCE = (
     '<p class="updated">Compiled from the cited public medical sources · '
     "last source-reviewed June 2026 · not yet independently reviewed by a clinician "
     '(<a href="/editorial-policy">editorial policy</a>)</p>'
-)
-_DISCLAIMER = (
-    '<p class="disclaimer">Educational information from public NIH/FDA databases - '
-    "<strong>not medical advice</strong>. Always talk to a doctor or pharmacist before "
-    "starting, stopping, or combining any supplement or medication.</p>"
 )
 
 
@@ -92,28 +82,11 @@ def interaction_slug(rule: InteractionRule) -> str:
     return f"{rule.supplement_id}-and-{rule.target}".replace("_", "-")
 
 
-def _shell(title: str, description: str, canonical: str, body: str, head_extra: str = "") -> str:
-    return (
-        '<!doctype html><html lang="en"><head><meta charset="utf-8"/>'
-        '<meta name="viewport" content="width=device-width, initial-scale=1"/>'
-        f"<title>{escape(title)}</title>"
-        f'<meta name="description" content="{escape(description)}"/>'
-        f'<link rel="canonical" href="{escape(canonical)}"/>'
-        '<link rel="icon" href="/favicon.svg" type="image/svg+xml"/>'
-        '<meta name="theme-color" content="#534ab7"/>'
-        f'<link rel="stylesheet" href="/site.css?v=3"/>{head_extra}</head><body>'
-        '<a class="skip-link" href="#main">Skip to main content</a>'
-        '<header class="site-header"><a class="brand" href="/">SleepWise</a>'
-        f'{_NAV}</header><main id="main" class="wrap prose">{body}{_DISCLAIMER}</main>{_FOOTER}'
-        "</body></html>"
-    )
-
-
 def _jsonld(payload: dict) -> str:
-    return f'<script type="application/ld+json">{json.dumps(payload)}</script>'
+    return json.dumps(payload)
 
 
-def _supplement_schema(supplement: Supplement, chunks: list[CorpusChunk], canonical: str) -> str:
+def _supplement_schema(supplement: Supplement, chunks: list[CorpusChunk]) -> str:
     """MedicalWebPage + DietarySupplement markup with truthful fields only.
 
     Deliberately absent: reviewedBy / medical credentials, and recommendedIntake -
@@ -126,7 +99,6 @@ def _supplement_schema(supplement: Supplement, chunks: list[CorpusChunk], canoni
             "@context": "https://schema.org",
             "@type": "MedicalWebPage",
             "name": f"{supplement.name} for sleep: evidence, dose, and interactions",
-            "url": canonical,
             "lastReviewed": LAST_REVIEWED,
             "about": {
                 "@type": "DietarySupplement",
@@ -139,13 +111,12 @@ def _supplement_schema(supplement: Supplement, chunks: list[CorpusChunk], canoni
     )
 
 
-def _interaction_schema(title: str, rule: InteractionRule, canonical: str) -> str:
+def _interaction_schema(title: str, rule: InteractionRule) -> str:
     return _jsonld(
         {
             "@context": "https://schema.org",
             "@type": "MedicalWebPage",
             "name": f"{title}: what to know",
-            "url": canonical,
             "lastReviewed": LAST_REVIEWED,
             "citation": [rule.source_url],
             "publisher": {"@type": "Organization", "name": "SleepWise"},
@@ -153,7 +124,7 @@ def _interaction_schema(title: str, rule: InteractionRule, canonical: str) -> st
     )
 
 
-def render_supplement_index(supplements: list[Supplement], canonical: str) -> str:
+def render_supplement_index(supplements: list[Supplement]) -> ContentPage:
     items = "".join(
         f'<li><a href="/supplements/{escape(s.id)}">{escape(s.name)}</a> - {escape(s.summary)}</li>'
         for s in supplements
@@ -165,11 +136,10 @@ def render_supplement_index(supplements: list[Supplement], canonical: str) -> st
         f"<ul>{items}</ul>"
         '<p><a href="/">Check these against your medications and health flags.</a></p>'
     )
-    return _shell(
+    return ContentPage(
         "Sleep supplements: evidence, doses, and interactions | SleepWise",
         "Source-linked guides to melatonin, magnesium, L-theanine, glycine, valerian, and "
         "ashwagandha for sleep.",
-        canonical,
         body,
     )
 
@@ -178,8 +148,7 @@ def render_supplement(
     supplement: Supplement,
     chunks: list[CorpusChunk],
     rules: list[InteractionRule],
-    canonical: str,
-) -> str:
+) -> ContentPage:
     # Publication gate: only claims confirmed against their cited source are rendered.
     confirmed = [c for c in chunks if c.verified]
     if confirmed:
@@ -223,17 +192,16 @@ def render_supplement(
         "<li>What dose and timing would you suggest for me?</li></ul>"
         f'<p><a href="/">Check {escape(supplement.name)} against your full profile.</a></p>'
     )
-    return _shell(
+    return ContentPage(
         f"{supplement.name} for sleep: evidence, dose, and interactions | SleepWise",
         f"{supplement.name} for sleep: what the evidence says, typical doses, and interaction "
         "concerns, from public medical sources.",
-        canonical,
         body,
-        head_extra=_supplement_schema(supplement, chunks, canonical),
+        schema=_supplement_schema(supplement, chunks),
     )
 
 
-def render_interaction_index(entries: list[tuple[str, str]], canonical: str) -> str:
+def render_interaction_index(entries: list[tuple[str, str]]) -> ContentPage:
     items = "".join(
         f'<li><a href="/interactions/{escape(slug)}">{escape(title)}</a></li>'
         for slug, title in entries
@@ -246,16 +214,15 @@ def render_interaction_index(entries: list[tuple[str, str]], canonical: str) -> 
         f"<ul>{items}</ul>"
         '<p><a href="/">Check your own combination.</a></p>'
     )
-    return _shell(
+    return ContentPage(
         "Sleep supplement interactions | SleepWise",
         "Guides to common sleep-supplement interactions with medications and health flags, "
         "from public medical sources.",
-        canonical,
         body,
     )
 
 
-def render_interaction(rule: InteractionRule, supplement: Supplement, canonical: str) -> str:
+def render_interaction(rule: InteractionRule, supplement: Supplement) -> ContentPage:
     target = humanize_target(rule)
     if rule.severity == "BLOCK":
         answer = (
@@ -288,11 +255,10 @@ def render_interaction(rule: InteractionRule, supplement: Supplement, canonical:
         "<li>What signs should make me stop and seek advice?</li></ul>"
         f'<p><a href="/">Check {escape(supplement.name)} against your full medication list.</a></p>'
     )
-    return _shell(
+    return ContentPage(
         f"{title}: what to know | SleepWise",
         f"{title}: why the combination may matter and what to ask a pharmacist, from public "
         "medical sources.",
-        canonical,
         body,
-        head_extra=_interaction_schema(title, rule, canonical),
+        schema=_interaction_schema(title, rule),
     )

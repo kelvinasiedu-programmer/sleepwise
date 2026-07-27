@@ -123,9 +123,7 @@ def run_language_safety() -> int:
     corpus = load_corpus()
     for supplement in supplements:
         chunks = [c for c in corpus if c.supplement_id == supplement.id]
-        violations += _count_violations(
-            pages.render_supplement(supplement, chunks, rules, "https://example.test")
-        )
+        violations += _count_violations(pages.render_supplement(supplement, chunks, rules).body)
     by_id = {s.id: s for s in supplements}
     seen: set[str] = set()
     for rule in rules:
@@ -134,7 +132,7 @@ def run_language_safety() -> int:
             continue
         seen.add(slug)
         violations += _count_violations(
-            pages.render_interaction(rule, by_id[rule.supplement_id], "https://example.test")
+            pages.render_interaction(rule, by_id[rule.supplement_id]).body
         )
     return violations
 

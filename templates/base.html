@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>{% block title %}SleepWise{% endblock %}</title>
+  <meta name="description" content="{% block description %}{% endblock %}" />
+  {% if canonical %}<link rel="canonical" href="{{ canonical }}" />{% endif %}
+  {% if noindex %}<meta name="robots" content="noindex" />{% endif %}
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+  <meta name="theme-color" content="#534ab7" />
+  <link rel="stylesheet" href="/site.css?v={{ asset_version }}" />
+  {% block head_extra %}{% endblock %}
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to main content</a>
+  <header class="site-header">
+    <a class="brand" href="/">SleepWise</a>
+    {#
+      One nav, one place. This used to be duplicated across the static pages, the
+      organizer, and the server-rendered content pages; the copies drifted and links
+      appeared to vanish as you browsed. Defining it once makes that impossible.
+    #}
+    <nav class="site-nav" aria-label="Primary">
+      {% for href, label in nav_links %}<a href="{{ href }}">{{ label }}</a>{% endfor %}
+    </nav>
+  </header>
+
+  <main id="main" class="{% block main_class %}wrap{% endblock %}">
+{% block content %}{% endblock %}
+  </main>
+
+  <footer class="site-footer">
+    <p>{% block footer_note %}Educational demonstration · not medical advice · sample data from NIH ODS, MedlinePlus &amp; openFDA.{% endblock %}</p>
+    <nav aria-label="Footer">
+      {% for href, label in footer_links %}<a href="{{ href }}">{{ label }}</a>{% if not loop.last %} · {% endif %}{% endfor %}
+    </nav>
+  </footer>
+
+  {% block scripts %}{% endblock %}
+</body>
+</html>

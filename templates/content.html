@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block title %}{{ page_title }}{% endblock %}
+{% block description %}{{ page_description }}{% endblock %}
+{% block main_class %}wrap prose{% endblock %}
+
+{% block head_extra %}
+  {% if schema %}<script type="application/ld+json">{{ schema | safe }}</script>{% endif %}
+{% endblock %}
+
+{% block content %}
+{{ body | safe }}
+    <p class="disclaimer">Educational information from public NIH/FDA databases -
+      <strong>not medical advice</strong>. Always talk to a doctor or pharmacist before
+      starting, stopping, or combining any supplement or medication.</p>
+{% endblock %}

@@ -1,19 +1,15 @@
-<!doctype html>
-<html lang="en">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>SleepWise - check sleep supplements against your medications</title>
-  <meta name="description" content="Check sleep supplements like melatonin, magnesium, valerian, ashwagandha, and L-theanine against your medications and health flags using public medical sources. Educational, not medical advice." />
-  <link rel="canonical" href="https://sleepwise-90oh.onrender.com/" />
-  <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
-  <meta name="theme-color" content="#534ab7" />
+{% extends "base.html" %}
+
+{% block title %}SleepWise - check sleep supplements against your medications{% endblock %}
+{% block description %}Check sleep supplements like melatonin, magnesium, valerian, ashwagandha, and L-theanine against your medications and health flags using public medical sources. Educational, not medical advice.{% endblock %}
+{% block footer_note %}Educational tool · not medical advice · data from NIH ODS, MedlinePlus &amp; openFDA.{% endblock %}
+
+{% block head_extra %}
   <meta property="og:type" content="website" />
   <meta property="og:title" content="SleepWise - sleep supplement safety checker" />
   <meta property="og:description" content="Check sleep supplements against your medications and health flags using public medical sources." />
   <meta property="og:url" content="https://sleepwise-90oh.onrender.com/" />
   <meta name="twitter:card" content="summary" />
-  <link rel="stylesheet" href="/site.css?v=7" />
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
@@ -26,25 +22,10 @@
     "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
   }
   </script>
-</head>
-<body>
-  <a class="skip-link" href="#main">Skip to main content</a>
-  <header class="site-header">
-    <a class="brand" href="/">SleepWise</a>
-    <nav class="site-nav" aria-label="Primary">
-      <a href="/">Checker</a>
-      <a href="/organizer">Organizer</a>
-      <a href="/supplements">Supplements</a>
-      <a href="/interactions">Interactions</a>
-      <a href="/methodology">Methodology</a>
-      <a href="/sources">Sources</a>
-      <a href="/about">About</a>
-      <a href="/privacy">Privacy</a>
-    </nav>
-  </header>
+{% endblock %}
 
-  <main id="main" class="wrap">
-    <section class="hero">
+{% block content %}
+<section class="hero">
       <h1>A safety-first engine for sleep supplement interactions</h1>
       <p class="sub">SleepWise decides what is safe using deterministic rules that run
         <em>before</em> any language model, so a model can never talk the system into a
@@ -85,16 +66,8 @@
         <li>"I am pregnant, breastfeeding, under 18, or have kidney concerns."</li>
       </ul>
     </section>
-  </main>
+{% endblock %}
 
-  <footer class="site-footer">
-    <p>Educational tool · not medical advice · data from NIH ODS, MedlinePlus &amp; openFDA.</p>
-    <nav aria-label="Footer">
-      <a href="/about">About</a> · <a href="/methodology">Methodology</a> · <a href="/sources">Sources</a> ·
-      <a href="/editorial-policy">Editorial policy</a> · <a href="/terms">Terms</a> · <a href="/privacy">Privacy</a> · <a href="/medical-disclaimer">Medical disclaimer</a> · <a href="/contact">Contact</a>
-    </nav>
-  </footer>
-
-  <script src="/app.js?v=7"></script>
-</body>
-</html>
+{% block scripts %}
+  <script src="/app.js?v={{ asset_version }}"></script>
+{% endblock %}

@@ -22,6 +22,7 @@ from pathlib import Path
 from fastapi import FastAPI, HTTPException, Request, Response
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, HTMLResponse, JSONResponse, PlainTextResponse
+from fastapi.templating import Jinja2Templates
 
 from . import config, pages, symptoms
 from . import recommend as rec
@@ -42,6 +43,39 @@ logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(name
 logger = logging.getLogger("sleepwise")
 
 STATIC_DIR = Path(__file__).resolve().parent.parent / "static"
+TEMPLATE_DIR = Path(__file__).resolve().parent.parent / "templates"
+
+templates = Jinja2Templates(directory=str(TEMPLATE_DIR))
+
+# Single source of truth for site chrome. Previously the nav and footer were copied into
+# every static page and into the server-rendered page builder; the copies drifted and
+# links appeared to vanish while browsing. Defined once, they cannot drift.
+NAV_LINKS = [
+    ("/", "Checker"),
+    ("/organizer", "Organizer"),
+    ("/supplements", "Supplements"),
+    ("/interactions", "Interactions"),
+    ("/methodology", "Methodology"),
+    ("/sources", "Sources"),
+    ("/about", "About"),
+    ("/privacy", "Privacy"),
+]
+FOOTER_LINKS = [
+    ("/about", "About"),
+    ("/methodology", "Methodology"),
+    ("/sources", "Sources"),
+    ("/editorial-policy", "Editorial policy"),
+    ("/terms", "Terms"),
+    ("/privacy", "Privacy"),
+    ("/medical-disclaimer", "Medical disclaimer"),
+    ("/contact", "Contact"),
+]
+# Bumped when CSS or JS changes so browsers pick up a deploy immediately.
+ASSET_VERSION = "8"
+
+templates.env.globals.update(
+    nav_links=NAV_LINKS, footer_links=FOOTER_LINKS, asset_version=ASSET_VERSION
+)
 
 _SECURITY_HEADERS = {
     "X-Content-Type-Options": "nosniff",
@@ -155,26 +189,49 @@ async def observe_and_secure(
     return response
 
 
-def _page(name: str) -> HTMLResponse:
-    return HTMLResponse((STATIC_DIR / name).read_text(encoding="utf-8"))
+def _render(request: Request, template: str, path: str) -> HTMLResponse:
+    return templates.TemplateResponse(
+        request=request,
+        name=template,
+        context={
+            "canonical": f"{config.base_url()}{path}",
+            "noindex": path in _NOINDEX,
+        },
+    )
 
 
-def _make_page_route(filename: str) -> Callable[[], HTMLResponse]:
-    def route() -> HTMLResponse:
-        return _page(filename)
+def _render_content(request: Request, page: pages.ContentPage, path: str) -> HTMLResponse:
+    """Render a generated content page through the shared shell."""
+    return templates.TemplateResponse(
+        request=request,
+        name="content.html",
+        context={
+            "page_title": page.title,
+            "page_description": page.description,
+            "body": page.body,
+            "schema": page.schema,
+            "canonical": f"{config.base_url()}{path}",
+            "noindex": path in _NOINDEX,
+        },
+    )
+
+
+def _make_page_route(template: str, path: str) -> Callable[[Request], HTMLResponse]:
+    def route(request: Request) -> HTMLResponse:
+        return _render(request, template, path)
 
     return route
 
 
 @app.get("/", response_class=HTMLResponse)
-def index() -> HTMLResponse:
-    return _page("index.html")
+def index(request: Request) -> HTMLResponse:
+    return _render(request, "index.html", "/")
 
 
 for _path, _filename in _PAGES.items():
     app.add_api_route(
         _path,
-        _make_page_route(_filename),
+        _make_page_route(_filename, _path),
         methods=["GET"],
         response_class=HTMLResponse,
         include_in_schema=False,
@@ -252,41 +309,41 @@ def sitemap() -> Response:
 
 
 @app.get("/supplements", response_class=HTMLResponse, include_in_schema=False)
-def supplements_index() -> HTMLResponse:
-    return HTMLResponse(
-        pages.render_supplement_index(SUPPLEMENTS, f"{config.base_url()}/supplements")
-    )
+def supplements_index(request: Request) -> HTMLResponse:
+    return _render_content(request, pages.render_supplement_index(SUPPLEMENTS), "/supplements")
 
 
 @app.get("/supplements/{supp_id}", response_class=HTMLResponse, include_in_schema=False)
-def supplement_page(supp_id: str) -> HTMLResponse:
+def supplement_page(request: Request, supp_id: str) -> HTMLResponse:
     supplement = _SUPP_BY_ID.get(supp_id)
     if supplement is None:
         raise HTTPException(status_code=404, detail="Unknown supplement")
     chunks = [c for c in _CORPUS if c.supplement_id == supp_id]
-    canonical = f"{config.base_url()}/supplements/{supp_id}"
-    return HTMLResponse(pages.render_supplement(supplement, chunks, RULES, canonical))
+    return _render_content(
+        request, pages.render_supplement(supplement, chunks, RULES), f"/supplements/{supp_id}"
+    )
 
 
 @app.get("/interactions", response_class=HTMLResponse, include_in_schema=False)
-def interactions_index() -> HTMLResponse:
+def interactions_index(request: Request) -> HTMLResponse:
     entries = [
         (slug, f"{_SUPP_BY_ID[rule.supplement_id].name} and {pages.humanize_target(rule)}")
         for slug, rule in sorted(_INTERACTIONS.items())
         if rule.supplement_id in _SUPP_BY_ID
     ]
-    return HTMLResponse(
-        pages.render_interaction_index(entries, f"{config.base_url()}/interactions")
-    )
+    return _render_content(request, pages.render_interaction_index(entries), "/interactions")
 
 
 @app.get("/interactions/{slug}", response_class=HTMLResponse, include_in_schema=False)
-def interaction_page(slug: str) -> HTMLResponse:
+def interaction_page(request: Request, slug: str) -> HTMLResponse:
     rule = _INTERACTIONS.get(slug)
     if rule is None or rule.supplement_id not in _SUPP_BY_ID:
         raise HTTPException(status_code=404, detail="Unknown interaction")
-    canonical = f"{config.base_url()}/interactions/{slug}"
-    return HTMLResponse(pages.render_interaction(rule, _SUPP_BY_ID[rule.supplement_id], canonical))
+    return _render_content(
+        request,
+        pages.render_interaction(rule, _SUPP_BY_ID[rule.supplement_id]),
+        f"/interactions/{slug}",
+    )
 
 
 @app.get("/health")
