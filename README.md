@@ -23,9 +23,12 @@ difference is structural rather than a disclaimer - see [What this is](#what-thi
        alt="SleepWise request pipeline: input, normalize meds, deterministic safety gate (ALLOW/WARN/BLOCK), evidence, citation-locked LLM explanation, result.">
 </p>
 
-<!-- Record a short clip, save it as docs/demo.gif, and uncomment:
-<p align="center"><img src="docs/demo.gif" width="720" alt="SleepWise demo"></p>
--->
+<p align="center">
+  <img src="docs/demo.gif" width="820"
+       alt="Running the benzodiazepine scenario: valerian is withheld pending a clinician. Then two medications typed into one field, which the engine refuses to guess at.">
+</p>
+
+<p align="center"><sub>Regenerate with <code>python scripts/record_demo.py</code> - scripted, not screen-recorded, so it cannot go stale.</sub></p>
 
 ## Contents
 
