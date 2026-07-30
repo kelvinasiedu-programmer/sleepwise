@@ -184,7 +184,14 @@ def render_supplement(
         f"<h2>What the evidence says</h2><ul>{evidence}</ul>"
         f"<h2>Typical dose</h2><p>{dose}{timing}. Evidence grade: "
         f"{escape(supplement.evidence_grade)}. This is a general range, not a personal "
-        "recommendation.</p>"
+        "recommendation."
+        + (
+            ""
+            if supplement.dose_verified
+            else " <em>No cited source states this range; it is shown for illustration "
+            "and is pending review.</em>"
+        )
+        + "</p>"
         f"{interactions}"
         "<h2>Questions to ask a pharmacist</h2><ul>"
         f"<li>Is {escape(supplement.name)} reasonable to try with my current medications?</li>"

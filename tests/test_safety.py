@@ -45,9 +45,24 @@ def test_ashwagandha_in_pregnancy_is_blocked():
     assert result.defer_to_pro is True
 
 
-def test_glycine_with_clozapine_warns():
-    result = _evaluate("glycine", meds=["clozapine"])
-    assert result.status == "WARN"
+def test_unsourced_rules_stay_removed():
+    """Rules removed by the citation audit must not creep back.
+
+    glycine/clozapine and l-theanine/antihypertensive both cited a MedlinePlus index that
+    carries no entry for either supplement. The clozapine literature also used 30-60 g of
+    glycine, against a 3-5 g sleep dose, so warning at that dose was misleading rather
+    than merely unsourced. See docs/CITATION_AUDIT.md.
+    """
+    assert _evaluate("glycine", meds=["clozapine"]).status == "ALLOW"
+    assert _evaluate("l_theanine", meds=["lisinopril"]).status == "ALLOW"
+
+
+def test_ashwagandha_rules_are_source_confirmed():
+    # Re-cited from the dead index to the NCCIH ashwagandha page, which supports all four.
+    for med in ("levothyroxine", "prednisone", "metformin", "amlodipine"):
+        result = _evaluate("ashwagandha", meds=[med])
+        assert result.status == "WARN", med
+        assert all(r.verified for r in result.reasons), med
 
 
 def test_clean_profile_allows_melatonin():

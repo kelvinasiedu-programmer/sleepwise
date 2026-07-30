@@ -265,9 +265,15 @@ Stated plainly, because a demonstration that hides its edges is not a good demon
 - **Sample data.** The interaction table covers six sleep supplements against common drug
   classes. It is narrow by design and is **not** an interaction database. Absence of a
   warning is not proof of safety.
-- **Citations are database-level, not claim-level.** A link means "this is the public
-  source this topic draws from", not "this exact sentence appears there". Claims not
-  confirmed against their source are withheld from display.
+- **Citations are audited but not clinically reviewed.** Every claim was checked against
+  its live source ([`docs/CITATION_AUDIT.md`](docs/CITATION_AUDIT.md)): 5 unsupported
+  rules removed, 2 wrongly-marked-verified claims demoted, the ashwagandha rules re-cited
+  to a source that actually supports them, and 16 dead citations dropped. 15 of 17 rules
+  are now source-confirmed. Whether the claims are *clinically* right, and whether the
+  severities are correct, still needs a pharmacist.
+- **No dose range has a source.** All six are shown labelled "range not confirmed against
+  a source". The magnesium ceiling was lowered to 350 mg because the previous figure
+  contradicted the upper limit stated on the page it cited.
 - **Matching is not exhaustive.** Generic names, common brands, embedded dosages, typos,
   and multi-drug ambiguity are handled; live RxNorm resolution is the planned upgrade.
 - **No personal health data is stored.** Stateless by design; the symptom organizer keeps

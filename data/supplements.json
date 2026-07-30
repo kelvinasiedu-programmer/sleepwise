@@ -10,23 +10,24 @@
     "unit": "mg",
     "timing": "30-60 min before bed",
     "evidence_grade": "moderate",
-    "summary": "A hormone that regulates the sleep-wake cycle; most useful for delayed sleep timing and jet lag.",
+    "summary": "A hormone involved in the sleep-wake cycle. The cited source describes use for jet lag and delayed sleep-wake phase disorder.",
     "sedating": true,
     "evidence": [
       {
-        "claim": "Can modestly shorten the time it takes to fall asleep, especially for circadian-rhythm and jet-lag related sleep problems.",
+        "claim": "Research suggests melatonin supplements may help with jet lag, and melatonin is used for delayed sleep-wake phase disorder.",
         "source": "NIH NCCIH - Melatonin: What You Need To Know",
         "source_url": "https://www.nccih.nih.gov/health/melatonin-what-you-need-to-know",
         "verified": true
       },
       {
-        "claim": "Lower doses (0.5-3 mg) are often as effective as higher doses; more is not necessarily better.",
+        "claim": "Reported mild side effects include headache, dizziness, nausea and sleepiness.",
         "source": "NIH NCCIH - Melatonin: What You Need To Know",
         "source_url": "https://www.nccih.nih.gov/health/melatonin-what-you-need-to-know",
-        "verified": false
+        "verified": true
       }
     ],
-    "buy_query": "melatonin"
+    "buy_query": "melatonin",
+    "dose_verified": false
   },
   {
     "id": "magnesium",
@@ -35,26 +36,21 @@
       "magnesium bisglycinate"
     ],
     "dose_low": 200,
-    "dose_high": 400,
+    "dose_high": 350,
     "unit": "mg",
     "timing": "evening",
     "evidence_grade": "limited",
-    "summary": "An essential mineral; the glycinate form is well tolerated. May support relaxation and sleep quality, especially where intake is low.",
+    "summary": "An essential mineral. The cited source sets a 350 mg daily upper limit for supplemental magnesium and does not address sleep.",
     "evidence": [
       {
-        "claim": "Adequate magnesium status is linked to sleep quality; supplementation may help when dietary intake is insufficient.",
-        "source": "NIH ODS - Magnesium Fact Sheet",
-        "source_url": "https://ods.od.nih.gov/factsheets/Magnesium-HealthProfessional/",
-        "verified": true
-      },
-      {
-        "claim": "The tolerable upper intake level from supplements is 350 mg/day for adults; higher amounts can cause diarrhea.",
+        "claim": "The tolerable upper intake level for supplemental elemental magnesium is 350 mg per day for adults.",
         "source": "NIH ODS - Magnesium Fact Sheet",
         "source_url": "https://ods.od.nih.gov/factsheets/Magnesium-HealthProfessional/",
         "verified": true
       }
     ],
-    "buy_query": "magnesium glycinate"
+    "buy_query": "magnesium glycinate",
+    "dose_verified": false
   },
   {
     "id": "l_theanine",
@@ -67,16 +63,10 @@
     "unit": "mg",
     "timing": "before bed",
     "evidence_grade": "limited",
-    "summary": "An amino acid found in tea; associated with relaxation without sedation. Sometimes paired with magnesium.",
-    "evidence": [
-      {
-        "claim": "May promote relaxation and reduce subjective stress, which can indirectly support sleep.",
-        "source": "MedlinePlus - Herbs & Supplements",
-        "source_url": "https://medlineplus.gov/druginfo/herb_All.html",
-        "verified": false
-      }
-    ],
-    "buy_query": "l-theanine"
+    "summary": "An amino acid found in tea. No claim about it has been confirmed against a cited public source yet.",
+    "evidence": [],
+    "buy_query": "l-theanine",
+    "dose_verified": false
   },
   {
     "id": "glycine",
@@ -87,16 +77,10 @@
     "unit": "mg",
     "timing": "before bed",
     "evidence_grade": "preliminary",
-    "summary": "An amino acid; small studies suggest a dose before bed may improve subjective sleep quality.",
-    "evidence": [
-      {
-        "claim": "Small trials report improved subjective sleep quality and reduced next-day fatigue with ~3 g before bed.",
-        "source": "MedlinePlus - Herbs & Supplements",
-        "source_url": "https://medlineplus.gov/druginfo/herb_All.html",
-        "verified": false
-      }
-    ],
-    "buy_query": "glycine powder"
+    "summary": "An amino acid. No claim about it has been confirmed against a cited public source yet.",
+    "evidence": [],
+    "buy_query": "glycine powder",
+    "dose_verified": false
   },
   {
     "id": "valerian",
@@ -109,17 +93,18 @@
     "unit": "mg",
     "timing": "30-120 min before bed",
     "evidence_grade": "limited",
-    "summary": "A traditional sleep herb. Evidence is mixed; notable for additive sedation with other CNS depressants.",
+    "summary": "A traditional sleep herb. The cited source calls the evidence for insomnia inconclusive and notes possible additive sedation.",
     "sedating": true,
     "evidence": [
       {
-        "claim": "Some people report improved sleep, but clinical evidence is mixed and study quality varies.",
+        "claim": "Evidence from clinical studies of valerian for sleep disorders such as insomnia is inconclusive.",
         "source": "NIH ODS - Valerian Fact Sheet",
         "source_url": "https://ods.od.nih.gov/factsheets/Valerian-HealthProfessional/",
         "verified": true
       }
     ],
-    "buy_query": "valerian root"
+    "buy_query": "valerian root",
+    "dose_verified": false
   },
   {
     "id": "ashwagandha",
@@ -132,16 +117,23 @@
     "unit": "mg",
     "timing": "evening",
     "evidence_grade": "limited",
-    "summary": "An adaptogenic herb (root extract) studied for stress and sleep. Not recommended in pregnancy.",
+    "summary": "An adaptogenic herb. The cited source advises avoiding it in pregnancy and breastfeeding, and notes rare liver-injury reports.",
     "sedating": true,
     "evidence": [
       {
-        "claim": "Root-extract studies suggest possible improvements in stress and sleep measures, though trials are small.",
-        "source": "MedlinePlus - Herbs & Supplements",
-        "source_url": "https://medlineplus.gov/druginfo/herb_All.html",
-        "verified": false
+        "claim": "Ashwagandha should be avoided during pregnancy and should not be used while breastfeeding.",
+        "source": "NIH NCCIH - Ashwagandha",
+        "source_url": "https://www.nccih.nih.gov/health/ashwagandha",
+        "verified": true
+      },
+      {
+        "claim": "Rarely, cases have linked liver injury to ashwagandha supplements.",
+        "source": "NIH NCCIH - Ashwagandha",
+        "source_url": "https://www.nccih.nih.gov/health/ashwagandha",
+        "verified": true
       }
     ],
-    "buy_query": "ashwagandha root extract"
+    "buy_query": "ashwagandha root extract",
+    "dose_verified": false
   }
 ]

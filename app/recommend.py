@@ -176,7 +176,10 @@ def _build_items(
         rec = Recommendation(
             supplement=supp.name,
             status=result.status,
-            dose=f"{_format_dose(supp.dose_low)}-{_format_dose(supp.dose_high)} {supp.unit}",
+            dose=(
+                f"{_format_dose(supp.dose_low)}-{_format_dose(supp.dose_high)} {supp.unit}"
+                + ("" if supp.dose_verified else " (range not confirmed against a source)")
+            ),
             timing=supp.timing,
             summary=supp.summary,
             rationale=ev,

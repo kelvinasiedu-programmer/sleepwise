@@ -4,8 +4,9 @@
     "target_type": "drug_class",
     "target": "benzodiazepine",
     "severity": "BLOCK",
-    "message": "Valerian can add to the sedative effect of benzodiazepines, increasing drowsiness and CNS depression. Do not combine without medical supervision.",
+    "message": "There is a theoretical possibility of additive sedative effects when valerian is combined with benzodiazepines. Do not combine without medical supervision.",
     "source_url": "https://ods.od.nih.gov/factsheets/Valerian-HealthProfessional/",
+    "source": "NIH ODS - Valerian Fact Sheet",
     "verified": true
   },
   {
@@ -13,8 +14,9 @@
     "target_type": "drug_class",
     "target": "sedative_hypnotic",
     "severity": "BLOCK",
-    "message": "Combining valerian with sedative-hypnotics (e.g., zolpidem) can cause excessive sedation. Do not combine without medical supervision.",
+    "message": "Valerian may have additive sedative effects with sedative drugs such as barbiturates and prescription sleep medicines. Do not combine without medical supervision.",
     "source_url": "https://ods.od.nih.gov/factsheets/Valerian-HealthProfessional/",
+    "source": "NIH ODS - Valerian Fact Sheet",
     "verified": true
   },
   {
@@ -22,8 +24,9 @@
     "target_type": "drug_class",
     "target": "opioid",
     "severity": "BLOCK",
-    "message": "Valerian adds to opioid-related CNS depression. This combination can be dangerous; consult a clinician.",
-    "source_url": "https://medlineplus.gov/druginfo/herb_All.html",
+    "message": "Opioids are CNS depressants, so additive sedation with valerian is plausible. The cited source discusses sedative drugs generally rather than opioids specifically.",
+    "source_url": "https://ods.od.nih.gov/factsheets/Valerian-HealthProfessional/",
+    "source": "NIH ODS - Valerian Fact Sheet",
     "verified": false
   },
   {
@@ -31,8 +34,9 @@
     "target_type": "drug_class",
     "target": "anticoagulant",
     "severity": "WARN",
-    "message": "Melatonin may affect bleeding risk and interact with anticoagulants. Discuss with your prescriber before combining.",
+    "message": "People taking blood-thinning medication need to be under medical supervision when taking melatonin. Discuss it with your prescriber before combining.",
     "source_url": "https://www.nccih.nih.gov/health/melatonin-what-you-need-to-know",
+    "source": "NIH NCCIH - Melatonin: What You Need To Know",
     "verified": true
   },
   {
@@ -40,44 +44,19 @@
     "target_type": "drug_class",
     "target": "antiplatelet",
     "severity": "WARN",
-    "message": "Melatonin may add to antiplatelet effects and bleeding risk. Discuss with your prescriber before combining.",
+    "message": "Antiplatelet medicines are blood thinners, and the cited source advises medical supervision for melatonin with blood-thinning medication. Discuss it with your prescriber.",
     "source_url": "https://www.nccih.nih.gov/health/melatonin-what-you-need-to-know",
-    "verified": false
-  },
-  {
-    "supplement_id": "melatonin",
-    "target_type": "drug_class",
-    "target": "antihypertensive",
-    "severity": "WARN",
-    "message": "Melatonin can influence blood pressure and may interact with antihypertensive medications. Monitor with your clinician.",
-    "source_url": "https://www.nccih.nih.gov/health/melatonin-what-you-need-to-know",
-    "verified": false
-  },
-  {
-    "supplement_id": "melatonin",
-    "target_type": "drug_class",
-    "target": "antidiabetic",
-    "severity": "WARN",
-    "message": "Melatonin may affect blood glucose. If you take antidiabetic medication, monitor levels and consult your clinician.",
-    "source_url": "https://www.nccih.nih.gov/health/melatonin-what-you-need-to-know",
-    "verified": false
-  },
-  {
-    "supplement_id": "melatonin",
-    "target_type": "drug_class",
-    "target": "immunosuppressant",
-    "severity": "WARN",
-    "message": "Melatonin can stimulate immune activity and may counteract immunosuppressant therapy. Consult your prescriber.",
-    "source_url": "https://www.nccih.nih.gov/health/melatonin-what-you-need-to-know",
-    "verified": false
+    "source": "NIH NCCIH - Melatonin: What You Need To Know",
+    "verified": true
   },
   {
     "supplement_id": "melatonin",
     "target_type": "drug_class",
     "target": "benzodiazepine",
     "severity": "WARN",
-    "message": "Melatonin adds to the sedative effect of benzodiazepines. Use caution and avoid activities requiring alertness.",
+    "message": "Melatonin can cause drowsiness, so additive sedation with a benzodiazepine is plausible. The cited source reports drowsiness but does not describe this specific combination.",
     "source_url": "https://www.nccih.nih.gov/health/melatonin-what-you-need-to-know",
+    "source": "NIH NCCIH - Melatonin: What You Need To Know",
     "verified": false
   },
   {
@@ -85,8 +64,9 @@
     "target_type": "drug_class",
     "target": "quinolone_antibiotic",
     "severity": "WARN",
-    "message": "Magnesium can bind quinolone antibiotics and reduce their absorption. Separate doses by several hours.",
+    "message": "Magnesium can reduce absorption of quinolone antibiotics. Take the antibiotic at least 2 hours before, or 4 to 6 hours after, a magnesium-containing supplement.",
     "source_url": "https://ods.od.nih.gov/factsheets/Magnesium-HealthProfessional/",
+    "source": "NIH ODS - Magnesium Fact Sheet",
     "verified": true
   },
   {
@@ -94,8 +74,9 @@
     "target_type": "drug_class",
     "target": "tetracycline_antibiotic",
     "severity": "WARN",
-    "message": "Magnesium can bind tetracycline antibiotics and reduce their absorption. Separate doses by several hours.",
+    "message": "Magnesium can reduce absorption of tetracycline antibiotics. Take the antibiotic at least 2 hours before, or 4 to 6 hours after, a magnesium-containing supplement.",
     "source_url": "https://ods.od.nih.gov/factsheets/Magnesium-HealthProfessional/",
+    "source": "NIH ODS - Magnesium Fact Sheet",
     "verified": true
   },
   {
@@ -103,8 +84,9 @@
     "target_type": "drug_class",
     "target": "bisphosphonate",
     "severity": "WARN",
-    "message": "Magnesium can reduce absorption of bisphosphonates. Separate dosing and follow your pharmacist's guidance.",
+    "message": "Magnesium can reduce absorption of oral bisphosphonates. Taking magnesium at least 2 hours before or after the bisphosphonate can minimise this.",
     "source_url": "https://ods.od.nih.gov/factsheets/Magnesium-HealthProfessional/",
+    "source": "NIH ODS - Magnesium Fact Sheet",
     "verified": true
   },
   {
@@ -112,62 +94,79 @@
     "target_type": "condition",
     "target": "kidney_disease",
     "severity": "BLOCK",
-    "message": "With reduced kidney function, supplemental magnesium can accumulate to dangerous levels. Do not supplement without medical supervision.",
+    "message": "The risk of magnesium toxicity increases with impaired kidney function, because the ability to clear excess magnesium is reduced. Do not supplement without medical supervision.",
     "source_url": "https://ods.od.nih.gov/factsheets/Magnesium-HealthProfessional/",
+    "source": "NIH ODS - Magnesium Fact Sheet",
     "verified": true
-  },
-  {
-    "supplement_id": "l_theanine",
-    "target_type": "drug_class",
-    "target": "antihypertensive",
-    "severity": "WARN",
-    "message": "L-theanine may lower blood pressure and could add to antihypertensive medication. Monitor with your clinician.",
-    "source_url": "https://medlineplus.gov/druginfo/herb_All.html",
-    "verified": false
-  },
-  {
-    "supplement_id": "glycine",
-    "target_type": "drug_class",
-    "target": "antipsychotic_clozapine",
-    "severity": "WARN",
-    "message": "Glycine may reduce the effectiveness of clozapine. Do not combine without your prescriber's guidance.",
-    "source_url": "https://medlineplus.gov/druginfo/herb_All.html",
-    "verified": false
   },
   {
     "supplement_id": "ashwagandha",
     "target_type": "condition",
     "target": "pregnancy",
     "severity": "BLOCK",
-    "message": "Ashwagandha is not recommended during pregnancy. Avoid use and consult your clinician.",
-    "source_url": "https://medlineplus.gov/druginfo/herb_All.html",
-    "verified": false
+    "message": "Ashwagandha should be avoided during pregnancy and should not be used while breastfeeding.",
+    "source_url": "https://www.nccih.nih.gov/health/ashwagandha",
+    "source": "NIH NCCIH - Ashwagandha",
+    "verified": true
+  },
+  {
+    "supplement_id": "ashwagandha",
+    "target_type": "condition",
+    "target": "breastfeeding",
+    "severity": "BLOCK",
+    "message": "Ashwagandha should not be used while breastfeeding.",
+    "source_url": "https://www.nccih.nih.gov/health/ashwagandha",
+    "source": "NIH NCCIH - Ashwagandha",
+    "verified": true
   },
   {
     "supplement_id": "ashwagandha",
     "target_type": "drug_class",
     "target": "immunosuppressant",
     "severity": "WARN",
-    "message": "Ashwagandha may stimulate the immune system and counteract immunosuppressant therapy. Consult your prescriber.",
-    "source_url": "https://medlineplus.gov/druginfo/herb_All.html",
-    "verified": false
+    "message": "Ashwagandha might interact with medicines that decrease the immune system response. Consult your prescriber.",
+    "source_url": "https://www.nccih.nih.gov/health/ashwagandha",
+    "source": "NIH NCCIH - Ashwagandha",
+    "verified": true
   },
   {
     "supplement_id": "ashwagandha",
     "target_type": "drug_class",
     "target": "thyroid_hormone",
     "severity": "WARN",
-    "message": "Ashwagandha may increase thyroid hormone levels and add to thyroid medication. Monitor with your clinician.",
-    "source_url": "https://medlineplus.gov/druginfo/herb_All.html",
-    "verified": false
+    "message": "Ashwagandha might interact with thyroid hormone medication. Monitor with your clinician.",
+    "source_url": "https://www.nccih.nih.gov/health/ashwagandha",
+    "source": "NIH NCCIH - Ashwagandha",
+    "verified": true
   },
   {
     "supplement_id": "ashwagandha",
     "target_type": "drug_class",
     "target": "sedative_hypnotic",
     "severity": "WARN",
-    "message": "Ashwagandha may add to the effect of sedative medications. Use caution and avoid activities requiring alertness.",
-    "source_url": "https://medlineplus.gov/druginfo/herb_All.html",
-    "verified": false
+    "message": "Ashwagandha might interact with sedatives and may itself cause drowsiness. Use caution and avoid activities requiring alertness.",
+    "source_url": "https://www.nccih.nih.gov/health/ashwagandha",
+    "source": "NIH NCCIH - Ashwagandha",
+    "verified": true
+  },
+  {
+    "supplement_id": "ashwagandha",
+    "target_type": "drug_class",
+    "target": "antidiabetic",
+    "severity": "WARN",
+    "message": "Ashwagandha might interact with medicines for diabetes. Monitor with your clinician.",
+    "source_url": "https://www.nccih.nih.gov/health/ashwagandha",
+    "source": "NIH NCCIH - Ashwagandha",
+    "verified": true
+  },
+  {
+    "supplement_id": "ashwagandha",
+    "target_type": "drug_class",
+    "target": "antihypertensive",
+    "severity": "WARN",
+    "message": "Ashwagandha might interact with medicines for high blood pressure. Monitor with your clinician.",
+    "source_url": "https://www.nccih.nih.gov/health/ashwagandha",
+    "source": "NIH NCCIH - Ashwagandha",
+    "verified": true
   }
 ]

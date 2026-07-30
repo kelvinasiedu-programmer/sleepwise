@@ -78,8 +78,8 @@ embedding path demonstrates the upgrade without forcing a dependency or a key.
 
 | Backend | all recall@3 / MRR | lexical | paraphrase |
 |---|---|---|---|
-| BM25 | 0.75 / 0.74 | 1.00 / 1.00 | 0.50 / 0.47 |
-| MiniLM embeddings | 0.94 / 0.93 | 1.00 / 1.00 | 0.88 / 0.85 |
+| BM25 | 0.75 / 0.78 | 1.00 / 1.00 | 0.50 / 0.56 |
+| MiniLM embeddings | 0.92 / 0.93 | 1.00 / 1.00 | 0.83 / 0.86 |
 
 BM25 is perfect on queries that share vocabulary with the target and roughly a coin flip
 on paraphrases; embeddings match it on the former and nearly double it on the latter.

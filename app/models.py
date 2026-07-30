@@ -53,6 +53,9 @@ class Supplement(BaseModel):
     evidence_grade: str
     summary: str
     sedating: bool = False
+    # False when no cited source states the displayed range. Currently false for every
+    # supplement; see docs/CITATION_AUDIT.md.
+    dose_verified: bool = False
     evidence: list[EvidenceItem] = Field(default_factory=list)
     buy_query: str
 
