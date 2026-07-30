@@ -10,3 +10,6 @@ sentence-transformers>=3.0
 # Demo recording: scripts/record_demo.py (also needs: playwright install chromium)
 playwright>=1.48
 pillow>=10.0
+
+# Normalizer training: python -m ml.train (inference at runtime is pure Python)
+scikit-learn>=1.5

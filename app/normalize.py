@@ -17,6 +17,7 @@ import difflib
 import re
 
 from .models import MedicationResolution
+from .normalizer_model import load_model
 
 LOCAL_DRUG_CLASSES: dict[str, str] = {
     # anticoagulants / antiplatelets
@@ -137,6 +138,15 @@ _NEGATION_TOKENS = {
 }
 
 
+def _exact_entities(cleaned: str) -> list[str]:
+    """Dictionary hits only. Authoritative: an exact name needs no second opinion."""
+    if not cleaned:
+        return []
+    if cleaned in LOCAL_DRUG_CLASSES:
+        return [cleaned]
+    return [t for t in dict.fromkeys(cleaned.split()) if t in LOCAL_DRUG_CLASSES]
+
+
 def _matched_entities(med: str) -> list[str]:
     """Every distinct known drug name an entry matches, in order.
 
@@ -175,14 +185,7 @@ def _resolve_one(med: str) -> MedicationResolution:
             "or 'no'). Enter only medications you currently take, one per entry.",
         )
 
-    entities = _matched_entities(name)
-    if not entities:
-        return MedicationResolution(input=name, status="unrecognized")
-
-    classes = {LOCAL_DRUG_CLASSES[entity] for entity in entities}
-    if len(classes) > 1:
-        # Several distinct drug classes in one field: resolving to any single one would
-        # discard the others, so refuse and ask the user to split the entry.
+    def _ambiguous(entities: list[str]) -> MedicationResolution:
         return MedicationResolution(
             input=name,
             status="ambiguous",
@@ -190,9 +193,45 @@ def _resolve_one(med: str) -> MedicationResolution:
             "Please enter each medication as its own entry.",
         )
 
-    return MedicationResolution(
-        input=name, status="recognized", drug_class=LOCAL_DRUG_CLASSES[entities[0]]
-    )
+    # 1. Exact dictionary hit wins outright.
+    exact = _exact_entities(cleaned)
+    if exact:
+        classes = {LOCAL_DRUG_CLASSES[e] for e in exact}
+        if len(classes) > 1:
+            return _ambiguous(exact)
+        return MedicationResolution(
+            input=name, status="recognized", drug_class=LOCAL_DRUG_CLASSES[exact[0]]
+        )
+
+    # A trained character-level model provides the second opinion below. It is never an
+    # independent authority over the dictionary; see docs/NORMALIZER.md for the
+    # experiment that chose this arrangement.
+    model = load_model()
+    predicted = model.predict(name)[0] if model else None
+
+    # 2. Fuzzy hit: only accepted if the model agrees. Fuzzy matching alone accounted for
+    # every false accept in evaluation - it happily resolves a near-miss name like
+    # "warfarina" to warfarin, which is how an uncovered drug becomes a confident answer.
+    fuzzy = _matched_entities(name)
+    if fuzzy:
+        classes = {LOCAL_DRUG_CLASSES[e] for e in fuzzy}
+        if len(classes) > 1:
+            return _ambiguous(fuzzy)
+        fuzzy_class = next(iter(classes))
+        if predicted == fuzzy_class:
+            return MedicationResolution(input=name, status="recognized", drug_class=fuzzy_class)
+        return MedicationResolution(
+            input=name,
+            status="unrecognized",
+            detail=f"This looks close to {fuzzy[0]}, but we could not confirm it. Check the "
+            "spelling, or enter the name as it appears on the label.",
+        )
+
+    # 3. No dictionary hit at all. The model may still place it, and it rejected every
+    # uncovered drug in evaluation, so its answer is accepted when it is confident.
+    if predicted:
+        return MedicationResolution(input=name, status="recognized", drug_class=predicted)
+    return MedicationResolution(input=name, status="unrecognized")
 
 
 def _match(med: str) -> str | None:
